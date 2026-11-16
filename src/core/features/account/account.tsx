@@ -3,6 +3,7 @@
 import { ArrowRight, Building2, Headset, KeyRound, LogOut, Mail, MapPin, Pencil, Plus, Smartphone, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { qrLoginEnabled } from "@/core/api/client/config";
 import { useLogout, useMe, useOrders } from "@/core/api/client/react";
 import { BASE, btn, formatCount, formatMoney, PageHeader, ProposalTag, proposalMessage, Spinner, TILE, useToast } from "@/core/ui";
 
@@ -139,11 +140,15 @@ export function AccountScreen() {
               <h2 id="sec-h" className="display flex items-center gap-2 text-[20px]">
                 <KeyRound size={19} className="text-success" aria-hidden /> Sign-in
               </h2>
-              <p className="mt-2 text-sm text-ink-2">Sessions last 12 hours. To sign in a computer, scan the code on its sign-in page with this phone.</p>
+              <p className="mt-2 text-sm text-ink-2">
+                Sessions last 12 hours.{qrLoginEnabled() && " To sign in a computer, scan the code on its sign-in page with this phone."}
+              </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link href="/qr/approve" className={btn("outline", "sm")}>
-                  <Smartphone size={15} aria-hidden /> Approve a computer
-                </Link>
+                {qrLoginEnabled() && (
+                  <Link href="/qr/approve" className={btn("outline", "sm")}>
+                    <Smartphone size={15} aria-hidden /> Approve a computer
+                  </Link>
+                )}
                 <button type="button" onClick={signOut} disabled={logout.isPending} aria-busy={logout.isPending || undefined} className={btn("ghost", "sm")}>
                   {logout.isPending ? <Spinner /> : <LogOut size={15} aria-hidden />} {logout.isPending ? "Signing out…" : "Sign out"}
                 </button>

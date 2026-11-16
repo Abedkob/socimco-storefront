@@ -95,6 +95,7 @@ All of these are `NEXT_PUBLIC_*`, so they're **compiled into the browser bundle*
 | `NEXT_PUBLIC_API_ADAPTER` | `contract` | `custom` uses `src/core/api/client/adapters/custom-adapter.ts` to translate the real API. |
 | `NEXT_PUBLIC_API_AUTH` | `cookie` | `cookie` (HttpOnly session cookie) or `bearer` (token kept per tab). |
 | `NEXT_PUBLIC_API_TIMEOUT_MS` | `15000` | Request timeout. |
+| `NEXT_PUBLIC_QR_LOGIN` | `on` | `off` hides sign-in with a phone (QR panel and "Approve a computer") for a backend without QR support. |
 
 ---
 

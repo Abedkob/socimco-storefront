@@ -53,6 +53,7 @@ Screens & hooks (core/features, client/react.tsx)
 | `NEXT_PUBLIC_API_ADAPTER` | `contract` (default) \| `custom` | `custom` turns on `custom-adapter.ts`. Use `contract` only if your API already speaks our contract exactly. |
 | `NEXT_PUBLIC_API_AUTH` | `cookie` (default) \| `bearer` | How the browser stays signed in (section 6). |
 | `NEXT_PUBLIC_API_TIMEOUT_MS` | `15000` | Requests are aborted after this long. |
+| `NEXT_PUBLIC_QR_LOGIN` | `on` \| `off` | `off` hides sign-in with a phone (QR) if your backend doesn't support it (see "QR sign-in" below). |
 
 These are `NEXT_PUBLIC_*`, so they're compiled into the browser bundle. **Never put secrets here.** Restart `pnpm dev` after changing them.
 
@@ -242,6 +243,83 @@ The UI checks these too, for instant feedback, but **your backend is the authori
   - `me` returns 401 when there's no valid session.
   - Login must not reveal whether a username exists.
   - Repeated failures are rate-limited (`RATE_LIMITED`).
+
+## QR sign-in (signing a computer in with a phone)
+
+This works like WhatsApp Web. The computer's sign-in page shows a QR code; a customer already signed in on their phone scans it (Account → Approve a computer, or the phone's camera app) and approves, and the computer is signed in to that account. **If your backend can't support this, set `NEXT_PUBLIC_QR_LOGIN=off`.** The QR panel and the "Approve a computer" button then disappear, and password sign-in is unaffected.
+
+### The flow
+
+```
+COMPUTER (login page)                       BACKEND                                PHONE (signed in)
+1. qrCreate  POST /api/auth/qr ───────────► new code: random, single use, 2 min
+   ◄── { id, approveUrl, expiresAt }        binds the code to THIS browser (poll cookie)
+   draws approveUrl as a QR code
+2. qrStatus  GET /api/auth/qr/:id ────────► "pending"
+   (every 2 s until a final status)                                            3. scans the QR, which opens
+                                                                                  <storefront>/qr/approve?code=…
+                                            ◄─── qrScan  POST /api/auth/qr/scan { code }
+                                            "scanned" ──► { requestedFrom, requestedAt }
+   status "scanned" → "Approve on your phone"                                     shows "Sign in on a computer?"
+                                            ◄─── qrApprove  POST /api/auth/qr/approve { code, decision }
+   status "approved" (or "denied")          ──► { status: "approved" | "denied" }
+4. qrConsume POST /api/auth/qr/:id/consume ► creates the COMPUTER's session for the approving user
+   ◄── { user }  (+ session cookie, or a token for readToken)
+   signed in → continues to the page it came from
+```
+
+### Rules your backend must enforce
+
+- **The code** must be random and unguessable (128 bits or more), single use, and valid for **120 s** (`expiresAt`). When it expires, the status becomes `expired` and the computer offers a fresh code.
+- **Only the computer that created the code** may call `qrStatus` and `qrConsume`. Otherwise, anyone who learns the `id` could take the session.
+  - The mock binds the computer with an HttpOnly cookie `qr_poll` (path `/api/auth/qr`), set by `qrCreate`.
+  - Anything else returns `NOT_FOUND`.
+- **`qrScan` and `qrApprove` need the phone's session.** A signed-out phone gets `UNAUTHENTICATED`; the storefront then sends it to sign-in and brings it back to the same code.
+  - A code is scanned by one account only. A second account scanning it gets `QR_ALREADY_USED`.
+  - Only the account that scanned it can approve it (`FORBIDDEN`). Approving before scanning is also `FORBIDDEN`.
+- **`requestedFrom`** is a short description of the computer, taken from its User-Agent at `qrCreate`, e.g. "Chrome on Windows". It's shown to the phone user so they can spot a request that isn't theirs.
+- **`qrConsume`** succeeds once, and only when the status is `approved`. It then becomes `consumed`.
+  - A repeat call, or a `denied` code, gets `QR_ALREADY_USED`.
+  - An expired code gets `QR_EXPIRED`.
+  - The storefront treats `qrConsume` like `login`, so in bearer mode `readToken` runs on its response.
+- **`approveUrl`** must be the **storefront's** page: `<storefront origin>/qr/approve?code=<code>`. The phone's scanner rejects any other link. If your API only returns the code, build the URL in a handler (below).
+- **Rate limits.** The mock allows 10 creates per minute per IP, 40 status polls per minute per code, and 10 phone actions per minute per user.
+- **Unknown codes** get `NOT_FOUND` (shown as "Code not recognised"), never a 500.
+
+### If you can't use a cookie to bind the computer (bearer mode)
+
+Return a poll token from your create call and keep it in a handler. Every QR call still goes through `request()`, so base URL, auth and errors are handled for you:
+
+```ts
+let pollToken = "";
+handlers: {
+  qrCreate: async (_input, { request }) => {
+    const r = (await request("/v1/qr", { method: "POST" })) as any;
+    pollToken = r.poll_token;
+    return { id: r.id, approveUrl: `${window.location.origin}/qr/approve?code=${encodeURIComponent(r.code)}`, expiresAt: r.expires_at };
+  },
+  qrStatus: async ({ params }, { request }) =>
+    request(`/v1/qr/${params.id}`, { headers: { "x-qr-poll": pollToken } }),
+  qrConsume: async ({ params }, { request, setToken }) => {
+    const r = (await request(`/v1/qr/${params.id}/consume`, { method: "POST", headers: { "x-qr-poll": pollToken } })) as any;
+    setToken(r.access_token);
+    return { user: mapUser(r.user) };
+  },
+},
+```
+
+If you add a header like `x-qr-poll`, add it to `Access-Control-Allow-Headers` too.
+
+### Testing it
+
+On a computer, open `/login`. On a phone signed in to the same site, go to Account → Approve a computer and scan. Approve, and the computer signs in.
+
+Then check the edge cases:
+- **Reuse:** scanning the same code again shows "Already used".
+- **Expiry:** after 2 minutes the computer offers a new code.
+- **Wrong link:** a made-up `?code=` shows "Code not recognised".
+
+The camera needs HTTPS, so test on a deployed preview URL or on `localhost`.
 
 ## Error codes
 

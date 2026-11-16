@@ -3,6 +3,7 @@
 import { AlertTriangle, Clock, Eye, EyeOff, Headset, Lock, Truck } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type FormEvent } from "react";
+import { qrLoginEnabled } from "@/core/api/client/config";
 import { useLogin, useMe } from "@/core/api/client/react";
 import { ERROR_MESSAGES, isApiError } from "@/core/contract";
 import { BrandLogo, btn, errorMessage, Spinner, useMediaQuery } from "@/core/ui";
@@ -150,7 +151,7 @@ function SignInForms() {
   return (
     <div className="flex flex-col gap-3">
       <PasswordForm next={next} expired={expired} />
-      {desktop && <QrPanel next={next} />}
+      {desktop && qrLoginEnabled() && <QrPanel next={next} />}
     </div>
   );
 }

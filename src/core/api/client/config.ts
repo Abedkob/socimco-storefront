@@ -19,6 +19,15 @@ export function adapterNameFromEnv(value: string | undefined = process.env.NEXT_
   return value === "custom" ? "custom" : "contract";
 }
 
+/**
+ * Whether sign-in with a phone (QR) is offered (NEXT_PUBLIC_QR_LOGIN). On by default; set it to "off" when the
+ * backend doesn't support the QR routes: the login page then shows only the password form, and the account page
+ * hides "Approve a computer".
+ */
+export function qrLoginEnabled(value: string | undefined = process.env.NEXT_PUBLIC_QR_LOGIN): boolean {
+  return value?.trim().toLowerCase() !== "off";
+}
+
 export interface ApiConfig {
   /** Origin (and optional path prefix) of the API. Empty string = same origin as the storefront. */
   baseUrl: string;
