@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, ChevronDown, FileText, House, LayoutGrid, Lock, Mail, Package, Search, ShoppingBag, Trash2, User, X, type LucideIcon } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown, FileText, House, LayoutGrid, Lock, Mail, Package, ScanQrCode, Search, ShoppingBag, Trash2, User, X, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { qrLoginEnabled } from "@/core/api/client/config";
 import { useCart, useCartMutations, useCategories, useMe, useNegotiation, useProducts } from "@/core/api/client/react";
 import { OPEN_NEGOTIATION_STATUSES, type CategoryNode } from "@/core/contract";
 import { BASE, BrandLogo, ProductImage, Sheet, Stepper, btn, errorMessage, formatCount, formatMoney, unitLabel, useToast } from "@/core/ui";
@@ -526,10 +527,21 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               {initials || <User size={18} aria-hidden />}
             </Link>
+            {qrLoginEnabled() && (
+              // Phones and tablets: scan a computer's sign-in code (WhatsApp Web style).
+              <Link
+                href="/qr/approve"
+                className="ml-auto grid size-11 shrink-0 place-items-center rounded-full bg-surface-2 text-ink hover:bg-canvas md:ml-0 lg:hidden"
+                aria-label="Scan a computer's sign-in code"
+                title="Scan a computer's sign-in code"
+              >
+                <ScanQrCode size={19} aria-hidden />
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setPanel("cart")}
-              className="ml-auto flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-dark pl-4 pr-1 text-[14px] font-semibold text-on-dark hover:bg-dark-2 md:ml-0 lg:h-12 lg:pr-1.5"
+              className={`${qrLoginEnabled() ? "" : "ml-auto md:ml-0"} flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-dark pl-4 pr-1 text-[14px] font-semibold text-on-dark hover:bg-dark-2 lg:h-12 lg:pr-1.5`}
               aria-label={`Cart, ${cart?.items.length ?? 0} lines${cart ? `, ${formatMoney(cart.subtotalCents)}` : ""}`}
             >
               <ShoppingBag size={18} aria-hidden />

@@ -115,7 +115,7 @@ export function QrPanel({ next }: { next: string }) {
               <p className="text-sm text-ink-3">{o.body}</p>
             </>
           ) : (
-            <p className="mt-1.5 text-sm leading-relaxed text-ink-3">Open SOCIMCO on your phone, go to Account → Approve a computer, and scan this code.</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-3">Open SOCIMCO on your phone, tap the scan button at the top, and point it at this code.</p>
           )}
           {(view === "pending" || view === "scanned") && (
             <p className="tabular mt-1.5 flex items-center gap-1.5 text-[12px] text-ink-3">

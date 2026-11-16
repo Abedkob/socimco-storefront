@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertTriangle, Clock, Eye, EyeOff, Headset, Lock, Truck } from "lucide-react";
+import { AlertTriangle, Clock, Eye, EyeOff, Headset, Lock, ScanQrCode, Truck, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { qrLoginEnabled } from "@/core/api/client/config";
@@ -132,6 +133,49 @@ function PasswordForm({ next, expired }: { next: string; expired: boolean }) {
   );
 }
 
+/* ---------- Phone: sign in, then scan a computer's code ---------- */
+
+const SCAN_PATH = "/qr/approve";
+
+/**
+ * On a phone, the QR code isn't for signing in here; it's how this phone signs a computer in.
+ * This card says so, and lets the customer go straight to the scanner after the password step.
+ */
+function PhoneScanCard({ next }: { next: string }) {
+  const scanAfter = next === SCAN_PATH || next.startsWith(`${SCAN_PATH}?`);
+  if (scanAfter) {
+    return (
+      <div className="flex items-start gap-3 rounded-[24px] bg-dark p-5 text-on-dark" role="status">
+        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-accent-ink">
+          <ScanQrCode size={20} aria-hidden />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">Then scan the computer&apos;s code</p>
+          <p className="mt-0.5 text-sm text-on-dark-2">After you sign in, you go straight to the scanner. Point it at the QR code on the computer&apos;s sign-in page.</p>
+        </div>
+        <Link href="/login" replace className="grid size-11 shrink-0 place-items-center rounded-full text-on-dark-2 hover:bg-white/10 hover:text-on-dark" aria-label="Don't scan, just sign in">
+          <X size={18} aria-hidden />
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <Link
+      href={`/login?next=${encodeURIComponent(SCAN_PATH)}`}
+      replace
+      className="group flex items-center gap-3 rounded-[24px] bg-surface p-5 ring-1 ring-black/5 hover:bg-surface-2"
+    >
+      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-dark text-on-dark">
+        <ScanQrCode size={20} aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-semibold">Signing in on a computer?</span>
+        <span className="block text-sm text-ink-3">Sign in here, then scan the QR code on its screen. No password needed there.</span>
+      </span>
+    </Link>
+  );
+}
+
 /* ---------- The two ways in (reads ?next= and ?reason=, so it renders inside Suspense) ---------- */
 
 function SignInForms() {
@@ -140,8 +184,9 @@ function SignInForms() {
   const next = safeNext(params.get("next"));
   const expired = params.get("reason") === "expired";
   const me = useMe();
-  // QR sign-in is desktop-only; phones sign in with a password (and approve computers from Account).
+  // Computers show a QR code to sign in with; phones sign in with a password and then scan computers' codes.
   const desktop = useMediaQuery("(min-width: 1024px)");
+  const qr = qrLoginEnabled();
 
   // Already signed in (another tab, or the back button): carry on.
   useEffect(() => {
@@ -151,7 +196,13 @@ function SignInForms() {
   return (
     <div className="flex flex-col gap-3">
       <PasswordForm next={next} expired={expired} />
-      {desktop && qrLoginEnabled() && <QrPanel next={next} />}
+      {/* CSS hides the phone card on desktop widths, so it never flashes there before the QR panel loads. */}
+      {qr && (
+        <div className="lg:hidden">
+          <PhoneScanCard next={next} />
+        </div>
+      )}
+      {qr && desktop && <QrPanel next={next} />}
     </div>
   );
 }
