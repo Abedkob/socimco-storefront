@@ -3,7 +3,7 @@
 import { AlertTriangle, ArrowRight, Check, ChevronRight, Clock, FileText, Lock, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { FormEvent } from "react";
+import { useId, type FormEvent } from "react";
 import { useCart, useNegotiation, useNegotiationActions } from "@/core/api/client/react";
 import { isApiError, lastCustomerOffer, lastSellerPrice, type Cart, type Negotiation } from "@/core/contract";
 import { BASE, btn, ErrorTile, errorMessage, Eyebrow, formatCount, formatCountdown, formatMoney, ProductImage, Spinner, TILE, useCountdown, useToast } from "@/core/ui";
@@ -230,11 +230,14 @@ function LinesSummary({ n, images }: { n: Negotiation; images: Images }) {
 }
 
 export function PriceFields({ form, label }: { form: OfferForm; label: string }) {
+  // Unique per instance: the page can show the first-offer form and the counter form at once,
+  // and duplicate ids would detach the label from its input (screen readers then read only the placeholder).
+  const uid = useId();
   return (
     <div className="space-y-4">
       {form.lines.map((l) => (
         <div key={l.productId}>
-          <label htmlFor={`price-${l.productId}`} className="text-sm font-semibold">
+          <label htmlFor={`${uid}-price-${l.productId}`} className="text-sm font-semibold">
             {label}
             {form.lines.length > 1 && <span className="font-normal text-ink-3"> · {l.name}</span>}
           </label>
@@ -243,19 +246,19 @@ export function PriceFields({ form, label }: { form: OfferForm; label: string })
               $
             </span>
             <input
-              id={`price-${l.productId}`}
+              id={`${uid}-price-${l.productId}`}
               inputMode="decimal"
               autoComplete="off"
               value={l.raw}
               onChange={(e) => form.set(l.productId, e.target.value)}
               placeholder={l.suggestions[0] ? (l.suggestions[0].cents / 100).toFixed(2) : "0.00"}
               aria-invalid={!!l.error}
-              aria-describedby={`hint-${l.productId}`}
+              aria-describedby={`${uid}-hint-${l.productId}`}
               className="tabular h-full min-w-0 flex-1 bg-transparent px-1.5 text-lg font-semibold outline-none"
             />
             <span className="pr-3 text-sm text-ink-3">per unit</span>
           </div>
-          <p id={`hint-${l.productId}`} className={`mt-1.5 text-sm ${l.error ? "text-danger" : "text-ink-3"}`} aria-live="polite">
+          <p id={`${uid}-hint-${l.productId}`} className={`mt-1.5 text-sm ${l.error ? "text-danger" : "text-ink-3"}`} aria-live="polite">
             {l.error ?? `${l.hint} · ${formatCount(l.quantity)} units`}
           </p>
           {l.suggestions.length > 0 && (
