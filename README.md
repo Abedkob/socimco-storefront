@@ -174,4 +174,11 @@ public/brand/               SOCIMCO logo files
 
 ## Deploying
 
-It's a standard Next.js app: `pnpm build && pnpm start` on any Node 22 host, or import the folder on Vercel. No database or server secrets are needed by the storefront itself; all data comes from the API set in `NEXT_PUBLIC_API_BASE_URL`.
+**Live:** https://socimco-storefront.vercel.app (Vercel project `socimco-storefront`). **Code:** https://github.com/Abedkob/socimco-storefront (private).
+
+- **Pushing to `main`** deploys to production.
+- **Other branches** get a preview URL. Use one per integration step (for example `feat/api-auth`, `feat/api-catalog`) and check the preview before merging.
+- **Settings for the real API** (`NEXT_PUBLIC_API_*`) go in Vercel → Project → Settings → Environment Variables. Because they're compiled in, **redeploy after changing them**. You can set them on Preview only first, test, then on Production.
+- **The mock resets.** While it runs on Vercel, its in-memory data resets whenever Vercel starts a fresh server (after a deploy or an idle period), and demo users then have to sign in again. That's fine for demos, and it ends when the real API is connected.
+
+It's also a standard Next.js app: `pnpm build && pnpm start` on any Node 22 host, or import the folder on Vercel. No database or server secrets are needed by the storefront itself; all data comes from the API set in `NEXT_PUBLIC_API_BASE_URL`.
