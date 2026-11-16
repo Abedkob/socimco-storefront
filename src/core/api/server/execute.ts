@@ -70,6 +70,25 @@ const handlers: { [R in RouteName]: Handler<R> } = {
     return { body: { user }, cookies: { session, qrPoll: null } };
   },
 
+  phoneCodeCreate: async (b, ctx, { body }) => ({ status: 201, body: await b.phoneCode.create(ctx, body) }),
+  phoneCodeStatus: async (b, ctx, { params }) => ({ body: await b.phoneCode.status(ctx, params.id) }),
+  phoneCodeDecide: async (b, ctx, { params, body }) => ({ body: await b.phoneCode.decide(ctx, params.id, body) }),
+  phoneSignIn: async (b, ctx, { body }) => {
+    const result = await b.phoneCode.redeem(ctx, body);
+    if (result.status === "signed_in") {
+      const { session, ...rest } = result;
+      return { body: rest, cookies: { session } };
+    }
+    // Approval mode: this phone (and only this phone) may poll and complete, via the HttpOnly poll cookie.
+    const { pollToken, ...rest } = result;
+    return { body: rest, cookies: { qrPoll: { token: pollToken, expiresAt: rest.expiresAt } } };
+  },
+  phoneSignInStatus: async (b, ctx, { params }) => ({ body: await b.phoneCode.progress(ctx, params.id) }),
+  phoneSignInComplete: async (b, ctx, { params }) => {
+    const { user, session } = await b.phoneCode.complete(ctx, params.id);
+    return { body: { user }, cookies: { session, qrPoll: null } };
+  },
+
   categories: async (b, ctx) => ({ body: await b.catalog.categories(ctx) }),
   products: async (b, ctx, { query }) => ({ body: await b.catalog.products(ctx, query) }),
   product: async (b, ctx, { params }) => ({ body: await b.catalog.product(ctx, params.slug) }),

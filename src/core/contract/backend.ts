@@ -10,6 +10,8 @@ import type {
   Order,
   OrderListQuery,
   OrderSummary,
+  PhoneCodeCreateBody,
+  PhoneCodeDecisionBody,
   PlaceOrderBody,
   Product,
   ProductQuery,
@@ -57,6 +59,27 @@ export interface ShopBackend {
     scan(ctx: RequestContext, body: QrCodeBody): Promise<{ requestedFrom: string; requestedAt: string }>;
     approve(ctx: RequestContext, body: QrApproveBody): Promise<{ status: "approved" | "denied" }>;
     consume(ctx: RequestContext, id: string): Promise<{ user: User; session: SessionGrant }>;
+  };
+  /** Phone sign-in: a signed-in computer shows a code; a signed-out phone scans it (see contract/routes.ts). */
+  phoneCode: {
+    /** Computer, signed in. */
+    create(ctx: RequestContext, body: PhoneCodeCreateBody): Promise<{ id: string; scanUrl: string; expiresAt: string; requireApproval: boolean }>;
+    /** Computer, owner only. */
+    status(ctx: RequestContext, id: string): Promise<{ status: QrStatus; expiresAt: string; requestedFrom: string | null }>;
+    /** Computer, owner only, once the phone has scanned. */
+    decide(ctx: RequestContext, id: string, body: PhoneCodeDecisionBody): Promise<{ status: "approved" | "denied" }>;
+    /** Phone, no session needed. Signs in at once, or (approval mode) binds this phone and waits. */
+    redeem(
+      ctx: RequestContext,
+      body: QrCodeBody,
+    ): Promise<
+      | { status: "signed_in"; user: User; session: SessionGrant }
+      | { status: "awaiting_approval"; id: string; expiresAt: string; pollToken: string }
+    >;
+    /** Phone, bound by its poll token. */
+    progress(ctx: RequestContext, id: string): Promise<{ status: QrStatus; expiresAt: string }>;
+    /** Phone, bound by its poll token, once the computer approved. */
+    complete(ctx: RequestContext, id: string): Promise<{ user: User; session: SessionGrant }>;
   };
   catalog: {
     categories(ctx: RequestContext): Promise<{ categories: CategoryNode[] }>;

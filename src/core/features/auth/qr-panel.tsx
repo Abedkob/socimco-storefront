@@ -2,24 +2,13 @@
 
 import { AlertTriangle, Check, Clock, Lock, RefreshCw, ShieldCheck, Smartphone, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useQrLogin } from "@/core/api/client/react";
 import { ERROR_MESSAGES, isApiError, type QrStatus } from "@/core/contract";
-import { btn, errorMessage, Spinner } from "@/core/ui";
+import { btn, errorMessage, Spinner, useSecondsLeft } from "@/core/ui";
 import { QrCode } from "./qr-code";
 
 type View = QrStatus | "loading" | "error";
-
-/** Seconds until `iso`, ticking every second (never below 0). */
-function useSecondsLeft(iso: string | null): number {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (!iso) return;
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [iso]);
-  return iso ? Math.max(0, Math.ceil((Date.parse(iso) - now) / 1000)) : 0;
-}
 
 const OVERLAY: Partial<Record<View, { icon: typeof Check; title: string; body: string; tone: string }>> = {
   scanned: { icon: Smartphone, title: "Approve on your phone", body: "We sent a sign-in request to your phone.", tone: "bg-dark text-on-dark" },

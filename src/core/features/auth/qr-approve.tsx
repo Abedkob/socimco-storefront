@@ -24,7 +24,8 @@ const RESULT: Record<Result, { icon: typeof Check; tone: string; title: string; 
   invalid: { icon: X, tone: "bg-dark text-on-dark", title: "Code not recognised", body: "This link isn't a current sign-in code. Scan the code on your computer again." },
 };
 
-function Frame({ children }: { children: ReactNode }) {
+/** The phone-screen frame (logo + "This phone"), shared by the QR approve and phone sign-in screens. */
+export function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[460px] flex-col px-4 pb-8 pt-5">
       <div className="flex items-center justify-between">
@@ -173,7 +174,7 @@ export function QrApproveScreen() {
   }, [signedOut, code, router]);
 
   return (
-    <Frame>
+    <PhoneFrame>
       {me.isPending || signedOut ? (
         <Loading label="Checking your account…" />
       ) : me.isError ? (
@@ -186,14 +187,14 @@ export function QrApproveScreen() {
       ) : (
         <Approve key={code} code={code} />
       )}
-    </Frame>
+    </PhoneFrame>
   );
 }
 
 export function QrApproveFallback() {
   return (
-    <Frame>
+    <PhoneFrame>
       <Loading label="Loading…" />
-    </Frame>
+    </PhoneFrame>
   );
 }

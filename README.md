@@ -146,6 +146,10 @@ public/brand/               SOCIMCO logo files
 - TanStack Query 5, zod 4, lucide-react icons, Vitest
 
 - `qrcode.react` draws the scannable sign-in QR code, which encodes the `approveUrl` from the API.
+- **QR sign-in works in both directions:**
+  - A signed-in **phone** approves a **computer** (QR on the computer's sign-in page).
+  - A signed-in **computer** signs a **phone** in: Account → Sign in on your phone shows a QR, and the phone's sign-in page has "Scan QR code to sign in".
+  - The second direction has an "Ask me to confirm on this computer" switch, on by default.
 - **The phone's in-app scanner.** On a phone, Account → Approve a computer opens `/qr/approve`, which uses the camera:
   - It reads codes with the browser's `BarcodeDetector` (Chrome on Android), or with `jsqr` elsewhere (Safari on iPhone).
   - It only accepts this site's own `/qr/approve?code=…` links.
@@ -176,6 +180,7 @@ public/brand/               SOCIMCO logo files
   - password sign-in and its errors
   - QR sign-in: approve, already used, unknown code
   - the phone's in-app scanner: tested with a simulated camera and decoder (wrong code, then a real code), and the no-camera fallback
+  - phone sign-in from a signed-in computer: with confirmation (Allow), without it, and reusing a code
   - sign-out, and a session expiring and returning to the right page
 - **Controls marked "Proposal"** (add or edit address, order these again) are designs waiting for backend support. They explain this when clicked instead of doing anything.
 

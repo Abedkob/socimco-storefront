@@ -48,7 +48,8 @@ const STATUS_FALLBACK: Record<number, ErrorCode> = {
   429: "RATE_LIMITED",
 };
 
-const LOGIN_ROUTES = new Set<StorefrontRoute>(["login", "qrConsume"]);
+/** Routes whose success signs this browser in (bearer mode reads the token from their response). */
+const LOGIN_ROUTES = new Set<StorefrontRoute>(["login", "qrConsume", "phoneSignIn", "phoneSignInComplete"]);
 
 function toApiError(status: number, json: unknown, adapter: ApiAdapter, route: StorefrontRoute): ApiError {
   const custom = adapter.toError?.(status, json);

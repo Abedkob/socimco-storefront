@@ -8,6 +8,7 @@ import { qrLoginEnabled } from "@/core/api/client/config";
 import { useLogin, useMe } from "@/core/api/client/react";
 import { ERROR_MESSAGES, isApiError } from "@/core/contract";
 import { BrandLogo, btn, errorMessage, Spinner, useMediaQuery } from "@/core/ui";
+import { QR_PATHS } from "./qr-link";
 import { QrPanel } from "./qr-panel";
 import { safeNext } from "./safe-next";
 
@@ -27,7 +28,7 @@ function loginMessage(error: unknown): string {
   }
 }
 
-function PasswordForm({ next, expired }: { next: string; expired: boolean }) {
+function PasswordForm({ next, expired, scanToSignIn }: { next: string; expired: boolean; scanToSignIn: boolean }) {
   const router = useRouter();
   const login = useLogin();
   const [username, setUsername] = useState("");
@@ -126,6 +127,19 @@ function PasswordForm({ next, expired }: { next: string; expired: boolean }) {
         )}
       </button>
 
+      {/* Phones: sign in with the code a signed-in computer shows (Account → Sign in on your phone). */}
+      {scanToSignIn && (
+        <div className="lg:hidden">
+          <div className="my-4 flex items-center gap-3 text-[12px] font-medium uppercase tracking-[0.12em] text-ink-3" aria-hidden>
+            <span className="h-px flex-1 bg-line" /> or <span className="h-px flex-1 bg-line" />
+          </div>
+          <Link href={QR_PATHS.signInPhone} className={btn("outline", "lg", "w-full")}>
+            <ScanQrCode size={18} aria-hidden /> Scan QR code to sign in
+          </Link>
+          <p className="mt-2 text-center text-[13px] text-ink-3">Signed in on a computer? Open Account → Sign in on your phone there.</p>
+        </div>
+      )}
+
       <p className="mt-5 text-sm leading-relaxed text-ink-3">
         SOCIMCO is a private trade portal. Accounts are opened by our sales desk — there&apos;s no self sign-up. Forgotten your password? Call your account manager.
       </p>
@@ -135,15 +149,17 @@ function PasswordForm({ next, expired }: { next: string; expired: boolean }) {
 
 /* ---------- Phone: sign in, then scan a computer's code ---------- */
 
-const SCAN_PATH = "/qr/approve";
+const SCAN_PATH = QR_PATHS.approveComputer;
+
+/** True when the customer chose "sign in here, then scan a computer's code". */
+const scansAfterSignIn = (next: string) => next === SCAN_PATH || next.startsWith(`${SCAN_PATH}?`);
 
 /**
  * On a phone, the QR code isn't for signing in here; it's how this phone signs a computer in.
  * This card says so, and lets the customer go straight to the scanner after the password step.
  */
 function PhoneScanCard({ next }: { next: string }) {
-  const scanAfter = next === SCAN_PATH || next.startsWith(`${SCAN_PATH}?`);
-  if (scanAfter) {
+  if (scansAfterSignIn(next)) {
     return (
       <div className="flex items-start gap-3 rounded-[24px] bg-dark p-5 text-on-dark" role="status">
         <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-accent-ink">
@@ -169,8 +185,8 @@ function PhoneScanCard({ next }: { next: string }) {
         <ScanQrCode size={20} aria-hidden />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-semibold">Signing in on a computer?</span>
-        <span className="block text-sm text-ink-3">Sign in here, then scan the QR code on its screen. No password needed there.</span>
+        <span className="block font-semibold">Want to sign in on a computer instead?</span>
+        <span className="block text-sm text-ink-3">Sign in on this phone, then scan the QR code on the computer&apos;s screen. No password needed there.</span>
       </span>
     </Link>
   );
@@ -195,7 +211,7 @@ function SignInForms() {
 
   return (
     <div className="flex flex-col gap-3">
-      <PasswordForm next={next} expired={expired} />
+      <PasswordForm next={next} expired={expired} scanToSignIn={qr && !scansAfterSignIn(next)} />
       {/* CSS hides the phone card on desktop widths, so it never flashes there before the QR panel loads. */}
       {qr && (
         <div className="lg:hidden">

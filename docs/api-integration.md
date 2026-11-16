@@ -64,6 +64,12 @@ Shapes are defined in `src/core/contract/schemas.ts`. Error responses ideally us
 | qrScan | `POST /api/auth/qr/scan` `{ code }` | `{ requestedFrom, requestedAt }` |
 | qrApprove | `POST /api/auth/qr/approve` `{ code, decision }` | `{ status }` |
 | qrConsume | `POST /api/auth/qr/:id/consume` | `{ user }` |
+| phoneCodeCreate | `POST /api/auth/qr/phone` `{ requireApproval? }` | `{ id, scanUrl, expiresAt, requireApproval }` |
+| phoneCodeStatus | `GET /api/auth/qr/phone/:id` | `{ status, expiresAt, requestedFrom }` |
+| phoneCodeDecide | `POST /api/auth/qr/phone/:id/decision` `{ decision }` | `{ status }` |
+| phoneSignIn | `POST /api/auth/qr/phone/redeem` `{ code }` | `{ status: "signed_in", user }` or `{ status: "awaiting_approval", id, expiresAt }` |
+| phoneSignInStatus | `GET /api/auth/qr/phone/:id/progress` | `{ status, expiresAt }` |
+| phoneSignInComplete | `POST /api/auth/qr/phone/:id/complete` | `{ user }` |
 | categories | `GET /api/categories` | `{ categories }` (tree) |
 | products | `GET /api/products?category&q&sort&page` | `{ items, page, pageSize, total }` |
 | product | `GET /api/products/:slug` | `{ product }` |

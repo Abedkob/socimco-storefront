@@ -34,6 +34,19 @@ export function createStorefrontApi(http: HttpClient) {
       approve: (body: QrApproveBody) => http.call("qrApprove", { body }),
       consume: (id: string) => http.call("qrConsume", { params: { id } }),
     },
+    /** Phone sign-in: the signed-in computer shows a code (computer.*), a signed-out phone scans it (phone.*). */
+    phoneSignIn: {
+      computer: {
+        create: (requireApproval: boolean) => http.call("phoneCodeCreate", { body: { requireApproval } }),
+        status: (id: string, o: Opts = {}) => http.call("phoneCodeStatus", { params: { id }, ...o }),
+        decide: (id: string, decision: "approve" | "deny") => http.call("phoneCodeDecide", { params: { id }, body: { decision } }),
+      },
+      phone: {
+        redeem: (code: string) => http.call("phoneSignIn", { body: { code } }),
+        status: (id: string, o: Opts = {}) => http.call("phoneSignInStatus", { params: { id }, ...o }),
+        complete: (id: string) => http.call("phoneSignInComplete", { params: { id } }),
+      },
+    },
     catalog: {
       categories: (o: Opts = {}) => http.call("categories", o),
       products: (query: Partial<ProductQuery> = {}, o: Opts = {}) => http.call("products", { query, ...o }),

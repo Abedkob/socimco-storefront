@@ -14,6 +14,7 @@ import {
   type PriceLine,
   type ProductQuery,
   type QrStatus,
+  type User,
 } from "@/core/contract";
 import { createDefaultStorefrontApi, type StorefrontApi } from "./storefront-api";
 
@@ -64,6 +65,8 @@ export const queryKeys = {
   orders: (limit?: number) => ["orders", limit ?? null] as const,
   order: (id: string) => ["order", id] as const,
   qr: (id: string) => ["qr", id] as const,
+  phoneCode: (id: string) => ["phone-code", id] as const,
+  phoneSignIn: (id: string) => ["phone-sign-in", id] as const,
 };
 
 /* ---------- Session ---------- */
@@ -219,4 +222,62 @@ export function useQrLogin() {
     },
   });
   return { create, status, consume, code: create.data ?? null };
+}
+
+/* ---------- Phone sign-in: the computer shows a code, the phone scans it (both poll every 2 s) ---------- */
+
+/** On the computer the code is done once the phone has signed in (consumed), or it was denied or expired. */
+const PHONE_CODE_FINAL: QrStatus[] = ["denied", "expired", "consumed"];
+/** On the phone, waiting ends once the computer decided (or the code expired). */
+const PHONE_WAIT_FINAL: QrStatus[] = ["approved", "denied", "expired", "consumed"];
+
+/** Computer side: create a code (with or without approval), watch it, approve or deny the phone. */
+export function usePhoneCode() {
+  const api = useApi();
+  const create = useMutation({ mutationFn: (requireApproval: boolean) => api.phoneSignIn.computer.create(requireApproval) });
+  const id = create.data?.id ?? null;
+  const status = useQuery({
+    queryKey: queryKeys.phoneCode(id ?? "none"),
+    queryFn: ({ signal }) => api.phoneSignIn.computer.status(id!, { signal }),
+    enabled: !!id,
+    staleTime: 0,
+    refetchInterval: (q) => (q.state.data && PHONE_CODE_FINAL.includes(q.state.data.status) ? false : 2_000),
+    refetchIntervalInBackground: false,
+  });
+  const decide = useMutation({
+    mutationFn: (decision: "approve" | "deny") => api.phoneSignIn.computer.decide(id!, decision),
+    onSuccess: () => void status.refetch(),
+  });
+  return { create, status, decide, code: create.data ?? null };
+}
+
+/** Phone side: redeem a scanned code; in approval mode, wait for the computer and then complete. */
+export function usePhoneSignIn() {
+  const api = useApi();
+  const qc = useQueryClient();
+  // A fresh account on this phone: drop everything cached while signed out (but keep this hook's own state).
+  const signedIn = (user: User) => {
+    qc.removeQueries();
+    qc.setQueryData(queryKeys.me, { user });
+  };
+  const redeem = useMutation({
+    mutationFn: (code: string) => api.phoneSignIn.phone.redeem(code),
+    onSuccess: (data) => {
+      if (data.status === "signed_in") signedIn(data.user);
+    },
+  });
+  const id = redeem.data?.status === "awaiting_approval" ? redeem.data.id : null;
+  const status = useQuery({
+    queryKey: queryKeys.phoneSignIn(id ?? "none"),
+    queryFn: ({ signal }) => api.phoneSignIn.phone.status(id!, { signal }),
+    enabled: !!id,
+    staleTime: 0,
+    refetchInterval: (q) => (q.state.data && PHONE_WAIT_FINAL.includes(q.state.data.status) ? false : 2_000),
+    refetchIntervalInBackground: false,
+  });
+  const complete = useMutation({
+    mutationFn: () => api.phoneSignIn.phone.complete(id!),
+    onSuccess: (data) => signedIn(data.user),
+  });
+  return { redeem, status, complete };
 }

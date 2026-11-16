@@ -24,6 +24,20 @@ export interface QrRecord {
   approvedByUserId: string | null;
 }
 
+/** Phone sign-in: a code shown by a signed-in computer (the owner) for a phone to scan. */
+export interface PhoneCodeRecord {
+  id: string;
+  codeHash: string;
+  ownerUserId: string;
+  requireApproval: boolean;
+  status: QrStatus;
+  createdAtMs: number;
+  expiresAtMs: number;
+  /** Set when a phone redeems the code in approval mode: binds that phone. */
+  phonePollTokenHash: string | null;
+  phoneUserAgent: string | null;
+}
+
 export interface MockState {
   store: StoreConfig;
   users: Map<string, SeedUser>;
@@ -38,6 +52,8 @@ export interface MockState {
   sessions: Map<string, SessionRecord>;
   qr: Map<string, QrRecord>;
   qrByCodeHash: Map<string, string>;
+  phoneCodes: Map<string, PhoneCodeRecord>;
+  phoneCodeByCodeHash: Map<string, string>;
   seq: { negotiation: number; order: number };
 }
 
@@ -66,6 +82,8 @@ export function createState(seed: Seed): MockState {
     sessions: new Map(),
     qr: new Map(),
     qrByCodeHash: new Map(),
+    phoneCodes: new Map(),
+    phoneCodeByCodeHash: new Map(),
     seq: { negotiation: maxNegotiation, order: maxOrder },
   };
 }

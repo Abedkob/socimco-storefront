@@ -17,6 +17,8 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const CHROME_WINDOWS =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+const IPHONE_SAFARI =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";
 
 let ipCounter = 0;
 const nextIp = () => `10.0.${Math.floor(++ipCounter / 250)}.${ipCounter % 250}`;
@@ -587,6 +589,98 @@ export function runBackendContract(name: string, makeDriver: DriverFactory) {
       await expectError(poller.call("qrStatus", { params: { id } }), "RATE_LIMITED");
       d.advance(MINUTE);
       await poller.call("qrStatus", { params: { id } });
+    });
+  });
+
+  describe(`${name}: phone sign-in (computer shows the code, phone scans)`, () => {
+    async function start(d: Driver, requireApproval?: boolean) {
+      const computer = await loggedIn(d);
+      const pc = await computer.call("phoneCodeCreate", { body: requireApproval === undefined ? {} : { requireApproval } });
+      const code = new URL(pc.scanUrl).searchParams.get("code") ?? "";
+      const phone = d.actor({ ip: nextIp(), userAgent: IPHONE_SAFARI });
+      return { computer, phone, id: pc.id, code, pc };
+    }
+
+    it("signs the phone in as soon as it scans when no approval is required", async () => {
+      const d = makeDriver();
+      const { computer, phone, id, code, pc } = await start(d, false);
+      expect(pc.scanUrl).toMatch(/\/qr\/sign-in\?code=.+/);
+      expect(pc.requireApproval).toBe(false);
+      expect(Date.parse(pc.expiresAt) - d.now()).toBe(2 * MINUTE);
+      expect(await computer.call("phoneCodeStatus", { params: { id } })).toMatchObject({ status: "pending", requestedFrom: null });
+
+      const result = await phone.call("phoneSignIn", { body: { code } });
+      expect(result).toMatchObject({ status: "signed_in", user: { id: "usr_01" } });
+      expect((await phone.call("me")).user.id).toBe("usr_01");
+      expect((await computer.call("phoneCodeStatus", { params: { id } })).status).toBe("consumed");
+      await expectError(d.actor({ ip: nextIp() }).call("phoneSignIn", { body: { code } }), "QR_ALREADY_USED");
+    });
+
+    it("waits for the computer's approval by default, then the phone completes", async () => {
+      const d = makeDriver();
+      const { computer, phone, id, code, pc } = await start(d);
+      expect(pc.requireApproval).toBe(true);
+
+      const result = await phone.call("phoneSignIn", { body: { code } });
+      expect(result).toMatchObject({ status: "awaiting_approval", id });
+      await expectError(phone.call("me"), "UNAUTHENTICATED");
+      expect(await computer.call("phoneCodeStatus", { params: { id } })).toMatchObject({ status: "scanned", requestedFrom: "Safari on iOS" });
+      expect((await phone.call("phoneSignInStatus", { params: { id } })).status).toBe("scanned");
+      await expectError(phone.call("phoneSignInComplete", { params: { id } }), "FORBIDDEN");
+
+      expect(await computer.call("phoneCodeDecide", { params: { id }, body: { decision: "approve" } })).toEqual({ status: "approved" });
+      expect((await phone.call("phoneSignInStatus", { params: { id } })).status).toBe("approved");
+      const pollToken = phone.cookies.qrPoll;
+      expect((await phone.call("phoneSignInComplete", { params: { id } })).user.id).toBe("usr_01");
+      expect((await phone.call("me")).user.id).toBe("usr_01");
+      expect(phone.cookies.qrPoll).toBeNull();
+      expect((await computer.call("phoneCodeStatus", { params: { id } })).status).toBe("consumed");
+
+      const replay = d.actor({ ip: nextIp() });
+      replay.cookies.qrPoll = pollToken;
+      await expectError(replay.call("phoneSignInComplete", { params: { id } }), "QR_ALREADY_USED");
+    });
+
+    it("lets the computer deny the phone", async () => {
+      const d = makeDriver();
+      const { computer, phone, id, code } = await start(d, true);
+      await phone.call("phoneSignIn", { body: { code } });
+      expect(await computer.call("phoneCodeDecide", { params: { id }, body: { decision: "deny" } })).toEqual({ status: "denied" });
+      expect((await phone.call("phoneSignInStatus", { params: { id } })).status).toBe("denied");
+      await expectError(phone.call("phoneSignInComplete", { params: { id } }), "QR_ALREADY_USED");
+      await expectError(phone.call("me"), "UNAUTHENTICATED");
+    });
+
+    it("keeps the code to its owner and the phone that scanned it", async () => {
+      const d = makeDriver();
+      await expectError(d.actor({ ip: nextIp() }).call("phoneCodeCreate", { body: {} }), "UNAUTHENTICATED");
+      const { computer, phone, id, code } = await start(d, true);
+      const otherCustomer = await loggedIn(d, "demo.customer2");
+      await expectError(otherCustomer.call("phoneCodeStatus", { params: { id } }), "NOT_FOUND");
+      await expectError(otherCustomer.call("phoneCodeDecide", { params: { id }, body: { decision: "approve" } }), "NOT_FOUND");
+      await expectError(computer.call("phoneCodeDecide", { params: { id }, body: { decision: "approve" } }), "FORBIDDEN");
+      await expectError(d.actor({ ip: nextIp() }).call("phoneSignIn", { body: { code: "not-a-code" } }), "NOT_FOUND");
+
+      await phone.call("phoneSignIn", { body: { code } });
+      const secondPhone = d.actor({ ip: nextIp() });
+      await expectError(secondPhone.call("phoneSignIn", { body: { code } }), "QR_ALREADY_USED");
+      await expectError(secondPhone.call("phoneSignInStatus", { params: { id } }), "NOT_FOUND");
+      secondPhone.cookies.qrPoll = "forged-token";
+      await expectError(secondPhone.call("phoneSignInComplete", { params: { id } }), "NOT_FOUND");
+    });
+
+    it("expires after 120 seconds, even once approved", async () => {
+      const d = makeDriver();
+      const first = await start(d, false);
+      d.advance(2 * MINUTE);
+      await expectError(first.phone.call("phoneSignIn", { body: { code: first.code } }), "QR_EXPIRED");
+      expect((await first.computer.call("phoneCodeStatus", { params: { id: first.id } })).status).toBe("expired");
+
+      const second = await start(d, true);
+      await second.phone.call("phoneSignIn", { body: { code: second.code } });
+      await second.computer.call("phoneCodeDecide", { params: { id: second.id }, body: { decision: "approve" } });
+      d.advance(2 * MINUTE);
+      await expectError(second.phone.call("phoneSignInComplete", { params: { id: second.id } }), "QR_EXPIRED");
     });
   });
 

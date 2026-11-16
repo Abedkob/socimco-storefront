@@ -3,7 +3,7 @@
 import { Camera, CameraOff, ScanLine, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { btn, Spinner } from "@/core/ui";
-import { codeFromScan } from "./qr-link";
+import { codeFromScan, QR_PATHS, type QrPath } from "./qr-link";
 
 /**
  * The phone's in-app scanner for QR sign-in (Account → Approve a computer).
@@ -48,9 +48,22 @@ async function createDetector(): Promise<Detect> {
   };
 }
 
-export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
+export function QrScanner({
+  onCode,
+  accept = QR_PATHS.approveComputer,
+  title = "Scan the code on your computer",
+  intro = "On the computer, open the SOCIMCO sign-in page. Then scan the code next to the password form with this phone.",
+  wrongCode = "That isn't a SOCIMCO sign-in code. Point at the code on the sign-in page.",
+}: {
+  onCode: (code: string) => void;
+  /** Which kind of SOCIMCO link this scanner is for; anything else shows `wrongCode`. */
+  accept?: QrPath;
+  title?: string;
+  intro?: string;
+  wrongCode?: string;
+}) {
   const [state, setState] = useState<State>("idle");
-  const [wrongCode, setWrongCode] = useState(false);
+  const [sawWrongCode, setSawWrongCode] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -69,7 +82,7 @@ export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
   useEffect(() => stop, []);
 
   const start = async () => {
-    setWrongCode(false);
+    setSawWrongCode(false);
     if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
       setState("unavailable");
       return;
@@ -94,14 +107,14 @@ export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
         const text = video.readyState >= 2 ? await detect(video, canvasRef.current!).catch(() => null) : null;
         if (!runningRef.current) return;
         if (text) {
-          const code = codeFromScan(text, window.location.origin);
+          const code = codeFromScan(text, window.location.origin, accept);
           if (code) {
             stop();
             navigator.vibrate?.(60);
             onCode(code);
             return;
           }
-          setWrongCode(true);
+          setSawWrongCode(true);
         }
         timerRef.current = setTimeout(tick, 200);
       };
@@ -115,7 +128,7 @@ export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
 
   const cancel = () => {
     stop();
-    setWrongCode(false);
+    setSawWrongCode(false);
     setState("idle");
   };
 
@@ -123,8 +136,8 @@ export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="display mt-8 text-[34px] leading-[1.05]">Scan the code on your computer</h1>
-      <p className="mt-2 text-ink-3">On the computer, open the SOCIMCO sign-in page. Then scan the code next to the password form with this phone.</p>
+      <h1 className="display mt-8 text-[34px] leading-[1.05]">{title}</h1>
+      <p className="mt-2 text-ink-3">{intro}</p>
 
       <div className="relative mt-6 aspect-square w-full overflow-hidden rounded-[28px] bg-dark text-on-dark">
         <video
@@ -168,7 +181,7 @@ export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
       </div>
 
       <p className="mt-3 min-h-6 text-center text-sm" aria-live="polite">
-        {state === "scanning" && (wrongCode ? <span className="font-medium text-danger">That isn&apos;t a SOCIMCO sign-in code. Point at the code on the sign-in page.</span> : <span className="text-ink-3">Point the camera at the code. It scans by itself.</span>)}
+        {state === "scanning" && (sawWrongCode ? <span className="font-medium text-danger">{wrongCode}</span> : <span className="text-ink-3">Point the camera at the code. It scans by itself.</span>)}
       </p>
 
       <div className="mt-auto space-y-2.5 pt-6">

@@ -1,11 +1,13 @@
 "use client";
 
-import { ArrowRight, Building2, Headset, KeyRound, LogOut, Mail, MapPin, Pencil, Plus, Smartphone, UserRound } from "lucide-react";
+import { ArrowRight, Building2, Headset, KeyRound, LogOut, Mail, MapPin, Pencil, Plus, QrCode, Smartphone, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { qrLoginEnabled } from "@/core/api/client/config";
 import { useLogout, useMe, useOrders } from "@/core/api/client/react";
-import { BASE, btn, formatCount, formatMoney, PageHeader, ProposalTag, proposalMessage, Spinner, TILE, useToast } from "@/core/ui";
+import { BASE, btn, formatCount, formatMoney, PageHeader, ProposalTag, proposalMessage, Sheet, Spinner, TILE, useToast } from "@/core/ui";
+import { PhoneCodePanel } from "./phone-code";
 
 /** The customer's sales contact. Not in the API yet, so it's the shop's general desk. */
 const SALES_DESK = { name: "SOCIMCO Sales Desk", email: "sales@socimco.example", hours: "Mon–Fri, 7 am–5 pm · replies to quotes within the hour" };
@@ -25,6 +27,7 @@ export function AccountScreen() {
   const me = useMe();
   const orders = useOrders();
   const logout = useLogout();
+  const [phoneCode, setPhoneCode] = useState(false);
   // The shop layout's AuthGate only renders this once the customer is known.
   const user = me.data?.user;
   if (!user) return null;
@@ -141,13 +144,25 @@ export function AccountScreen() {
                 <KeyRound size={19} className="text-success" aria-hidden /> Sign-in
               </h2>
               <p className="mt-2 text-sm text-ink-2">
-                Sessions last 12 hours.{qrLoginEnabled() && " To sign in a computer, scan the code on its sign-in page with this phone."}
+                Sessions last 12 hours.
+                {qrLoginEnabled() && (
+                  <>
+                    <span className="hidden lg:inline"> Show a code here to sign your phone in without a password.</span>
+                    <span className="lg:hidden"> To sign in a computer, scan the code on its sign-in page with this phone.</span>
+                  </>
+                )}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {qrLoginEnabled() && (
-                  <Link href="/qr/approve" className={btn("outline", "sm")}>
-                    <Smartphone size={15} aria-hidden /> Approve a computer
-                  </Link>
+                  <>
+                    {/* Computers: show a code for a phone to sign in with. Phones: scan a computer's code. */}
+                    <button type="button" onClick={() => setPhoneCode(true)} className={btn("primary", "sm", "hidden lg:inline-flex")}>
+                      <QrCode size={15} aria-hidden /> Sign in on your phone
+                    </button>
+                    <Link href="/qr/approve" className={btn("outline", "sm", "lg:hidden")}>
+                      <Smartphone size={15} aria-hidden /> Approve a computer
+                    </Link>
+                  </>
                 )}
                 <button type="button" onClick={signOut} disabled={logout.isPending} aria-busy={logout.isPending || undefined} className={btn("ghost", "sm")}>
                   {logout.isPending ? <Spinner /> : <LogOut size={15} aria-hidden />} {logout.isPending ? "Signing out…" : "Sign out"}
@@ -171,6 +186,10 @@ export function AccountScreen() {
           </div>
         </div>
       </div>
+
+      <Sheet open={phoneCode} onClose={() => setPhoneCode(false)} side="right" label="Sign in on your phone">
+        <PhoneCodePanel onClose={() => setPhoneCode(false)} />
+      </Sheet>
     </div>
   );
 }

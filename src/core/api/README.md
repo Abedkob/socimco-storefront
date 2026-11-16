@@ -53,7 +53,7 @@ Screens & hooks (core/features, client/react.tsx)
 | `NEXT_PUBLIC_API_ADAPTER` | `contract` (default) \| `custom` | `custom` turns on `custom-adapter.ts`. Use `contract` only if your API already speaks our contract exactly. |
 | `NEXT_PUBLIC_API_AUTH` | `cookie` (default) \| `bearer` | How the browser stays signed in (section 6). |
 | `NEXT_PUBLIC_API_TIMEOUT_MS` | `15000` | Requests are aborted after this long. |
-| `NEXT_PUBLIC_QR_LOGIN` | `on` \| `off` | `off` hides sign-in with a phone (QR) if your backend doesn't support it (see "QR sign-in" below). |
+| `NEXT_PUBLIC_QR_LOGIN` | `on` \| `off` | `off` hides both QR features if your backend doesn't support them: a phone signing a computer in, and a computer signing a phone in (see "QR sign-in" and "Phone sign-in" below). |
 
 These are `NEXT_PUBLIC_*`, so they're compiled into the browser bundle. **Never put secrets here.** Restart `pnpm dev` after changing them.
 
@@ -132,6 +132,12 @@ The UI needs these shapes **after** your adapter. Exact zod definitions are in `
 | `qrScan` | `POST /api/auth/qr/scan` | `{ code }` | `{ requestedFrom, requestedAt }` |
 | `qrApprove` | `POST /api/auth/qr/approve` | `{ code, decision: approve\|deny }` | `{ status: approved\|denied }` |
 | `qrConsume` | `POST /api/auth/qr/:id/consume` | — | `{ user: User }` (and sets the session) |
+| `phoneCodeCreate` | `POST /api/auth/qr/phone` | `{ requireApproval?: boolean }` (default `true`) | `{ id, scanUrl, expiresAt, requireApproval }`. `scanUrl` = `<storefront origin>/qr/sign-in?code=<code>` |
+| `phoneCodeStatus` | `GET /api/auth/qr/phone/:id` | — | `{ status, expiresAt, requestedFrom: string\|null }` |
+| `phoneCodeDecide` | `POST /api/auth/qr/phone/:id/decision` | `{ decision: approve\|deny }` | `{ status: approved\|denied }` |
+| `phoneSignIn` | `POST /api/auth/qr/phone/redeem` | `{ code }` | `{ status: "signed_in", user }` (and sets the session) **or** `{ status: "awaiting_approval", id, expiresAt }` |
+| `phoneSignInStatus` | `GET /api/auth/qr/phone/:id/progress` | — | `{ status, expiresAt }` |
+| `phoneSignInComplete` | `POST /api/auth/qr/phone/:id/complete` | — | `{ user: User }` (and sets the session) |
 | `categories` | `GET /api/categories` | — | `{ categories: CategoryNode[] }` (top level with `children`) |
 | `products` | `GET /api/products` | query `category? q? sort page` | `{ items: ProductListItem[], page, pageSize, total }` |
 | `product` | `GET /api/products/:slug` | — | `{ product: Product }` |
@@ -320,6 +326,70 @@ Then check the edge cases:
 - **Wrong link:** a made-up `?code=` shows "Code not recognised".
 
 The camera needs HTTPS, so test on a deployed preview URL or on `localhost`.
+
+## Phone sign-in (the reverse: a signed-in computer signs a phone in)
+
+The customer is signed in on a computer and wants to use their phone without typing a password.
+1. **On the computer:** Account → **Sign in on your phone** shows a QR code.
+2. **On the phone:** the sign-in page has **Scan QR code to sign in**, which opens the scanner (`/qr/sign-in`). The phone's own camera app works too, because the QR is a normal link.
+
+The computer chooses one of two modes when it creates the code:
+
+| Mode | `requireApproval` | What happens | When to use it |
+|---|---|---|---|
+| **Confirm on the computer** (default) | `true` | The phone scans, the computer asks "Allow Safari on iOS to sign in?", the user clicks Allow, and only then does the phone get its session. | Always recommended. Protects against someone photographing the code. |
+| **No confirmation** | `false` | Scanning signs the phone in at once. | When nobody else can see the screen. Anyone who scans the code within its 2 minutes gets in. |
+
+### The flow
+
+```
+COMPUTER (signed in)                         BACKEND                                   PHONE (signed out)
+1. phoneCodeCreate POST /api/auth/qr/phone ► new code: random, single use, 2 min,
+   { requireApproval }                       owned by this user
+   ◄── { id, scanUrl, expiresAt }
+   draws scanUrl as a QR; polls phoneCodeStatus every 2 s
+                                                                              2. scans: opens <storefront>/qr/sign-in?code=…
+                                             ◄─── phoneSignIn POST /api/auth/qr/phone/redeem { code }
+  requireApproval = false:                   ──► { status: "signed_in", user } + session      → phone is in
+  requireApproval = true:                    binds THIS phone (poll cookie), status "scanned"
+                                             ──► { status: "awaiting_approval", id, expiresAt }
+   status "scanned", requestedFrom "Safari on iOS"                             phone polls phoneSignInStatus every 2 s
+   → "Allow Safari on iOS to sign in?"                                         → "Allow it on your computer"
+3. phoneCodeDecide POST …/:id/decision ────► "approved" (or "denied")
+                                                                              4. sees "approved"
+                                             ◄─── phoneSignInComplete POST …/:id/complete
+                                             ──► { user } + session, status "consumed"        → phone is in
+   status "consumed" → "Your phone is signed in"
+```
+
+### Rules your backend must enforce
+
+- **The code** must be random and unguessable (128 bits or more), single use, and valid for **120 s**. It's created only by a signed-in user, and belongs to that user.
+- **`phoneCodeStatus` and `phoneCodeDecide`** are for the owner only, meaning the same signed-in user. Anyone else gets `NOT_FOUND`.
+  - `phoneCodeDecide` before a phone has scanned is `FORBIDDEN`.
+  - After a decision, it's `QR_ALREADY_USED`.
+- **`phoneSignIn` (redeem)** needs no session; the phone is signed out.
+  - An unknown code is `NOT_FOUND`, an expired one `QR_EXPIRED`, and a code already scanned or used `QR_ALREADY_USED`. So a second phone can't take over a code.
+  - In approval mode it must **bind that phone**. The mock sets the same HttpOnly `qr_poll` cookie as QR login (path `/api/auth/qr`), so that only that phone can call `phoneSignInStatus` and `phoneSignInComplete`. Anyone else gets `NOT_FOUND`.
+- **`phoneSignInComplete`** works once, and only after `approved`.
+  - Denied, or already used: `QR_ALREADY_USED`.
+  - Expired: `QR_EXPIRED`.
+  - Not decided yet: `FORBIDDEN`.
+- **The mode is decided when the code is created, and enforced by the backend.** A phone can't skip the approval of a code created with `requireApproval: true`. If SOCIMCO wants to forbid the no-confirmation mode altogether, reject `requireApproval: false` with `FORBIDDEN`, and the computer will show the error.
+- **The phone's session** is a normal session for the code's owner, the same as after a password login. In bearer mode, `readToken` runs on the `phoneSignIn` and `phoneSignInComplete` responses.
+- **`requestedFrom`** describes the phone from its User-Agent at redeem time (e.g. "Safari on iOS"). It's shown on the computer next to Allow.
+- **Rate limits (mock):** 10 creates per minute per user, 10 redeems per minute per IP, and 40 polls per minute per code.
+
+`NEXT_PUBLIC_QR_LOGIN=off` hides both directions of QR sign-in.
+
+**Testing it:**
+1. Sign in on a computer and open Account → Sign in on your phone.
+2. On a signed-out phone, tap "Scan QR code to sign in".
+3. With "Ask me to confirm" on, click Allow on the computer. The phone opens the shop, signed in.
+4. Switch confirm off and try again: the phone gets in right after scanning.
+5. Scan the same code again: it shows "Already used".
+
+The contract tests (`pnpm test`, "phone sign-in") cover all of these rules against the mock.
 
 ## Error codes
 

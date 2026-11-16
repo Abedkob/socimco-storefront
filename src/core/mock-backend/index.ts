@@ -4,6 +4,7 @@ import { createCartApi } from "./cart";
 import { createCatalog } from "./catalog";
 import { createNegotiations, createSeller } from "./negotiations";
 import { createOrders } from "./orders";
+import { createPhoneCode } from "./phone-code";
 import { createQr } from "./qr";
 import { createRateLimiter } from "./rate-limit";
 import { loadSeed, type Seed } from "./seed";
@@ -25,6 +26,7 @@ export function createMockBackend(seed: Seed = loadSeed(), options: MockBackendO
     store: { get: async () => structuredClone(deps.state.store) },
     auth: createAuth(deps),
     qr: createQr(deps),
+    phoneCode: createPhoneCode(deps),
     catalog: createCatalog(deps),
     cart: createCartApi(deps),
     negotiations: createNegotiations(deps),

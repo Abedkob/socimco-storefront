@@ -271,6 +271,16 @@ export type QrCodeBody = z.infer<typeof QrCodeBody>;
 export const QrApproveBody = QrCodeBody.extend({ decision: z.enum(["approve", "deny"]) });
 export type QrApproveBody = z.infer<typeof QrApproveBody>;
 
+/** Phone sign-in: a signed-in computer shows a code; a signed-out phone scans it. */
+export const PhoneCodeCreateBody = z.object({
+  /** true (default): the computer must approve the phone. false: scanning alone signs the phone in. */
+  requireApproval: z.boolean().default(true),
+});
+export type PhoneCodeCreateBody = z.infer<typeof PhoneCodeCreateBody>;
+
+export const PhoneCodeDecisionBody = z.object({ decision: z.enum(["approve", "deny"]) });
+export type PhoneCodeDecisionBody = z.infer<typeof PhoneCodeDecisionBody>;
+
 export const ProductSort = z.enum(["name", "price_asc", "price_desc", "newest"]);
 export const ProductQuery = z.object({
   category: Slug.optional(),
@@ -331,6 +341,14 @@ export const QrCreateResponse = z.object({ id: Id, approveUrl: z.url(), expiresA
 export const QrStatusResponse = z.object({ status: QrStatus, expiresAt: Timestamp });
 export const QrScanResponse = z.object({ requestedFrom: z.string(), requestedAt: Timestamp });
 export const QrApproveResponse = z.object({ status: z.enum(["approved", "denied"]) });
+export const PhoneCodeResponse = z.object({ id: Id, scanUrl: z.url(), expiresAt: Timestamp, requireApproval: z.boolean() });
+/** The computer's view: `requestedFrom` describes the phone once it has scanned ("Safari on iOS"). */
+export const PhoneCodeStatusResponse = z.object({ status: QrStatus, expiresAt: Timestamp, requestedFrom: z.string().nullable() });
+export const PhoneSignInResponse = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("signed_in"), user: User }),
+  z.object({ status: z.literal("awaiting_approval"), id: Id, expiresAt: Timestamp }),
+]);
+export type PhoneSignInResponse = z.infer<typeof PhoneSignInResponse>;
 export const CategoriesResponse = z.object({ categories: z.array(CategoryNode) });
 export const ProductsResponse = z.object({
   items: z.array(ProductListItem),

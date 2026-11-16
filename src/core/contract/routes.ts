@@ -11,6 +11,11 @@ import {
   OrderListQuery,
   OrderResponse,
   OrdersResponse,
+  PhoneCodeCreateBody,
+  PhoneCodeDecisionBody,
+  PhoneCodeResponse,
+  PhoneCodeStatusResponse,
+  PhoneSignInResponse,
   PlaceOrderBody,
   ProductQuery,
   ProductResponse,
@@ -48,6 +53,14 @@ export const apiRoutes = {
   qrScan: { method: "POST", path: "/api/auth/qr/scan", body: QrCodeBody, response: QrScanResponse },
   qrApprove: { method: "POST", path: "/api/auth/qr/approve", body: QrApproveBody, response: QrApproveResponse },
   qrConsume: { method: "POST", path: "/api/auth/qr/:id/consume", response: UserResponse },
+
+  // Phone sign-in (the reverse of QR login): a signed-in computer shows a code, a signed-out phone scans it.
+  phoneCodeCreate: { method: "POST", path: "/api/auth/qr/phone", body: PhoneCodeCreateBody, response: PhoneCodeResponse },
+  phoneCodeStatus: { method: "GET", path: "/api/auth/qr/phone/:id", response: PhoneCodeStatusResponse },
+  phoneCodeDecide: { method: "POST", path: "/api/auth/qr/phone/:id/decision", body: PhoneCodeDecisionBody, response: QrApproveResponse },
+  phoneSignIn: { method: "POST", path: "/api/auth/qr/phone/redeem", body: QrCodeBody, response: PhoneSignInResponse },
+  phoneSignInStatus: { method: "GET", path: "/api/auth/qr/phone/:id/progress", response: QrStatusResponse },
+  phoneSignInComplete: { method: "POST", path: "/api/auth/qr/phone/:id/complete", response: UserResponse },
 
   categories: { method: "GET", path: "/api/categories", response: CategoriesResponse },
   products: { method: "GET", path: "/api/products", query: ProductQuery, response: ProductsResponse },
