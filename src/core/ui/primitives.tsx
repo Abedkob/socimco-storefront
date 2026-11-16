@@ -91,11 +91,11 @@ export function Stepper({
   const w = size === "sm" ? "w-11 shrink-0 sm:w-10" : "w-12 shrink-0";
   return (
     <div className={`inline-flex ${h} items-stretch overflow-hidden rounded-full bg-surface ring-1 ring-inset ring-line-strong ${disabled ? "opacity-60" : ""} ${className}`}>
-      <button type="button" aria-label={`Decrease ${label}`} onClick={q.decrement} disabled={disabled || !q.canDecrement} className={`${w} grid place-items-center text-ink hover:bg-surface-2 disabled:text-line-strong`}>
+      <button type="button" aria-label={`Diminuer : ${label}`} onClick={q.decrement} disabled={disabled || !q.canDecrement} className={`${w} grid place-items-center text-ink hover:bg-surface-2 disabled:text-line-strong`}>
         <Minus size={16} aria-hidden />
       </button>
       <input {...q.inputProps} aria-label={label} disabled={disabled} className="tabular w-12 min-w-0 flex-1 bg-transparent text-center font-semibold text-ink outline-none focus-visible:bg-accent-soft" />
-      <button type="button" aria-label={`Increase ${label}`} onClick={q.increment} disabled={disabled || !q.canIncrement} className={`${w} grid place-items-center text-ink hover:bg-surface-2 disabled:text-line-strong`}>
+      <button type="button" aria-label={`Augmenter : ${label}`} onClick={q.increment} disabled={disabled || !q.canIncrement} className={`${w} grid place-items-center text-ink hover:bg-surface-2 disabled:text-line-strong`}>
         <Plus size={16} aria-hidden />
       </button>
     </div>
@@ -111,7 +111,7 @@ export function TradeBadge({ qty, className = "" }: { qty: number; className?: s
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full bg-dark px-2.5 py-1 text-[11px] font-semibold text-on-dark ${className}`}>
       <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-      Trade {formatCount(qty)}+
+      Négociable dès {formatCount(qty)}
     </span>
   );
 }
@@ -120,12 +120,12 @@ export function TradeBadge({ qty, className = "" }: { qty: number; className?: s
 export function StockLine({ stock, inStock, compact = false }: { stock?: number; inStock?: boolean; compact?: boolean }) {
   const size = compact ? "text-[12px]" : "text-sm";
   const available = stock !== undefined ? stock > 0 : inStock !== false;
-  if (!available) return <span className={`${size} font-medium text-danger`}>Out of stock</span>;
+  if (!available) return <span className={`${size} font-medium text-danger`}>Rupture de stock</span>;
   const low = stock !== undefined && stock < 100;
   return (
     <span className={`inline-flex items-center gap-1.5 whitespace-nowrap ${size} font-medium ${low ? "text-warning" : "text-success"}`}>
       <span className={`size-1.5 shrink-0 rounded-full ${low ? "bg-warning" : "bg-success"}`} aria-hidden />
-      {stock === undefined ? "In stock" : low ? `Low stock · ${formatCount(stock)} left` : `${formatCount(stock)} in stock`}
+      {stock === undefined ? "En stock" : low ? `Stock faible · plus que ${formatCount(stock)}` : `${formatCount(stock)} en stock`}
     </span>
   );
 }
@@ -146,7 +146,7 @@ export function SectionHead({ title, sub, action }: { title: string; sub?: strin
 export function PageHeader({ crumbs, title, lead, aside }: { crumbs: { label: string; href?: string }[]; title: ReactNode; lead?: ReactNode; aside?: ReactNode }) {
   return (
     <>
-      <nav aria-label="Breadcrumb" className="px-1 pt-4 text-sm text-ink-3">
+      <nav aria-label="Fil d'Ariane" className="px-1 pt-4 text-sm text-ink-3">
         <ol className="flex flex-wrap items-center gap-x-1">
           {crumbs.map((c, i) => (
             <li key={c.label} className="flex items-center gap-1">
@@ -175,6 +175,9 @@ export function PageHeader({ crumbs, title, lead, aside }: { crumbs: { label: st
   );
 }
 
+/** French labels for the order statuses the API sends. */
+export const ORDER_STATUS_LABEL: Record<string, string> = { confirmed: "Confirmée", processing: "En préparation", shipped: "Expédiée", delivered: "Livrée", cancelled: "Annulée" };
+
 const ORDER_STATUS: Record<string, string> = {
   confirmed: "bg-surface-2 text-ink-2",
   processing: "bg-warning-soft text-warning",
@@ -184,14 +187,14 @@ const ORDER_STATUS: Record<string, string> = {
 };
 
 export function OrderStatusChip({ status }: { status: string }) {
-  return <span className={`inline-flex h-7 items-center rounded-full px-3 text-[12px] font-semibold capitalize ${ORDER_STATUS[status] ?? "bg-surface-2 text-ink-2"}`}>{status}</span>;
+  return <span className={`inline-flex h-7 items-center rounded-full px-3 text-[12px] font-semibold ${ORDER_STATUS[status] ?? "bg-surface-2 text-ink-2"}`}>{ORDER_STATUS_LABEL[status] ?? status}</span>;
 }
 
 export function NegotiatedChip({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex h-6 items-center gap-1.5 rounded-full bg-accent-soft px-2.5 text-[11px] font-semibold text-success ${className}`}>
       <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-      Negotiated
+      Négocié
     </span>
   );
 }
@@ -225,7 +228,7 @@ export function ErrorTile({ message, onRetry, className = "" }: { message: strin
       <p className="max-w-md text-ink-2">{message}</p>
       {onRetry && (
         <button type="button" onClick={onRetry} className={btn("outline", "md")}>
-          Try again
+          Réessayer
         </button>
       )}
     </div>
@@ -234,5 +237,5 @@ export function ErrorTile({ message, onRetry, className = "" }: { message: strin
 
 /** Friendly text for an error thrown by the API client (ApiError) or anything else. */
 export function errorMessage(error: unknown): string {
-  return error instanceof Error && error.message ? error.message : "Something went wrong. Please try again.";
+  return error instanceof Error && error.message ? error.message : "Une erreur est survenue. Veuillez réessayer.";
 }

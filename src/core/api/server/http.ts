@@ -137,18 +137,18 @@ export function createApiRoute(backend: ShopBackend, options: ApiRouteOptions = 
 
       if (request.method !== "GET") {
         const origin = request.headers.get("origin");
-        if (!origin || origin !== ctx.origin) throw new ApiError("FORBIDDEN", { message: "Cross-origin request blocked." });
+        if (!origin || origin !== ctx.origin) throw new ApiError("FORBIDDEN", { message: "Requête d'origine externe bloquée." });
       }
 
       let body: unknown;
       if ("body" in def) {
         if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
-          throw new ApiError("VALIDATION_FAILED", { message: "Send a JSON body." });
+          throw new ApiError("VALIDATION_FAILED", { message: "Envoyez un corps de requête JSON." });
         }
         try {
           body = await request.json();
         } catch {
-          throw new ApiError("VALIDATION_FAILED", { message: "Malformed JSON body." });
+          throw new ApiError("VALIDATION_FAILED", { message: "Corps de requête JSON mal formé." });
         }
       }
 

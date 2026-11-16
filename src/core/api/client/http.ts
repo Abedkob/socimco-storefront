@@ -106,7 +106,7 @@ export function createHttpClient(options: HttpClientOptions): HttpClient {
       if (signal?.aborted) throw error;
       const timedOut = timeout.signal.aborted;
       throw new ApiError("INTERNAL", {
-        message: timedOut ? "The server took too long to answer. Try again." : "Can't reach the server. Check your connection and try again.",
+        message: timedOut ? "Le serveur met trop de temps à répondre. Réessayez." : "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
         details: { route, kind: timedOut ? "timeout" : "network" },
       });
     } finally {
@@ -176,7 +176,7 @@ export function createHttpClient(options: HttpClientOptions): HttpClient {
       // Contract drift: the API answered, but not in the shape the storefront relies on.
       console.error(`[api] ${route} returned an unexpected shape`, checked.error.issues);
       throw new ApiError("INTERNAL", {
-        message: "The server sent an unexpected response. Try again later.",
+        message: "Le serveur a renvoyé une réponse inattendue. Réessayez plus tard.",
         details: { route, kind: "contract", issues: checked.error.issues },
       });
     }

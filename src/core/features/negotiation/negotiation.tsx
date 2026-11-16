@@ -6,18 +6,35 @@ import { useSearchParams } from "next/navigation";
 import { useId, type FormEvent } from "react";
 import { useCart, useNegotiation, useNegotiationActions } from "@/core/api/client/react";
 import { isApiError, lastCustomerOffer, lastSellerPrice, type Cart, type Negotiation } from "@/core/contract";
-import { BASE, btn, ErrorTile, errorMessage, Eyebrow, formatCount, formatCountdown, formatMoney, ProductImage, Spinner, TILE, useCountdown, useToast } from "@/core/ui";
+import {
+  BASE,
+  btn,
+  centsToInput,
+  CURRENCY_SYMBOL,
+  ErrorTile,
+  errorMessage,
+  Eyebrow,
+  formatCount,
+  formatCountdown,
+  formatDayTime,
+  formatMoney,
+  ProductImage,
+  Spinner,
+  TILE,
+  useCountdown,
+  useToast,
+} from "@/core/ui";
 import { useOfferForm, type OfferForm } from "./offer";
 import { isQuoteClosed, maxOffers, quoteRef, quoteTotals, rememberQuote, useRememberedQuote } from "./quote";
 
 const STAMP: Record<Negotiation["status"], { label: string; tone: string }> = {
-  awaiting_seller: { label: "Awaiting seller", tone: "bg-surface text-ink" },
-  awaiting_customer: { label: "Your move", tone: "bg-accent text-accent-ink" },
-  accepted: { label: "Price agreed", tone: "bg-success-soft text-success" },
-  rejected: { label: "Declined", tone: "bg-danger-soft text-danger" },
-  expired: { label: "Expired", tone: "bg-surface text-ink-2" },
-  cancelled: { label: "Cancelled", tone: "bg-surface text-ink-2" },
-  ordered: { label: "Ordered", tone: "bg-success-soft text-success" },
+  awaiting_seller: { label: "En attente du service commercial", tone: "bg-surface text-ink" },
+  awaiting_customer: { label: "À vous de répondre", tone: "bg-accent text-accent-ink" },
+  accepted: { label: "Prix convenu", tone: "bg-success-soft text-success" },
+  rejected: { label: "Refusé", tone: "bg-danger-soft text-danger" },
+  expired: { label: "Expiré", tone: "bg-surface text-ink-2" },
+  cancelled: { label: "Annulé", tone: "bg-surface text-ink-2" },
+  ordered: { label: "Commandé", tone: "bg-success-soft text-success" },
 };
 
 type Images = Map<string, string>;
@@ -48,7 +65,7 @@ function OffersLeft({ left, max }: { left: number; max: number }) {
           <span key={i} className={`size-2.5 rounded-full ${i < left ? "bg-dark" : "bg-line-strong/40"}`} />
         ))}
       </span>
-      {left} of {max} offers left
+      {left} {left > 1 ? "offres restantes" : "offre restante"} sur {max}
     </span>
   );
 }
@@ -74,11 +91,11 @@ function PriceLadder({ n }: { n: Negotiation }) {
     <section className={`${TILE} p-6`} aria-labelledby="ladder-h">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="ladder-h" className="font-semibold">
-          Price per unit · {line.name}
+          Prix unitaire · {line.name}
         </h2>
         {!agreed && you > 0 && (
           <p className="tabular text-sm text-ink-2">
-            Gap <span className="font-semibold text-ink">{formatMoney(seller - you)}</span> per unit
+            Écart <span className="font-semibold text-ink">{formatMoney(seller - you)}</span> / unité
           </p>
         )}
       </div>
@@ -98,48 +115,51 @@ function PriceLadder({ n }: { n: Negotiation }) {
           </span>
         )}
         <span className="absolute -top-10 right-0 translate-x-1/2 text-center text-xs text-ink-3">
-          List
+          Catalogue
           <span className="tabular block font-semibold text-ink">{formatMoney(list)}</span>
         </span>
         <span className="absolute right-0 top-1/2 h-5 w-0.5 -translate-y-1/2 bg-ink" aria-hidden />
         {you > 0 && !agreed && (
           <span className="absolute top-5 -translate-x-1/2 text-center text-xs text-ink-3" style={{ left: pos(you) }}>
-            You
+            Vous
             <span className="tabular block font-semibold text-ink">{formatMoney(you)}</span>
           </span>
         )}
         {seller < list && !agreed && (
           <span className="absolute -top-10 -translate-x-1/2 text-center text-xs text-ink-3" style={{ left: pos(seller) }}>
-            Seller
+            SOCIMCO
             <span className="tabular block font-semibold text-ink">{formatMoney(seller)}</span>
           </span>
         )}
         {agreed && (
           <span className="absolute top-5 -translate-x-1/2 text-center text-xs text-success" style={{ left: pos(agreed) }}>
-            Agreed
+            Convenu
             <span className="tabular block font-semibold">{formatMoney(agreed)}</span>
           </span>
         )}
       </div>
       <p className="sr-only">
-        List price {formatMoney(list)} per unit.
-        {you > 0 && !agreed && ` Your last offer ${formatMoney(you)}.`}
-        {seller < list && !agreed && ` Seller's price ${formatMoney(seller)}.`}
-        {agreed && ` Agreed ${formatMoney(agreed)}.`}
+        Prix catalogue : {formatMoney(list)} l&apos;unité.
+        {you > 0 && !agreed && ` Votre dernière offre : ${formatMoney(you)}.`}
+        {seller < list && !agreed && ` Prix du service commercial : ${formatMoney(seller)}.`}
+        {agreed && ` Prix convenu : ${formatMoney(agreed)}.`}
       </p>
     </section>
   );
 }
 
-const ACTION_LABEL = { offer: "offered", counter: "countered", accept: "accepted", reject: "declined" } as const;
+/** "Vous avez proposé" / "Service commercial SOCIMCO a fait une contre-offre". */
+const ACTION_LABEL = {
+  customer: { offer: "avez proposé", counter: "avez fait une contre-offre", accept: "avez accepté", reject: "avez refusé" },
+  seller: { offer: "a proposé", counter: "a fait une contre-offre", accept: "a accepté", reject: "a refusé" },
+} as const;
 
 function Timeline({ n }: { n: Negotiation }) {
   const qty = (id: string) => n.lines.find((l) => l.productId === id)?.quantity ?? 0;
-  const time = (iso: string) => new Date(iso).toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" });
   return (
     <section aria-labelledby="history-h">
       <h2 id="history-h" className="display px-1 text-[24px]">
-        History
+        Historique
       </h2>
       <ol className="mt-4">
         {n.rounds.map((r, i) => {
@@ -149,25 +169,25 @@ function Timeline({ n }: { n: Negotiation }) {
             <li key={r.n} className="relative flex gap-4 pb-6 last:pb-0">
               {i < n.rounds.length - 1 && <span className="absolute left-[15px] top-8 h-[calc(100%-24px)] w-px bg-line-strong" aria-hidden />}
               <span className={`relative grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold ${mine ? "bg-ink text-on-dark" : "bg-accent text-accent-ink"}`} aria-hidden>
-                {mine ? "You" : "S"}
+                {mine ? "V" : "S"}
               </span>
               <div className="min-w-0 flex-1 rounded-[20px] bg-surface p-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <p className="font-semibold">
-                    {mine ? "You" : "SOCIMCO sales desk"} {ACTION_LABEL[r.action]}
-                    <span className="ml-2 text-sm font-normal text-ink-3">Round {r.n}</span>
+                    {mine ? "Vous" : "Le service commercial SOCIMCO"} {ACTION_LABEL[r.by][r.action]}
+                    <span className="ml-2 text-sm font-normal text-ink-3">· Tour {r.n}</span>
                   </p>
                   <p className="text-sm text-ink-3">
-                    <time dateTime={r.createdAt}>{time(r.createdAt)}</time>
+                    <time dateTime={r.createdAt}>{formatDayTime(r.createdAt)}</time>
                   </p>
                 </div>
                 {r.lines.length > 0 && (
                   <p className="tabular mt-1 text-ink-2">
-                    {r.lines.map((l) => `${formatMoney(l.unitPriceCents)} / unit`).join(" · ")}
-                    <span className="ml-2 font-semibold text-ink">{formatMoney(total)} total</span>
+                    {r.lines.map((l) => `${formatMoney(l.unitPriceCents)} / unité`).join(" · ")}
+                    <span className="ml-2 font-semibold text-ink">{formatMoney(total)} au total</span>
                   </p>
                 )}
-                {r.message && <p className="mt-2 break-words border-l-2 border-line-strong pl-3 text-ink-2">“{r.message}”</p>}
+                {r.message && <p className="mt-2 break-words border-l-2 border-line-strong pl-3 text-ink-2">«&nbsp;{r.message}&nbsp;»</p>}
               </div>
             </li>
           );
@@ -189,7 +209,7 @@ function LinesSummary({ n, images }: { n: Negotiation; images: Images }) {
             <div className="min-w-0 flex-1 text-sm">
               <p className="truncate font-semibold">{l.name}</p>
               <p className="tabular text-ink-3">
-                {formatCount(l.quantity)} × {formatMoney(l.listUnitPriceCents)} list
+                {formatCount(l.quantity)} × {formatMoney(l.listUnitPriceCents)} (prix catalogue)
               </p>
             </div>
           </li>
@@ -197,29 +217,29 @@ function LinesSummary({ n, images }: { n: Negotiation; images: Images }) {
       </ul>
       <dl className="tabular space-y-1.5 border-t border-line pt-4 text-sm">
         <div className="flex justify-between gap-3">
-          <dt className="text-ink-2">List total</dt>
+          <dt className="text-ink-2">Total au prix catalogue</dt>
           <dd className={agreed ? "text-ink-3 line-through" : "font-semibold"}>{formatMoney(t.listTotalCents)}</dd>
         </div>
         {t.lastOfferTotalCents !== null && !agreed && (
           <div className="flex justify-between gap-3">
-            <dt className="text-ink-2">Your last offer</dt>
+            <dt className="text-ink-2">Votre dernière offre</dt>
             <dd className="font-semibold">{formatMoney(t.lastOfferTotalCents)}</dd>
           </div>
         )}
         {t.lastCounterTotalCents !== null && !agreed && (
           <div className="flex justify-between gap-3">
-            <dt className="text-ink-2">Seller&apos;s price</dt>
+            <dt className="text-ink-2">Prix du service commercial</dt>
             <dd className="font-semibold">{formatMoney(t.lastCounterTotalCents)}</dd>
           </div>
         )}
         {agreed && (
           <>
             <div className="flex items-baseline justify-between gap-3 text-base">
-              <dt className="font-semibold">Agreed total</dt>
+              <dt className="font-semibold">Total convenu</dt>
               <dd className="display text-[24px] leading-none">{formatMoney(n.agreedTotalCents ?? 0)}</dd>
             </div>
             <div className="flex justify-between gap-3 text-success">
-              <dt>You save</dt>
+              <dt>Vous économisez</dt>
               <dd className="font-semibold">{formatMoney(n.savingsCents ?? 0)}</dd>
             </div>
           </>
@@ -242,24 +262,24 @@ export function PriceFields({ form, label }: { form: OfferForm; label: string })
             {form.lines.length > 1 && <span className="font-normal text-ink-3"> · {l.name}</span>}
           </label>
           <div className={`mt-1.5 flex h-12 items-center rounded-[var(--radius-control)] border bg-surface ${l.error ? "border-danger" : "border-line-strong focus-within:border-ink"} focus-within:ring-2 focus-within:ring-focus`}>
-            <span className="pl-3 text-ink-3" aria-hidden>
-              $
-            </span>
             <input
               id={`${uid}-price-${l.productId}`}
               inputMode="decimal"
               autoComplete="off"
               value={l.raw}
               onChange={(e) => form.set(l.productId, e.target.value)}
-              placeholder={l.suggestions[0] ? (l.suggestions[0].cents / 100).toFixed(2) : "0.00"}
+              placeholder={l.suggestions[0] ? centsToInput(l.suggestions[0].cents) : "0,00"}
               aria-invalid={!!l.error}
               aria-describedby={`${uid}-hint-${l.productId}`}
-              className="tabular h-full min-w-0 flex-1 bg-transparent px-1.5 text-lg font-semibold outline-none"
+              className="tabular h-full min-w-0 flex-1 bg-transparent pl-3 pr-1.5 text-lg font-semibold outline-none"
             />
-            <span className="pr-3 text-sm text-ink-3">per unit</span>
+            {/* French order: the currency follows the amount ("85,00 $US / unité"). */}
+            <span className="shrink-0 whitespace-nowrap pr-3 text-sm text-ink-3">
+              <span className="font-semibold">{CURRENCY_SYMBOL}</span> / unité
+            </span>
           </div>
           <p id={`${uid}-hint-${l.productId}`} className={`mt-1.5 text-sm ${l.error ? "text-danger" : "text-ink-3"}`} aria-live="polite">
-            {l.error ?? `${l.hint} · ${formatCount(l.quantity)} units`}
+            {l.error ?? `${l.hint} · ${formatCount(l.quantity)} ${l.quantity > 1 ? "unités" : "unité"}`}
           </p>
           {l.suggestions.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-2">
@@ -280,7 +300,7 @@ export function PriceFields({ form, label }: { form: OfferForm; label: string })
       ))}
       {form.offerTotalCents !== null && (
         <p className="tabular flex justify-between gap-3 rounded-[14px] bg-surface-2 px-4 py-2.5 text-sm">
-          Offer total <span className="font-semibold">{formatMoney(form.offerTotalCents)}</span>
+          Total de l&apos;offre <span className="font-semibold">{formatMoney(form.offerTotalCents)}</span>
         </p>
       )}
     </div>
@@ -301,15 +321,15 @@ function StartQuote({ cart }: { cart: Cart }) {
     return (
       <div className={`${TILE} p-8 text-center`}>
         <FileText className="mx-auto text-ink-3" size={28} aria-hidden />
-        <p className="mt-3 font-semibold">No lines qualify for a trade price yet</p>
-        <p className="mt-1 text-ink-2">Trade pricing starts at each product&apos;s minimum, usually 100 units.</p>
+        <p className="mt-3 font-semibold">Aucune ligne n&apos;est encore éligible à un prix négocié</p>
+        <p className="mt-1 text-ink-2">Le prix négocié s&apos;applique à partir de la quantité minimale de chaque produit, généralement 100 unités.</p>
         <div className="mt-5 flex flex-wrap justify-center gap-2">
           <Link href={`${BASE}/category/power-tools`} className={btn("primary", "md")}>
-            Browse power tools
+            Voir l&apos;outillage électroportatif
           </Link>
           {cart.items.length > 0 && (
             <Link href={`${BASE}/cart`} className={btn("outline", "md")}>
-              Back to your cart
+              Retour au panier
             </Link>
           )}
         </div>
@@ -322,7 +342,7 @@ function StartQuote({ cart }: { cart: Cart }) {
     form.touch();
     if (!form.allValid || create.isPending) return;
     const message = String(new FormData(e.currentTarget).get("message") ?? "").trim() || undefined;
-    void run(create.mutateAsync({ lines: form.priced, message }), "Offer sent to the SOCIMCO sales desk", (n) => rememberQuote(n.id));
+    void run(create.mutateAsync({ lines: form.priced, message }), "Offre envoyée au service commercial SOCIMCO", (n) => rememberQuote(n.id));
   };
 
   return (
@@ -344,42 +364,42 @@ function StartQuote({ cart }: { cart: Cart }) {
         </ul>
         {others.length > 0 && (
           <p className="px-1 text-sm text-ink-3">
-            {others.map((o) => `${formatCount(o.quantity)} × ${o.name}`).join(", ")} stay{others.length === 1 ? "s" : ""} at list price.
+            {others.map((o) => `${formatCount(o.quantity)} × ${o.name}`).join(", ")} {others.length === 1 ? "reste" : "restent"} au prix catalogue.
           </p>
         )}
         <div className="rounded-[var(--radius-card)] bg-dark p-6 text-on-dark">
-          <p className="display text-[20px]">How trade quotes work</p>
+          <p className="display text-[20px]">Comment fonctionne un devis</p>
           <ul className="mt-3 space-y-2 text-sm text-on-dark-2">
-            <li>• You can make up to {maxOffers()} offers. Each must be above your previous one.</li>
-            <li>• The sales desk accepts, declines or counters. Open quotes expire if nobody replies in time.</li>
-            <li>• Your cart is locked while the quote is open. An agreed price holds for a limited time.</li>
+            <li>• Vous pouvez faire jusqu&apos;à {maxOffers()} offres. Chacune doit être supérieure à la précédente.</li>
+            <li>• Le service commercial accepte, refuse ou fait une contre-offre. Un devis ouvert expire faute de réponse dans le délai imparti.</li>
+            <li>• Votre panier est verrouillé tant que le devis est ouvert. Un prix convenu est garanti pendant une durée limitée.</li>
           </ul>
         </div>
       </div>
       <div className={`${TILE} p-6 lg:sticky lg:top-[96px] lg:self-start`}>
-        <h2 className="display text-[24px]">Your offer</h2>
+        <h2 className="display text-[24px]">Votre offre</h2>
         <div className="mt-4">
-          <PriceFields form={form} label="Your price" />
+          <PriceFields form={form} label="Votre prix" />
         </div>
         <label className="mt-4 block text-sm font-semibold" htmlFor="message">
-          Note to the sales desk <span className="font-normal text-ink-3">(optional)</span>
+          Message au service commercial <span className="font-normal text-ink-3">(facultatif)</span>
         </label>
         <textarea
           id="message"
           name="message"
           rows={2}
           maxLength={500}
-          placeholder="e.g. Fit-out for our three branches"
+          placeholder="Ex. : équipement de nos trois agences"
           className="mt-1.5 w-full rounded-[14px] border border-line-strong bg-surface p-3 outline-none focus:border-ink focus-visible:ring-2 focus-visible:ring-focus"
         />
         <button type="submit" disabled={create.isPending} aria-busy={create.isPending || undefined} className={btn("trade", "lg", "mt-4 w-full")}>
           {create.isPending ? (
             <>
-              <Spinner /> Sending…
+              <Spinner /> Envoi…
             </>
           ) : (
             <>
-              Send offer <ArrowRight size={18} aria-hidden />
+              Envoyer l&apos;offre <ArrowRight size={18} aria-hidden />
             </>
           )}
         </button>
@@ -396,23 +416,23 @@ function ActionPanel({ n, images }: { n: Negotiation; images: Images }) {
   const t = quoteTotals(n);
   const max = maxOffers(n);
   const busy = actions.offer.isPending || actions.accept.isPending || actions.reject.isPending || actions.cancel.isPending;
-  const cancel = () => void run(actions.cancel.mutateAsync(n.id), "Quote cancelled");
+  const cancel = () => void run(actions.cancel.mutateAsync(n.id), "Devis annulé");
 
   const sendCounter = (e: FormEvent) => {
     e.preventDefault();
     form.touch();
     if (!form.allValid || busy) return;
-    void run(actions.offer.mutateAsync({ id: n.id, lines: form.priced }), "Counter offer sent", () => form.reset());
+    void run(actions.offer.mutateAsync({ id: n.id, lines: form.priced }), "Contre-offre envoyée", () => form.reset());
   };
 
   return (
     <div className={`${TILE} p-6`}>
       <div className="flex items-center justify-between gap-3">
-        <Eyebrow>Quote {quoteRef(n.id)}</Eyebrow>
+        <Eyebrow>Devis {quoteRef(n.id)}</Eyebrow>
         {!isQuoteClosed(n) && (
           <span className="tabular flex items-center gap-1.5 text-sm font-medium text-ink-2">
             <Clock size={15} aria-hidden />
-            <span className="sr-only">Time left:</span> {formatCountdown(remaining)}
+            <span className="sr-only">Temps restant :</span> {formatCountdown(remaining)}
           </span>
         )}
       </div>
@@ -423,38 +443,38 @@ function ActionPanel({ n, images }: { n: Negotiation; images: Images }) {
       <div className="mt-5 border-t border-canvas pt-5" aria-live="polite">
         {n.status === "awaiting_seller" && (
           <>
-            <p className="font-semibold">Waiting for the sales desk</p>
-            <p className="mt-1 text-sm text-ink-2">They&apos;ll accept, decline or counter your offer. You&apos;ll see it here.</p>
+            <p className="font-semibold">En attente du service commercial</p>
+            <p className="mt-1 text-sm text-ink-2">Il acceptera votre offre, la refusera ou fera une contre-offre. Sa réponse s&apos;affichera ici.</p>
             <button type="button" onClick={cancel} disabled={busy} className={btn("danger", "md", "mt-4 w-full")}>
-              Cancel quote
+              Annuler le devis
             </button>
           </>
         )}
 
         {n.status === "awaiting_customer" && (
           <>
-            <p className="font-semibold">The sales desk countered. Your move.</p>
+            <p className="font-semibold">Le service commercial a fait une contre-offre. À vous de répondre.</p>
             <div className="mt-1">
               <OffersLeft left={n.customerRoundsLeft} max={max} />
             </div>
-            <button type="button" onClick={() => void run(actions.accept.mutateAsync(n.id), "Price accepted")} disabled={busy} className={btn("primary", "lg", "mt-4 w-full")}>
-              {actions.accept.isPending ? <Spinner /> : <Check size={18} aria-hidden />} Accept {formatMoney(t.lastCounterTotalCents ?? t.listTotalCents)}
+            <button type="button" onClick={() => void run(actions.accept.mutateAsync(n.id), "Prix accepté")} disabled={busy} className={btn("primary", "lg", "mt-4 w-full")}>
+              {actions.accept.isPending ? <Spinner /> : <Check size={18} aria-hidden />} Accepter {formatMoney(t.lastCounterTotalCents ?? t.listTotalCents)}
             </button>
             {n.customerRoundsLeft > 0 ? (
               <form onSubmit={sendCounter} noValidate className="mt-5 border-t border-canvas pt-5">
-                <PriceFields form={form} label="Or counter with" />
+                <PriceFields form={form} label="Ou faites une contre-offre" />
                 <button type="submit" disabled={busy} aria-busy={actions.offer.isPending || undefined} className={btn("trade", "md", "mt-3 w-full")}>
-                  {actions.offer.isPending && <Spinner />} Send counter offer
+                  {actions.offer.isPending && <Spinner />} Envoyer la contre-offre
                 </button>
               </form>
             ) : (
               <p className="mt-4 flex gap-2 rounded-[14px] bg-surface-2 p-3 text-sm">
                 <AlertTriangle size={16} className="mt-0.5 shrink-0" aria-hidden />
-                You&apos;ve used all {max} offers. Accept or decline this price.
+                {max > 1 ? `Vous avez utilisé vos ${max} offres.` : "Vous avez utilisé votre offre."} Acceptez ou refusez ce prix.
               </p>
             )}
-            <button type="button" onClick={() => void run(actions.reject.mutateAsync(n.id), "Quote declined")} disabled={busy} className={btn("ghost", "md", "mt-2 w-full text-danger")}>
-              Decline and pay list price
+            <button type="button" onClick={() => void run(actions.reject.mutateAsync(n.id), "Devis refusé")} disabled={busy} className={btn("ghost", "md", "mt-2 w-full text-danger")}>
+              Refuser et payer le prix catalogue
             </button>
           </>
         )}
@@ -462,16 +482,16 @@ function ActionPanel({ n, images }: { n: Negotiation; images: Images }) {
         {n.status === "accepted" && (
           <>
             <p className="flex items-center gap-2 font-semibold text-success">
-              <Check size={18} aria-hidden /> Price agreed
+              <Check size={18} aria-hidden /> Prix convenu
             </p>
             <p className="mt-1 text-sm text-ink-2">
-              Place your order within <span className="tabular font-semibold text-ink">{formatCountdown(remaining)}</span> to keep this price.
+              Temps restant pour commander à ce prix : <span className="tabular font-semibold text-ink">{formatCountdown(remaining)}</span>
             </p>
             <Link href={`${BASE}/checkout`} className={btn("primary", "lg", "mt-4 w-full")}>
-              Checkout · {formatMoney(n.agreedTotalCents ?? 0)} <ArrowRight size={17} aria-hidden />
+              Passer la commande · {formatMoney(n.agreedTotalCents ?? 0)} <ArrowRight size={17} aria-hidden />
             </Link>
             <button type="button" onClick={cancel} disabled={busy} className={btn("ghost", "md", "mt-2 w-full")}>
-              Cancel quote
+              Annuler le devis
             </button>
           </>
         )}
@@ -479,11 +499,11 @@ function ActionPanel({ n, images }: { n: Negotiation; images: Images }) {
         {n.status === "ordered" && (
           <>
             <p className="flex items-center gap-2 font-semibold text-success">
-              <Check size={18} aria-hidden /> Ordered at the agreed price
+              <Check size={18} aria-hidden /> Commandé au prix convenu
             </p>
-            <p className="mt-1 text-sm text-ink-2">This quote became an order. You can start a new quote any time.</p>
+            <p className="mt-1 text-sm text-ink-2">Ce devis a donné lieu à une commande. Vous pouvez demander un nouveau devis à tout moment.</p>
             <Link href={`${BASE}/orders`} className={btn("outline", "md", "mt-4 w-full")}>
-              View your orders
+              Voir vos commandes
             </Link>
           </>
         )}
@@ -491,13 +511,13 @@ function ActionPanel({ n, images }: { n: Negotiation; images: Images }) {
         {(n.status === "rejected" || n.status === "expired" || n.status === "cancelled") && (
           <>
             <p className="font-semibold">
-              {n.status === "rejected" ? "This quote was declined." : n.status === "expired" ? "This quote expired." : "This quote was cancelled."}
+              {n.status === "rejected" ? "Ce devis a été refusé." : n.status === "expired" ? "Ce devis a expiré." : "Ce devis a été annulé."}
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-2">
-              <Lock size={14} aria-hidden /> Your cart is unlocked. Order at list price or start a new quote.
+              <Lock size={14} aria-hidden /> Votre panier est déverrouillé. Commandez au prix catalogue ou demandez un nouveau devis.
             </p>
             <Link href={`${BASE}/cart`} className={btn("outline", "md", "mt-4 w-full")}>
-              Back to your cart
+              Retour au panier
             </Link>
           </>
         )}
@@ -507,13 +527,13 @@ function ActionPanel({ n, images }: { n: Negotiation; images: Images }) {
 }
 
 const LEAD: Partial<Record<Negotiation["status"], string>> = {
-  awaiting_customer: "The sales desk has countered. Accept their price, make another offer, or decline.",
-  awaiting_seller: "Your offer is with the SOCIMCO sales desk. This page updates when they reply.",
-  accepted: "Both sides agreed. The agreed price applies when you place the order.",
-  ordered: "This quote is closed: it became an order.",
-  rejected: "The sales desk declined this quote. Order at list price or start a new quote below.",
-  cancelled: "This quote was cancelled. Order at list price or start a new quote below.",
-  expired: "This quote expired before both sides agreed. Start a new quote below.",
+  awaiting_customer: "Le service commercial a fait une contre-offre. Acceptez son prix, faites une nouvelle offre ou refusez.",
+  awaiting_seller: "Votre offre a été transmise au service commercial SOCIMCO. Cette page se met à jour dès sa réponse.",
+  accepted: "Les deux parties sont d'accord. Le prix convenu s'applique lorsque vous validez la commande.",
+  ordered: "Ce devis est clos : il a donné lieu à une commande.",
+  rejected: "Le service commercial a refusé ce devis. Commandez au prix catalogue ou demandez un nouveau devis ci-dessous.",
+  cancelled: "Ce devis a été annulé. Commandez au prix catalogue ou demandez un nouveau devis ci-dessous.",
+  expired: "Ce devis a expiré avant qu'un accord soit trouvé. Demandez un nouveau devis ci-dessous.",
 };
 
 /** The trade quote: start one from the cart, follow the rounds, and act on the sales desk's reply. */
@@ -533,39 +553,39 @@ export function NegotiationScreen() {
 
   return (
     <div className="mx-auto max-w-[1400px] px-3 pb-16 lg:px-6 lg:pb-6">
-      <nav aria-label="Breadcrumb" className="px-1 pt-4 text-sm text-ink-3">
+      <nav aria-label="Fil d'Ariane" className="px-1 pt-4 text-sm text-ink-3">
         <ol className="flex flex-wrap items-center gap-x-1">
           <li>
             <Link href={BASE || "/"} className="inline-flex min-h-11 items-center hover:text-ink hover:underline">
-              Home
+              Accueil
             </Link>
           </li>
           <li className="flex items-center gap-1">
             <ChevronRight size={14} aria-hidden />
             <Link href={`${BASE}/cart`} className="inline-flex min-h-11 items-center hover:text-ink hover:underline">
-              Cart
+              Panier
             </Link>
           </li>
           <li className="flex items-center gap-1">
             <ChevronRight size={14} aria-hidden />
             <span aria-current="page" className="inline-flex min-h-11 items-center text-ink">
-              Trade quote
+              Devis
             </span>
           </li>
         </ol>
       </nav>
       <header className="flex flex-wrap items-center gap-x-4 gap-y-3 px-1">
-        <h1 className="display text-[34px] leading-[1.05] sm:text-[46px]">{n ? "Trade quote" : "Request a trade price"}</h1>
+        <h1 className="display text-[34px] leading-[1.05] sm:text-[46px]">{n ? "Devis" : "Demander un prix négocié"}</h1>
         {n && <Stamp status={n.status} />}
         {n && !isQuoteClosed(n) && n.status !== "accepted" && <OffersLeft left={n.customerRoundsLeft} max={maxOffers(n)} />}
       </header>
       <p className="mt-2 max-w-2xl px-1 text-[15px] text-ink-3">
-        {(n && LEAD[n.status]) ?? "Propose a per-unit price for qualifying lines. The sales desk will accept, decline or counter."}
+        {(n && LEAD[n.status]) ?? "Proposez un prix unitaire pour les lignes éligibles. Le service commercial l'acceptera, le refusera ou fera une contre-offre."}
       </p>
 
       {loading ? (
         <div className={`${TILE} mt-6 flex items-center justify-center gap-3 p-12 text-ink-3`} aria-busy="true">
-          <Spinner /> Loading your quote…
+          <Spinner /> Chargement de votre devis…
         </div>
       ) : failed ? (
         <ErrorTile
@@ -592,7 +612,7 @@ export function NegotiationScreen() {
           <div className={n ? "mt-8" : "mt-6"}>
             {showStart ? (
               <>
-                {n && <h2 className="display mb-4 px-1 text-[26px]">Start a new quote</h2>}
+                {n && <h2 className="display mb-4 px-1 text-[26px]">Demander un nouveau devis</h2>}
                 {cart.data && <StartQuote key={n?.id ?? "new"} cart={cart.data} />}
               </>
             ) : (
@@ -609,7 +629,7 @@ export function NegotiationScreen() {
           </div>
           {n?.status === "rejected" && (
             <p className="mt-6 flex items-center gap-2 px-1 text-sm text-ink-3">
-              <X size={14} aria-hidden /> The seller declined. Their decision ends this quote.
+              <X size={14} aria-hidden /> Le service commercial a refusé : sa décision clôt ce devis.
             </p>
           )}
         </>

@@ -16,12 +16,12 @@ const MAX_QTY = 99_999;
  */
 function TradeMeter({ line }: { line: CartLineData }) {
   if (!line.negotiationEligible) {
-    return <p className="text-[13px] text-ink-3">List price · below trade quantity or not tradeable</p>;
+    return <p className="text-[13px] text-ink-3">Prix catalogue · quantité insuffisante ou produit non négociable</p>;
   }
   return (
     <div className="max-w-[320px]">
       <p className="flex items-center gap-1.5 text-[13px] font-semibold text-success">
-        <Check size={14} aria-hidden /> Trade price eligible
+        <Check size={14} aria-hidden /> Éligible au prix négocié
       </p>
       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-accent" aria-hidden />
     </div>
@@ -44,7 +44,7 @@ function CartLine({ line, locked, available }: { line: CartLineData; locked: boo
         },
         onError: (e) => {
           const available = shortLinesFromError(e)?.[line.productId];
-          notify(available !== undefined ? `Only ${formatCount(available)} in stock for ${line.name}.` : errorMessage(e), "danger");
+          notify(available !== undefined ? `Seulement ${formatCount(available)} en stock pour ${line.name}.` : errorMessage(e), "danger");
         },
       },
     );
@@ -53,7 +53,7 @@ function CartLine({ line, locked, available }: { line: CartLineData; locked: boo
     remove.mutate(line.productId, {
       onSuccess: () => {
         clearShortLine(line.productId);
-        notify(`Removed ${line.name}`, "info");
+        notify(`Retiré du panier : ${line.name}`, "info");
       },
       onError: (e) => notify(errorMessage(e), "danger"),
     });
@@ -79,7 +79,7 @@ function CartLine({ line, locked, available }: { line: CartLineData; locked: boo
                 onClick={drop}
                 disabled={busy}
                 className="-mr-2 -mt-2 grid size-11 shrink-0 place-items-center rounded-full text-ink-3 hover:bg-surface-2 hover:text-danger disabled:opacity-50"
-                aria-label={`Remove ${line.name}`}
+                aria-label={`Retirer ${line.name}`}
               >
                 <Trash2 size={17} aria-hidden />
               </button>
@@ -100,7 +100,7 @@ function CartLine({ line, locked, available }: { line: CartLineData; locked: boo
           max={MAX_QTY}
           onChange={(q) => setQuantity(q)}
           size="sm"
-          label={`Quantity of ${line.name}`}
+          label={`Quantité : ${line.name}`}
           disabled={locked}
           className="w-[148px]"
         />
@@ -113,16 +113,16 @@ function CartLine({ line, locked, available }: { line: CartLineData; locked: boo
         <div className="mx-1.5 mb-1.5 mt-3 flex flex-wrap items-center gap-3 rounded-[16px] bg-danger-soft p-3 text-sm text-danger" role="alert">
           <AlertTriangle size={17} className="shrink-0" aria-hidden />
           <p className="min-w-0 flex-1">
-            <span className="font-semibold">{available > 0 ? `Only ${formatCount(available)} left in stock.` : "Out of stock."}</span>{" "}
-            {available > 0 ? "Reduce this line to keep your order moving." : "Remove this line to keep your order moving."}
+            <span className="font-semibold">{available > 0 ? `Plus que ${formatCount(available)} en stock.` : "Rupture de stock."}</span>{" "}
+            {available > 0 ? "Réduisez la quantité pour poursuivre votre commande." : "Retirez cette ligne pour poursuivre votre commande."}
           </p>
           {available > 0 ? (
-            <button type="button" onClick={() => setQuantity(available, `Quantity changed to ${formatCount(available)}`)} disabled={locked || busy} className={btn("primary", "sm")}>
-              Change to {formatCount(available)}
+            <button type="button" onClick={() => setQuantity(available, `Quantité ramenée à ${formatCount(available)}`)} disabled={locked || busy} className={btn("primary", "sm")}>
+              Passer à {formatCount(available)}
             </button>
           ) : (
             <button type="button" onClick={drop} disabled={locked || busy} className={btn("primary", "sm")}>
-              Remove line
+              Retirer la ligne
             </button>
           )}
         </div>
@@ -140,14 +140,16 @@ function EmptyCart() {
         <span className="grid size-14 place-items-center rounded-full bg-surface-2">
           <ShoppingBag size={24} aria-hidden />
         </span>
-        <h2 className="display mt-5 text-[30px] leading-tight">Your cart is empty</h2>
-        <p className="mt-2 max-w-md text-ink-2">Add the quantities you need. Products tagged Trade unlock your own price from 100 units.</p>
+        <h2 className="display mt-5 text-[30px] leading-tight">Votre panier est vide</h2>
+        <p className="mt-2 max-w-md text-ink-2">
+          Ajoutez les quantités dont vous avez besoin. Les produits signalés «&nbsp;Négociable&nbsp;» vous donnent droit à votre propre prix dès 100 unités.
+        </p>
         <div className="mt-6 flex flex-wrap gap-2">
           <Link href={`${BASE}/category/power-tools`} className={btn("primary", "lg")}>
-            Shop power tools <ArrowRight size={17} aria-hidden />
+            Voir l&apos;outillage électroportatif <ArrowRight size={17} aria-hidden />
           </Link>
           <Link href={`${BASE}/orders`} className={btn("outline", "lg")}>
-            Your orders
+            Vos commandes
           </Link>
         </div>
       </div>
@@ -172,64 +174,64 @@ function Summary({ subtotalCents, eligible, quote }: { subtotalCents: number; el
   const savings = accepted ? (quote.savingsCents ?? 0) : 0;
   return (
     <div className={`${TILE} p-6`}>
-      <h2 className="display text-[24px]">Summary</h2>
+      <h2 className="display text-[24px]">Récapitulatif</h2>
       <dl className="tabular mt-4 space-y-2 text-[15px]">
         <div className="flex justify-between gap-3">
-          <dt className="text-ink-2">Subtotal at list price</dt>
+          <dt className="text-ink-2">Sous-total au prix catalogue</dt>
           <dd className="font-semibold">{formatMoney(subtotalCents)}</dd>
         </div>
         {accepted && (
           <div className="flex justify-between gap-3 text-success">
-            <dt>Negotiated savings</dt>
+            <dt>Économies négociées</dt>
             <dd className="font-semibold">−{formatMoney(savings)}</dd>
           </div>
         )}
         <div className="flex justify-between gap-3">
-          <dt className="text-ink-2">Shipping</dt>
-          <dd className="text-ink-2">At checkout</dd>
+          <dt className="text-ink-2">Livraison</dt>
+          <dd className="text-ink-2">Calculée à la commande</dd>
         </div>
       </dl>
       <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-canvas pt-4">
-        <span className="font-semibold">{accepted ? "Agreed total" : "Total"}</span>
+        <span className="font-semibold">{accepted ? "Total convenu" : "Total"}</span>
         <span className="tabular display text-[32px] leading-none">{formatMoney(subtotalCents - savings)}</span>
       </div>
 
       {eligible > 0 && !open && !accepted && (
         <div className="mt-5 rounded-[18px] bg-accent-soft p-4 text-sm">
           <p className="flex items-center gap-2 font-semibold text-success">
-            <FileText size={16} aria-hidden /> {eligible} line{eligible > 1 ? "s" : ""} qualif{eligible > 1 ? "y" : "ies"} for a trade price
+            <FileText size={16} aria-hidden /> {eligible > 1 ? `${eligible} lignes éligibles` : "1 ligne éligible"} au prix négocié
           </p>
-          <p className="mt-1 text-ink-2">Name your own unit price. The sales desk accepts or counters, usually within the hour.</p>
+          <p className="mt-1 text-ink-2">Proposez votre propre prix unitaire. Le service commercial accepte ou fait une contre-offre, généralement dans l&apos;heure.</p>
         </div>
       )}
 
       <div className="mt-5 space-y-2.5">
         {accepted ? (
           <Link href={`${BASE}/checkout`} className={btn("primary", "lg", "w-full")}>
-            Checkout at agreed price <ArrowRight size={17} aria-hidden />
+            Commander au prix convenu <ArrowRight size={17} aria-hidden />
           </Link>
         ) : open ? (
           <>
             <Link href={`${BASE}/negotiation`} className={btn("trade", "lg", "w-full")}>
-              {quote?.status === "awaiting_customer" ? "Reply to the counter offer" : "View your quote"}
+              {quote?.status === "awaiting_customer" ? "Répondre à la contre-offre" : "Voir votre devis"}
             </Link>
-            <p className="text-center text-[13px] text-ink-3">Checkout opens when the quote is agreed or cancelled.</p>
+            <p className="text-center text-[13px] text-ink-3">La commande sera possible une fois le devis convenu ou annulé.</p>
           </>
         ) : (
           <>
             {eligible > 0 && (
               <Link href={`${BASE}/negotiation`} className={btn("trade", "lg", "w-full")}>
-                Request a trade price
+                Demander un prix négocié
               </Link>
             )}
             <Link href={`${BASE}/checkout`} className={btn(eligible ? "outline" : "primary", "lg", "w-full")}>
-              Checkout{eligible ? " at list price" : ""}
+              {eligible ? "Commander au prix catalogue" : "Passer la commande"}
             </Link>
           </>
         )}
       </div>
       <p className="mt-5 flex items-center gap-2 text-[13px] text-ink-3">
-        <Truck size={15} className="shrink-0" aria-hidden /> Next-day dispatch on orders before 2 pm
+        <Truck size={15} className="shrink-0" aria-hidden /> Expédition le lendemain pour toute commande passée avant 14 h
       </p>
     </div>
   );
@@ -249,15 +251,21 @@ export function CartScreen() {
   return (
     <div className="mx-auto max-w-[1400px] px-3 pb-16 lg:px-6 lg:pb-6">
       <PageHeader
-        crumbs={[{ label: "Home", href: BASE || "/" }, { label: "Cart" }]}
-        title="Your cart"
-        lead={c ? (lines.length ? `${lines.length} line${lines.length === 1 ? "" : "s"} · ${formatCount(items)} items` : "Nothing here yet.") : undefined}
-        aside={lines.length > 0 ? <ActionLink href={`${BASE}/category/power-tools`}>Continue shopping</ActionLink> : undefined}
+        crumbs={[{ label: "Accueil", href: BASE || "/" }, { label: "Panier" }]}
+        title="Votre panier"
+        lead={
+          c
+            ? lines.length
+              ? `${formatCount(lines.length)} ${lines.length === 1 ? "ligne" : "lignes"} · ${formatCount(items)} ${items === 1 ? "article" : "articles"}`
+              : "Votre panier ne contient encore aucun article."
+            : undefined
+        }
+        aside={lines.length > 0 ? <ActionLink href={`${BASE}/category/power-tools`}>Continuer mes achats</ActionLink> : undefined}
       />
 
       {cart.isPending ? (
         <div className={`${TILE} mt-6 flex items-center justify-center gap-3 p-12 text-ink-3`} aria-busy="true">
-          <Spinner /> Loading your cart…
+          <Spinner /> Chargement de votre panier…
         </div>
       ) : cart.isError ? (
         <ErrorTile className="mt-6" message={errorMessage(cart.error)} onRetry={() => void cart.refetch()} />
@@ -272,26 +280,26 @@ export function CartScreen() {
                   <Lock size={18} aria-hidden />
                 </span>
                 <p className="min-w-0 flex-1">
-                  <span className="font-semibold">Quantities are locked</span>
+                  <span className="font-semibold">Quantités verrouillées</span>
                   <span className="block text-sm text-on-dark-2">
                     {accepted
-                      ? "Your agreed price applies to these quantities. Check out or cancel the quote to make changes."
-                      : "Your quote is open with the sales desk. Cancel it to change your cart."}
+                      ? "Votre prix convenu s'applique à ces quantités. Passez la commande ou annulez le devis pour les modifier."
+                      : "Votre devis est en cours auprès du service commercial. Annulez-le pour modifier votre panier."}
                   </span>
                 </p>
                 <Link href={`${BASE}/negotiation`} className={btn("light", "md")}>
-                  View quote
+                  Voir le devis
                 </Link>
               </div>
             )}
-            <ul className="space-y-3" aria-label="Cart lines">
+            <ul className="space-y-3" aria-label="Lignes du panier">
               {lines.map((l) => (
                 <CartLine key={l.productId} line={l} locked={locked} available={short[l.productId]} />
               ))}
             </ul>
           </div>
 
-          <aside className="lg:sticky lg:top-[96px] lg:self-start" aria-label="Cart summary">
+          <aside className="lg:sticky lg:top-[96px] lg:self-start" aria-label="Récapitulatif du panier">
             <Summary subtotalCents={c?.subtotalCents ?? 0} eligible={lines.filter((l) => l.negotiationEligible).length} quote={quote.data} />
           </aside>
         </div>

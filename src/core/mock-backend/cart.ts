@@ -8,7 +8,7 @@ const MAX_QUANTITY = 100_000;
 export function assertOrderableQuantity(product: Product, quantity: number) {
   if (!Number.isInteger(quantity) || quantity < product.minOrderQty || quantity > MAX_QUANTITY) {
     throw new ApiError("QUANTITY_INVALID", {
-      message: `Order at least ${product.minOrderQty}.`,
+      message: `Commandez au moins ${product.minOrderQty}.`,
       details: { productId: product.id, minOrderQty: product.minOrderQty },
     });
   }
@@ -76,7 +76,7 @@ export function createCartApi(deps: Deps): ShopBackend["cart"] {
       const user = requireRole(deps, ctx, "customer");
       const cart = unlockedCart(user.id);
       const item = cart.items.find((i) => i.productId === productId);
-      if (!item) throw new ApiError("NOT_FOUND", { message: "This item isn't in your cart." });
+      if (!item) throw new ApiError("NOT_FOUND", { message: "Cet article n'est pas dans votre panier." });
       assertOrderableQuantity(getProduct(state, productId), body.quantity);
       item.quantity = body.quantity;
       return toCartView(deps, cart);

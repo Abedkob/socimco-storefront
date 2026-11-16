@@ -10,7 +10,7 @@
       {
         "productId": "prd_hammer_16oz",
         "sku": "HMR-16OZ-008",
-        "name": "16oz Fiberglass Claw Hammer",
+        "name": "Marteau arrache-clou 16 oz, manche fibre de verre",
         "imageUrl": "https://images.unsplash.com/photo-1607870411590-d5e9e06da09a?w=960&h=840&fit=crop&q=75&auto=format",
         "quantity": 20,
         "listUnitPriceCents": 1850,
@@ -24,7 +24,7 @@
     "taxCents": 0,
     "totalCents": 37000,
     "shippingAddress": {
-      "label": "Main warehouse",
+      "label": "Entrepôt principal",
       "line1": "12 Industrial Rd",
       "city": "Springfield",
       "postalCode": "10001",
@@ -43,7 +43,7 @@
       {
         "productId": "prd_impact_driver",
         "sku": "DRL-IMP-002",
-        "name": "18V Brushless Impact Driver",
+        "name": "Visseuse à chocs sans charbons 18 V",
         "imageUrl": "https://images.pexels.com/photos/8487757/pexels-photo-8487757.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop",
         "quantity": 150,
         "listUnitPriceCents": 14900,
@@ -57,7 +57,7 @@
     "taxCents": 0,
     "totalCents": 2025000,
     "shippingAddress": {
-      "label": "Main warehouse",
+      "label": "Entrepôt principal",
       "line1": "12 Industrial Rd",
       "city": "Springfield",
       "postalCode": "10001",
@@ -76,7 +76,7 @@
       {
         "productId": "prd_tape_measure",
         "sku": "MSR-TAP-017",
-        "name": "8m Tape Measure",
+        "name": "Mètre ruban 8 m",
         "imageUrl": "https://images.pexels.com/photos/32942847/pexels-photo-32942847.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop",
         "quantity": 10,
         "listUnitPriceCents": 1450,
@@ -86,7 +86,7 @@
       {
         "productId": "prd_safety_helmet",
         "sku": "SAF-HLM-020",
-        "name": "Vented Safety Helmet",
+        "name": "Casque de chantier ventilé",
         "imageUrl": "https://images.unsplash.com/photo-1768158988512-ad31657fe5b8?w=960&h=840&fit=crop&q=75&auto=format",
         "quantity": 5,
         "listUnitPriceCents": 1900,
@@ -100,7 +100,7 @@
     "taxCents": 0,
     "totalCents": 24000,
     "shippingAddress": {
-      "label": "Main warehouse",
+      "label": "Entrepôt principal",
       "line1": "12 Industrial Rd",
       "city": "Springfield",
       "postalCode": "10001",

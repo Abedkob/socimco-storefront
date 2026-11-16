@@ -2,7 +2,7 @@
   {
     "id": "cat_power",
     "slug": "power-tools",
-    "name": "Power Tools",
+    "name": "Outillage électroportatif",
     "parentId": null,
     "imageUrl": "https://images.pexels.com/photos/7218101/pexels-photo-7218101.jpeg?auto=compress&cs=tinysrgb&w=960",
     "sortOrder": 1
@@ -10,7 +10,7 @@
   {
     "id": "cat_drills",
     "slug": "drills",
-    "name": "Drills & Drivers",
+    "name": "Perceuses et visseuses",
     "parentId": "cat_power",
     "imageUrl": "https://images.pexels.com/photos/4792486/pexels-photo-4792486.jpeg?auto=compress&cs=tinysrgb&w=960",
     "sortOrder": 1
@@ -18,7 +18,7 @@
   {
     "id": "cat_saws",
     "slug": "saws",
-    "name": "Saws",
+    "name": "Scies",
     "parentId": "cat_power",
     "imageUrl": "https://images.pexels.com/photos/20318087/pexels-photo-20318087.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 2
@@ -26,7 +26,7 @@
   {
     "id": "cat_grinders",
     "slug": "grinders",
-    "name": "Grinders",
+    "name": "Meuleuses",
     "parentId": "cat_power",
     "imageUrl": "https://images.pexels.com/photos/4315560/pexels-photo-4315560.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 3
@@ -34,7 +34,7 @@
   {
     "id": "cat_hand",
     "slug": "hand-tools",
-    "name": "Hand Tools",
+    "name": "Outillage à main",
     "parentId": null,
     "imageUrl": "https://images.pexels.com/photos/7484795/pexels-photo-7484795.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 2
@@ -42,7 +42,7 @@
   {
     "id": "cat_hammers",
     "slug": "hammers",
-    "name": "Hammers",
+    "name": "Marteaux",
     "parentId": "cat_hand",
     "imageUrl": "https://images.unsplash.com/photo-1607870411590-d5e9e06da09a?w=960&h=720&fit=crop&q=75&auto=format",
     "sortOrder": 1
@@ -50,7 +50,7 @@
   {
     "id": "cat_wrenches",
     "slug": "wrenches",
-    "name": "Wrenches & Sockets",
+    "name": "Clés et douilles",
     "parentId": "cat_hand",
     "imageUrl": "https://images.pexels.com/photos/8335679/pexels-photo-8335679.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 2
@@ -58,7 +58,7 @@
   {
     "id": "cat_fasteners",
     "slug": "fasteners",
-    "name": "Fasteners",
+    "name": "Visserie et fixations",
     "parentId": null,
     "imageUrl": "https://images.pexels.com/photos/3926791/pexels-photo-3926791.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 3
@@ -66,7 +66,7 @@
   {
     "id": "cat_screws",
     "slug": "screws",
-    "name": "Screws",
+    "name": "Vis",
     "parentId": "cat_fasteners",
     "imageUrl": "https://images.pexels.com/photos/5583084/pexels-photo-5583084.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 1
@@ -74,7 +74,7 @@
   {
     "id": "cat_anchors",
     "slug": "anchors",
-    "name": "Anchors & Plugs",
+    "name": "Chevilles et ancrages",
     "parentId": "cat_fasteners",
     "imageUrl": "https://images.pexels.com/photos/5583050/pexels-photo-5583050.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 2
@@ -82,7 +82,7 @@
   {
     "id": "cat_measuring",
     "slug": "measuring",
-    "name": "Measuring & Layout",
+    "name": "Mesure et traçage",
     "parentId": null,
     "imageUrl": "https://images.pexels.com/photos/3143085/pexels-photo-3143085.jpeg?auto=compress&cs=tinysrgb&w=960&h=720&fit=crop",
     "sortOrder": 4
@@ -90,7 +90,7 @@
   {
     "id": "cat_safety",
     "slug": "safety",
-    "name": "Safety & PPE",
+    "name": "Sécurité et EPI",
     "parentId": null,
     "imageUrl": "https://images.unsplash.com/photo-1781157080615-ffde66c035a5?w=960&h=720&fit=crop&q=75&auto=format",
     "sortOrder": 5
@@ -98,7 +98,7 @@
   {
     "id": "cat_storage",
     "slug": "storage",
-    "name": "Tool Storage",
+    "name": "Rangement d'outils",
     "parentId": null,
     "imageUrl": "https://images.unsplash.com/photo-1558906050-d6d6aa390fd3?w=960&h=720&fit=crop&q=75&auto=format",
     "sortOrder": 6

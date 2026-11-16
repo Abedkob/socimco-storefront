@@ -19,6 +19,7 @@ import {
   NegotiatedChip,
   PageHeader,
   ProductImage,
+  proposalMessage,
   ProposalTag,
   Spinner,
   TILE,
@@ -32,14 +33,14 @@ type BlockCode = Extract<ErrorCode, "CART_EMPTY" | "NEGOTIATION_NOT_ACCEPTED" | 
 const BLOCKING: readonly ErrorCode[] = ["CART_EMPTY", "NEGOTIATION_NOT_ACCEPTED", "NEGOTIATION_EXPIRED"];
 
 const BLOCK_COPY: Record<BlockCode, { title: string; body: string }> = {
-  CART_EMPTY: { title: "Nothing to check out", body: "Your cart is empty. Add what you need, then come back here." },
+  CART_EMPTY: { title: "Rien à commander", body: "Votre panier est vide. Ajoutez les articles dont vous avez besoin, puis revenez ici." },
   NEGOTIATION_NOT_ACCEPTED: {
-    title: "Finish your quote first",
-    body: "Your trade quote is still open with the sales desk. Agree a price, or cancel the quote and pay list price.",
+    title: "Finalisez d'abord votre devis",
+    body: "Votre devis est toujours en cours auprès du service commercial. Convenez d'un prix, ou annulez le devis et payez le prix catalogue.",
   },
   NEGOTIATION_EXPIRED: {
-    title: "Your agreed price expired",
-    body: "The agreed price is no longer held. Start a new quote, or check out at list price.",
+    title: "Votre prix convenu a expiré",
+    body: "Le prix convenu n'est plus garanti. Demandez un nouveau devis ou commandez au prix catalogue.",
   },
 };
 
@@ -58,11 +59,12 @@ function OrderPlaced({ order, name, email }: { order: Order; name?: string; emai
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   const items = order.lines.reduce((t, l) => t + l.quantity, 0);
+  const SAVED = "Économies";
   const stats: [string, string][] = [
     ["Total", formatMoney(order.totalCents)],
-    ["You saved", order.discountCents > 0 ? formatMoney(order.discountCents) : "—"],
-    ["Items", formatCount(items)],
-    ["Deliver to", order.shippingAddress.label],
+    [SAVED, order.discountCents > 0 ? formatMoney(order.discountCents) : "—"],
+    ["Articles", formatCount(items)],
+    ["Livraison à", order.shippingAddress.label],
   ];
   return (
     <div className="mx-auto max-w-[1100px] px-3 pb-16 pt-6 lg:px-6" aria-live="polite">
@@ -72,27 +74,28 @@ function OrderPlaced({ order, name, email }: { order: Order; name?: string; emai
           <span className="relative grid size-16 place-items-center rounded-full bg-success text-white">
             <PackageCheck size={30} aria-hidden />
           </span>
-          {name && <p className="relative mt-6 text-on-dark-2">Thank you, {name.split(" ")[0]}</p>}
+          {name && <p className="relative mt-6 text-on-dark-2">Merci, {name.split(" ")[0]}</p>}
           <h1 ref={heading} tabIndex={-1} className="display relative mt-1 break-words text-[36px] leading-[1.02] outline-none sm:text-[56px]">
-            Order <span className="tabular bg-[linear-gradient(100deg,#c9f2c9,#35b335)] bg-clip-text text-transparent">{order.number}</span> placed
+            Commande <span className="tabular bg-[linear-gradient(100deg,#c9f2c9,#35b335)] bg-clip-text text-transparent">{order.number}</span> validée
           </h1>
           <p className="relative mt-3 max-w-xl text-on-dark-2">
-            {email ? `We've sent the confirmation to ${email}.` : "We've sent you a confirmation."} It ships from the warehouse next working day.
+            {email ? `Nous avons envoyé la confirmation à ${email}.` : "Nous vous avons envoyé une confirmation."} Votre commande quittera l&apos;entrepôt
+            le jour ouvré suivant.
           </p>
           <dl className="tabular relative mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/15 sm:grid-cols-4">
             {stats.map(([k, v]) => (
               <div key={k} className="min-w-0 bg-dark-2/80 px-4 py-4">
                 <dt className="text-[12px] text-on-dark-2">{k}</dt>
-                <dd className={`mt-0.5 truncate text-[20px] font-semibold ${k === "You saved" && order.discountCents > 0 ? "text-[#9fd8b7]" : ""}`}>{v}</dd>
+                <dd className={`mt-0.5 truncate text-[20px] font-semibold ${k === SAVED && order.discountCents > 0 ? "text-[#9fd8b7]" : ""}`}>{v}</dd>
               </div>
             ))}
           </dl>
           <div className="relative mt-8 flex flex-wrap gap-2">
             <Link href={`${BASE}/orders/${order.id}`} className={btn("light", "lg")}>
-              View order <ArrowRight size={17} aria-hidden />
+              Voir la commande <ArrowRight size={17} aria-hidden />
             </Link>
             <Link href={BASE || "/"} className="inline-flex h-12 items-center rounded-full px-6 text-[15px] font-semibold text-on-dark ring-1 ring-inset ring-white/25 hover:bg-white/10">
-              Back to the shop
+              Retour à la boutique
             </Link>
           </div>
         </div>
@@ -172,7 +175,7 @@ export function CheckoutScreen() {
   const payListPrice = () => {
     const done = () => {
       setServerBlock(null);
-      notify("Quote cancelled. Checking out at list price.", "info");
+      notify("Devis annulé. Vous commandez désormais au prix catalogue.", "info");
     };
     if (n && (isQuoteOpen(n) || n.status === "accepted")) {
       cancel.mutate(n.id, { onSuccess: done, onError: (e) => notify(errorMessage(e), "danger") });
@@ -185,14 +188,14 @@ export function CheckoutScreen() {
   return (
     <div className="mx-auto max-w-[1400px] px-3 pb-16 lg:px-6 lg:pb-6">
       <PageHeader
-        crumbs={[{ label: "Home", href: BASE || "/" }, { label: "Cart", href: `${BASE}/cart` }, { label: "Checkout" }]}
-        title="Checkout"
-        lead={negotiated && !blocked ? "Your agreed trade price is applied below." : "Review your delivery and order, then place it."}
+        crumbs={[{ label: "Accueil", href: BASE || "/" }, { label: "Panier", href: `${BASE}/cart` }, { label: "Commande" }]}
+        title="Commande"
+        lead={negotiated && !blocked ? "Votre prix négocié convenu est appliqué ci-dessous." : "Vérifiez la livraison et votre commande, puis validez-la."}
       />
 
       {loading ? (
         <div className={`${TILE} mt-6 flex items-center justify-center gap-3 p-12 text-ink-3`} aria-busy="true">
-          <Spinner /> Loading your order…
+          <Spinner /> Chargement de votre commande…
         </div>
       ) : failed ? (
         <ErrorTile
@@ -216,19 +219,19 @@ export function CheckoutScreen() {
             {blocked === "CART_EMPTY" ? (
               <>
                 <Link href={`${BASE}/category/power-tools`} className={btn("primary", "lg")}>
-                  Shop power tools
+                  Voir l&apos;outillage électroportatif
                 </Link>
                 <Link href={`${BASE}/orders`} className={btn("outline", "lg")}>
-                  Your orders
+                  Vos commandes
                 </Link>
               </>
             ) : (
               <>
                 <Link href={`${BASE}/negotiation`} className={btn("trade", "lg")}>
-                  {blocked === "NEGOTIATION_EXPIRED" ? "Start a new quote" : "Go to your quote"}
+                  {blocked === "NEGOTIATION_EXPIRED" ? "Demander un nouveau devis" : "Voir votre devis"}
                 </Link>
                 <button type="button" onClick={payListPrice} disabled={cancel.isPending} className={btn("outline", "lg")}>
-                  {cancel.isPending && <Spinner />} Pay list price instead
+                  {cancel.isPending && <Spinner />} Payer le prix catalogue
                 </button>
               </>
             )}
@@ -240,23 +243,26 @@ export function CheckoutScreen() {
             <section className={`${TILE} p-6`} aria-labelledby="addr-h">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <SectionTitle id="addr-h" n={1}>
-                  Delivery address
+                  Adresse de livraison
                 </SectionTitle>
                 <button
                   type="button"
-                  onClick={() => notify("Adding addresses from the shop isn't available yet. Ask the sales desk to add one to your account.", "info")}
+                  onClick={() =>
+                    notify(`${proposalMessage("L'ajout d'une adresse depuis la boutique")} Demandez au service commercial d'en ajouter une à votre compte.`, "info")
+                  }
                   className={btn("ghost", "sm")}
                 >
-                  <Plus size={16} aria-hidden /> Add address <ProposalTag />
+                  <Plus size={16} aria-hidden /> Ajouter une adresse <ProposalTag />
                 </button>
               </div>
               {addresses.length === 0 ? (
                 <p className="mt-4 rounded-[20px] bg-surface-2 p-4 text-sm text-ink-2">
-                  Your account has no delivery address yet. Ask the SOCIMCO sales desk to add one, then come back to place the order.
+                  Aucune adresse de livraison n&apos;est encore enregistrée sur votre compte. Demandez au service commercial SOCIMCO d&apos;en ajouter une, puis
+                  revenez valider la commande.
                 </p>
               ) : (
                 <fieldset className="mt-4 grid gap-2 sm:grid-cols-2">
-                  <legend className="sr-only">Choose a delivery address</legend>
+                  <legend className="sr-only">Choisissez une adresse de livraison</legend>
                   {addresses.map((a) => (
                     <label
                       key={a.id}
@@ -266,10 +272,10 @@ export function CheckoutScreen() {
                       <span className="min-w-0 text-[15px] leading-relaxed">
                         <span className="flex flex-wrap items-center gap-2 font-semibold">
                           <MapPin size={15} aria-hidden /> {a.label}
-                          {a.isDefault && <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-ink-3 ring-1 ring-line">Default</span>}
+                          {a.isDefault && <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-ink-3 ring-1 ring-line">Par défaut</span>}
                         </span>
                         <span className="block break-words text-ink-2">
-                          {a.line1}, {a.city} {a.postalCode}, {a.country}
+                          {a.line1}, {a.postalCode} {a.city}, {a.country}
                         </span>
                       </span>
                     </label>
@@ -280,20 +286,20 @@ export function CheckoutScreen() {
 
             <section className={`${TILE} p-6`} aria-labelledby="ship-h">
               <SectionTitle id="ship-h" n={2}>
-                Delivery
+                Livraison
               </SectionTitle>
               <div className="mt-4 flex items-center gap-4 rounded-[20px] bg-surface-2 p-4">
                 <Truck size={22} className="shrink-0 text-success" aria-hidden />
                 <div className="min-w-0">
-                  <p className="font-semibold">Standard trade delivery</p>
-                  <p className="text-sm text-ink-2">Dispatched next working day{address ? ` · 1–2 days to ${address.city}` : ""}</p>
+                  <p className="font-semibold">Livraison professionnelle standard</p>
+                  <p className="text-sm text-ink-2">Expédition le jour ouvré suivant{address ? ` · 1 à 2 jours jusqu'à ${address.city}` : ""}</p>
                 </div>
               </div>
             </section>
 
             <section className={`${TILE} p-6`} aria-labelledby="items-h">
               <SectionTitle id="items-h" n={3}>
-                Items
+                Articles
               </SectionTitle>
               <ul className="mt-4 divide-y divide-canvas">
                 {lines.map((l) => (
@@ -308,15 +314,15 @@ export function CheckoutScreen() {
                         {formatCount(l.quantity)} ×{" "}
                         {l.negotiated && (
                           <>
-                            <span className="sr-only">list price </span>
+                            <span className="sr-only">prix catalogue </span>
                             <s className="mr-1">{formatMoney(l.listUnitPriceCents)}</s>
-                            <span className="sr-only">, you pay </span>
+                            <span className="sr-only">, vous payez </span>
                           </>
                         )}
                         <span className={l.negotiated ? "font-semibold text-ink" : ""}>{formatMoney(l.unitPriceCents)}</span> / {unitLabel(l.unit, 1)}
                       </p>
                       {l.negotiated && (
-                        <p className="tabular text-sm font-semibold text-success">Saving {formatMoney((l.listUnitPriceCents - l.unitPriceCents) * l.quantity)}</p>
+                        <p className="tabular text-sm font-semibold text-success">Économie de {formatMoney((l.listUnitPriceCents - l.unitPriceCents) * l.quantity)}</p>
                       )}
                     </div>
                     <p className="tabular shrink-0 font-semibold">{formatMoney(l.lineTotalCents)}</p>
@@ -326,34 +332,34 @@ export function CheckoutScreen() {
             </section>
           </div>
 
-          <aside className="lg:sticky lg:top-[96px] lg:self-start" aria-label="Order summary">
+          <aside className="lg:sticky lg:top-[96px] lg:self-start" aria-label="Récapitulatif de la commande">
             <div className={`${TILE} p-6`}>
-              <Eyebrow>Order summary</Eyebrow>
+              <Eyebrow>Récapitulatif</Eyebrow>
               {negotiated && (
                 <div className="mt-3 flex items-center gap-3 rounded-[18px] bg-accent-soft p-3.5 text-sm">
                   <Clock size={17} className="shrink-0 text-success" aria-hidden />
                   <p>
-                    Agreed price held for <span className="tabular font-semibold">{formatCountdown(remaining)}</span>
+                    Prix convenu garanti encore <span className="tabular font-semibold">{formatCountdown(remaining)}</span>
                   </p>
                 </div>
               )}
               <dl className="tabular mt-4 space-y-2 text-[15px]">
                 <div className="flex justify-between gap-3">
-                  <dt className="text-ink-2">Subtotal at list price</dt>
+                  <dt className="text-ink-2">Sous-total au prix catalogue</dt>
                   <dd className={negotiated ? "text-ink-3 line-through" : "font-semibold"}>{formatMoney(totals.subtotalCents)}</dd>
                 </div>
                 {totals.discountCents > 0 && (
                   <div className="flex justify-between gap-3 text-success">
-                    <dt>Negotiated savings</dt>
+                    <dt>Économies négociées</dt>
                     <dd className="font-semibold">−{formatMoney(totals.discountCents)}</dd>
                   </div>
                 )}
                 <div className="flex justify-between gap-3">
-                  <dt className="text-ink-2">Shipping</dt>
-                  <dd>{formatMoney(totals.shippingCents)}</dd>
+                  <dt className="text-ink-2">Livraison</dt>
+                  <dd>{totals.shippingCents === 0 ? "Offerte" : formatMoney(totals.shippingCents)}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-ink-2">Tax</dt>
+                  <dt className="text-ink-2">Taxes</dt>
                   <dd>{formatMoney(totals.taxCents)}</dd>
                 </div>
               </dl>
@@ -367,17 +373,17 @@ export function CheckoutScreen() {
                   <div className="mt-4 flex gap-3 rounded-[18px] bg-danger-soft p-4 text-sm text-danger" role="alert">
                     <AlertTriangle size={18} className="mt-0.5 shrink-0" aria-hidden />
                     <div className="min-w-0">
-                      <p className="font-semibold">We couldn&apos;t place your order</p>
+                      <p className="font-semibold">Nous n&apos;avons pas pu valider votre commande</p>
                       <p className="mt-0.5">{error.message}</p>
                       {error.code === "OUT_OF_STOCK" ? (
                         <Link href={`${BASE}/cart`} className="mt-2 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">
-                          Review your cart
+                          Vérifier votre panier
                         </Link>
                       ) : error.code === "ADDRESS_NOT_FOUND" ? (
-                        <p className="mt-2">Choose another delivery address above, then try again.</p>
+                        <p className="mt-2">Choisissez une autre adresse de livraison ci-dessus, puis réessayez.</p>
                       ) : (
                         <button type="button" onClick={submit} className="mt-2 inline-flex min-h-11 items-center font-semibold underline underline-offset-4">
-                          Try again
+                          Réessayer
                         </button>
                       )}
                     </div>
@@ -394,14 +400,14 @@ export function CheckoutScreen() {
               >
                 {place.isPending ? (
                   <>
-                    <Spinner /> Placing your order…
+                    <Spinner /> Validation en cours…
                   </>
                 ) : (
-                  <>Place order · {formatMoney(totals.totalCents)}</>
+                  <>Valider la commande · {formatMoney(totals.totalCents)}</>
                 )}
               </button>
               <p className="mt-3 text-center text-[13px] text-ink-3">
-                {accepted ? "Placing the order closes your quote." : "You'll get an email confirmation straight away."}
+                {accepted ? "La validation de la commande clôture votre devis." : "Vous recevrez immédiatement une confirmation par e-mail."}
               </p>
             </div>
           </aside>

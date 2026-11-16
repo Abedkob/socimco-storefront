@@ -32,7 +32,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
         <div className="flex flex-col items-center gap-4 text-ink-3">
           <BrandLogo className="h-12" priority />
           <Spinner />
-          <span className="sr-only">Loading your account…</span>
+          <span className="sr-only">Chargement de votre compte…</span>
         </div>
       </div>
     );

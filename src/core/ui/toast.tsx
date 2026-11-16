@@ -56,7 +56,7 @@ export function Toaster() {
           <div key={t.id} role="status" className="toast-in pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-[20px] bg-dark py-2 pl-4 pr-2 text-sm text-on-dark shadow-2xl">
             <Icon size={18} className={t.tone === "danger" ? "shrink-0 text-[#ff8a80]" : "shrink-0 text-accent"} aria-hidden />
             <p className="flex-1 py-1.5">{t.message}</p>
-            <button type="button" onClick={() => dismiss(t.id)} className="grid size-10 shrink-0 place-items-center rounded-full text-on-dark-2 hover:bg-dark-2 hover:text-on-dark" aria-label="Dismiss">
+            <button type="button" onClick={() => dismiss(t.id)} className="grid size-10 shrink-0 place-items-center rounded-full text-on-dark-2 hover:bg-dark-2 hover:text-on-dark" aria-label="Fermer">
               <X size={16} aria-hidden />
             </button>
           </div>

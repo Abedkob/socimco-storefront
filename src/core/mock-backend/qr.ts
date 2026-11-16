@@ -17,7 +17,7 @@ export function summarizeUserAgent(ua: string): string {
           ? "Chrome"
           : /Safari\//.test(ua)
             ? "Safari"
-            : "A browser";
+            : "Un navigateur";
   const os = /Windows/.test(ua)
     ? "Windows"
     : /iPhone|iPad/.test(ua)
@@ -28,8 +28,8 @@ export function summarizeUserAgent(ua: string): string {
           ? "macOS"
           : /Linux/.test(ua)
             ? "Linux"
-            : "an unknown device";
-  return `${browser} on ${os}`;
+            : "un appareil inconnu";
+  return `${browser} sur ${os}`;
 }
 
 export function createQr(deps: Deps): ShopBackend["qr"] {
@@ -107,7 +107,7 @@ export function createQr(deps: Deps): ShopBackend["qr"] {
       const user = currentUser(deps, ctx);
       limiter.hit(`qr-phone:${user.id}`, 10, MINUTE_MS);
       const rec = byCode(body.code);
-      if (rec.status === "pending") throw new ApiError("FORBIDDEN", { message: "Scan the code before approving." });
+      if (rec.status === "pending") throw new ApiError("FORBIDDEN", { message: "Scannez le code avant d'autoriser la connexion." });
       if (rec.status !== "scanned") throw new ApiError("QR_ALREADY_USED");
       if (rec.scannedByUserId !== user.id) throw new ApiError("FORBIDDEN");
       if (body.decision === "approve") {
@@ -125,7 +125,7 @@ export function createQr(deps: Deps): ShopBackend["qr"] {
       if (rec.status === "expired") throw new ApiError("QR_EXPIRED");
       if (rec.status === "consumed" || rec.status === "denied") throw new ApiError("QR_ALREADY_USED");
       if (rec.status !== "approved" || !rec.approvedByUserId) {
-        throw new ApiError("FORBIDDEN", { message: "This login hasn't been approved yet." });
+        throw new ApiError("FORBIDDEN", { message: "Cette connexion n'a pas encore été autorisée." });
       }
       const user = state.users.get(rec.approvedByUserId);
       if (!user?.active) throw new ApiError("ACCOUNT_DISABLED");

@@ -25,7 +25,7 @@ export function createOrders(deps: Deps): ShopBackend["orders"] {
 
       if (!body.idempotencyKey) throw new ApiError("IDEMPOTENCY_KEY_REQUIRED");
       if (!IdempotencyKey.safeParse(body.idempotencyKey).success) {
-        throw new ApiError("VALIDATION_FAILED", { message: "Idempotency-Key must be a UUID." });
+        throw new ApiError("VALIDATION_FAILED", { message: "L'en-tête Idempotency-Key doit être un UUID." });
       }
       const idemKey = `${user.id}:${body.idempotencyKey}`;
       const previousId = state.idempotency.get(idemKey);
@@ -51,7 +51,7 @@ export function createOrders(deps: Deps): ShopBackend["orders"] {
         negotiation = rec;
       } else if (cart.lockedByNegotiationId) {
         throw new ApiError("NEGOTIATION_NOT_ACCEPTED", {
-          message: "Finish or cancel the open negotiation before ordering.",
+          message: "Finalisez ou annulez le devis en cours avant de commander.",
         });
       }
 
@@ -128,7 +128,7 @@ export function createOrders(deps: Deps): ShopBackend["orders"] {
     async get(ctx, id) {
       const user = requireRole(deps, ctx, "customer");
       const rec = state.orders.get(id);
-      if (!rec || rec.userId !== user.id) throw new ApiError("NOT_FOUND", { message: "Order not found." });
+      if (!rec || rec.userId !== user.id) throw new ApiError("NOT_FOUND", { message: "Commande introuvable." });
       return { order: toOrderView(rec) };
     },
   };

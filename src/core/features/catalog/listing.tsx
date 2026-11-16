@@ -12,11 +12,14 @@ import { ProductGrid } from "./product-card";
 type Sort = ProductQuery["sort"];
 
 const SORTS: { value: Sort; label: string }[] = [
-  { value: "name", label: "Name A–Z" },
-  { value: "price_asc", label: "Price: low to high" },
-  { value: "price_desc", label: "Price: high to low" },
-  { value: "newest", label: "Newest" },
+  { value: "name", label: "Nom A–Z" },
+  { value: "price_asc", label: "Prix croissant" },
+  { value: "price_desc", label: "Prix décroissant" },
+  { value: "newest", label: "Nouveautés" },
 ];
+
+/** "1 produit", "12 produits" (French: plural from 2). */
+const countProducts = (n: number) => `${formatCount(n)} produit${n > 1 ? "s" : ""}`;
 
 type Filters = { inStockOnly: boolean; tradeOnly: boolean; brands: string[] };
 const NO_FILTERS: Filters = { inStockOnly: false, tradeOnly: false, brands: [] };
@@ -54,11 +57,11 @@ function FilterPanel({ filters, setFilters, brands, place }: { filters: Filters;
     <div className="space-y-6">
       {place && (
         <section>
-          <h3 className={FILTER_HEADING}>Category</h3>
+          <h3 className={FILTER_HEADING}>Catégorie</h3>
           <ul className="mt-3 space-y-0.5">
             <li>
               <Link href={`${BASE}/category/${place.parent.slug}`} aria-current={place.current.id === place.parent.id ? "page" : undefined} className={row(place.current.id === place.parent.id, false)}>
-                All {place.parent.name} <span className="tabular opacity-70">{formatCount(place.parent.productCount)}</span>
+                Tout le rayon <span className="tabular opacity-70">{formatCount(place.parent.productCount)}</span>
               </Link>
             </li>
             {place.parent.children.map((c) => (
@@ -72,19 +75,19 @@ function FilterPanel({ filters, setFilters, brands, place }: { filters: Filters;
         </section>
       )}
       <section>
-        <h3 className={FILTER_HEADING}>Availability</h3>
+        <h3 className={FILTER_HEADING}>Disponibilité</h3>
         <div className="mt-2">
           <Check checked={filters.inStockOnly} onChange={(v) => setFilters({ ...filters, inStockOnly: v })}>
-            In stock only
+            En stock uniquement
           </Check>
           <Check checked={filters.tradeOnly} onChange={(v) => setFilters({ ...filters, tradeOnly: v })}>
-            Trade price available
+            Prix négocié possible
           </Check>
         </div>
       </section>
       {brands.length > 0 && (
         <section>
-          <h3 className={FILTER_HEADING}>Brand</h3>
+          <h3 className={FILTER_HEADING}>Marque</h3>
           <div className="mt-2">
             {brands.map((b) => (
               <Check key={b} checked={filters.brands.includes(b)} onChange={(v) => setFilters({ ...filters, brands: v ? [...filters.brands, b] : filters.brands.filter((x) => x !== b) })}>
@@ -102,7 +105,7 @@ function SortSelect({ sort, onChange, id }: { sort: Sort; onChange: (s: Sort) =>
   return (
     <div className="flex items-center gap-2 text-sm">
       <label htmlFor={id} className="sr-only sm:not-sr-only sm:text-ink-3">
-        Sort by
+        Trier par
       </label>
       <select id={id} value={sort} onChange={(e) => onChange(e.target.value as Sort)} className="h-11 w-full min-w-0 rounded-full border border-line-strong bg-surface px-4 font-medium text-ink">
         {SORTS.map((s) => (
@@ -119,13 +122,13 @@ function Pagination({ page, pages, onPage }: { page: number; pages: number; onPa
   return (
     <nav aria-label="Pagination" className="mt-6 flex items-center justify-center gap-3">
       <button type="button" onClick={() => onPage(page - 1)} disabled={page <= 1} className={btn("outline", "md")}>
-        <ChevronLeft size={16} aria-hidden /> Previous
+        <ChevronLeft size={16} aria-hidden /> Précédent
       </button>
       <span className="tabular text-sm text-ink-2" aria-live="polite">
-        Page {page} of {pages}
+        Page {formatCount(page)} sur {formatCount(pages)}
       </span>
       <button type="button" onClick={() => onPage(page + 1)} disabled={page >= pages} className={btn("outline", "md")}>
-        Next <ChevronRight size={16} aria-hidden />
+        Suivant <ChevronRight size={16} aria-hidden />
       </button>
     </nav>
   );
@@ -142,7 +145,7 @@ function CategoryTiles({ tiles }: { tiles: Tile[] }) {
             <ProductImage src={c.imageUrl} alt="" className="size-14 shrink-0 rounded-[14px] object-cover" />
             <span className="min-w-0">
               <span className="block font-semibold leading-tight">{c.name}</span>
-              <span className="tabular text-sm text-ink-3">{formatCount(c.productCount)} products</span>
+              <span className="tabular text-sm text-ink-3">{countProducts(c.productCount)}</span>
             </span>
           </Link>
         </li>
@@ -197,16 +200,16 @@ function Listing({
   let results: ReactNode;
   if (products.isPending) results = <ProductGrid items={[]} loading />;
   else if (products.isError)
-    results = <ErrorTile message={`We couldn't load these products. ${errorMessage(products.error)}`} onRetry={() => void products.refetch()} />;
+    results = <ErrorTile message={`Impossible de charger ces produits. ${errorMessage(products.error)}`} onRetry={() => void products.refetch()} />;
   else if (items.length === 0)
     results = (
       <div className={`${TILE} p-10 text-center`}>
         <SearchX className="mx-auto text-ink-3" size={30} aria-hidden />
         <p className="mt-3 text-lg font-semibold">{emptyTitle}</p>
-        <p className="mt-1 text-ink-2">Try removing a filter or searching by SKU.</p>
+        <p className="mt-1 text-ink-2">Essayez de retirer un filtre ou de rechercher par référence.</p>
         {active > 0 && (
           <button type="button" className={btn("outline", "md", "mt-5")} onClick={clear}>
-            Clear filters
+            Effacer les filtres
           </button>
         )}
       </div>
@@ -228,7 +231,7 @@ function Listing({
       {/* Mobile filter/sort bar */}
       <div className="sticky top-[76px] z-20 mt-5 flex items-center gap-1.5 rounded-full bg-surface/95 p-1.5 shadow-[0_10px_30px_-18px_rgb(0_0_0/0.4)] ring-1 ring-black/5 backdrop-blur lg:hidden">
         <button type="button" onClick={() => setFiltersOpen(true)} className={btn("ghost", "md", "flex-1 bg-surface-2")}>
-          <SlidersHorizontal size={17} aria-hidden /> Filters
+          <SlidersHorizontal size={17} aria-hidden /> Filtres
           {active > 0 && <span className="tabular grid size-5 place-items-center rounded-full bg-dark text-[11px] text-on-dark">{active}</span>}
         </button>
         <div className="min-w-0 flex-1">
@@ -237,18 +240,18 @@ function Listing({
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[272px_1fr]">
-        <aside className="hidden lg:block" aria-label="Filters">
+        <aside className="hidden lg:block" aria-label="Filtres">
           <div className="sticky top-[96px] rounded-[var(--radius-card)] bg-surface p-5">
             <FilterPanel filters={filters} setFilters={setFilters} brands={brands} place={place} />
           </div>
         </aside>
-        <section aria-label="Products" className="min-w-0">
+        <section aria-label="Produits" className="min-w-0">
           <div className="mb-4 hidden items-center justify-between gap-4 px-1 lg:flex">
             <p className="text-ink-2" aria-live="polite">
-              <span className="tabular font-semibold text-ink">{formatCount(count)}</span> products
+              <span className="tabular font-semibold text-ink">{formatCount(count)}</span> produit{count > 1 ? "s" : ""}
               {active > 0 && (
                 <button type="button" onClick={clear} className="ml-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold underline underline-offset-4">
-                  <X size={14} aria-hidden /> Clear {active} filter{active > 1 ? "s" : ""}
+                  <X size={14} aria-hidden /> Effacer {active > 1 ? `les ${active} filtres` : "le filtre"}
                 </button>
               )}
             </p>
@@ -260,12 +263,12 @@ function Listing({
         </section>
       </div>
 
-      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} side="bottom" label="Filters">
+      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} side="bottom" label="Filtres">
         <div className="flex max-h-[88dvh] flex-col bg-surface">
           <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-line-strong" aria-hidden />
           <div className="flex items-center justify-between px-5 py-3">
-            <h2 className="display text-[22px]">Filters</h2>
-            <button type="button" onClick={() => setFiltersOpen(false)} className="grid size-11 place-items-center rounded-full bg-surface-2" aria-label="Close filters">
+            <h2 className="display text-[22px]">Filtres</h2>
+            <button type="button" onClick={() => setFiltersOpen(false)} className="grid size-11 place-items-center rounded-full bg-surface-2" aria-label="Fermer les filtres">
               <X size={20} aria-hidden />
             </button>
           </div>
@@ -274,10 +277,10 @@ function Listing({
           </div>
           <div className="flex gap-2 border-t border-line p-4">
             <button type="button" onClick={clear} className={btn("outline", "lg", "flex-1")} disabled={active === 0}>
-              Clear
+              Effacer
             </button>
             <button type="button" onClick={() => setFiltersOpen(false)} className={btn("primary", "lg", "flex-[2]")}>
-              Show {formatCount(count)} products
+              Voir {countProducts(count)}
             </button>
           </div>
         </div>
@@ -321,7 +324,7 @@ function NotFound({ title, message, crumbs }: { title: string; message: string; 
         <SearchX className="text-ink-3" size={30} aria-hidden />
         <p className="max-w-md text-ink-2">{message}</p>
         <Link href={BASE || "/"} className={btn("primary", "md")}>
-          Back to the catalog
+          Retour au catalogue
         </Link>
       </div>
     </div>
@@ -337,7 +340,7 @@ export function CategoryListing() {
   if (categories.isError)
     return (
       <div className="mx-auto max-w-[1400px] px-3 pb-14 lg:px-6">
-        <PageHeader crumbs={[{ label: "Home", href: BASE || "/" }, { label: "Category" }]} title="Category" />
+        <PageHeader crumbs={[{ label: "Accueil", href: BASE || "/" }, { label: "Catégorie" }]} title="Catégorie" />
         <ErrorTile className="mt-6" message={errorMessage(categories.error)} onRetry={() => void categories.refetch()} />
       </div>
     );
@@ -347,9 +350,9 @@ export function CategoryListing() {
   if (!found)
     return (
       <NotFound
-        title="Category not found"
-        message="This category doesn't exist or has moved. Browse the departments from the catalog."
-        crumbs={[{ label: "Home", href: BASE || "/" }, { label: "Not found" }]}
+        title="Catégorie introuvable"
+        message="Cette catégorie n'existe pas ou a été déplacée. Parcourez les rayons depuis le catalogue."
+        crumbs={[{ label: "Accueil", href: BASE || "/" }, { label: "Introuvable" }]}
       />
     );
 
@@ -363,36 +366,39 @@ export function CategoryListing() {
       query={{ category: slug }}
       title={current.name}
       intro={(total) => {
-        const n = formatCount(total ?? current.productCount);
+        const n = countProducts(total ?? current.productCount);
+        const ranges = children.length || 1;
         return isTop
-          ? `${n} products across ${children.length || 1} ranges. Trade pricing on volume orders.`
-          : `${n} products in ${parent.name}. Prices shown per unit; trade pricing from the minimum quantity.`;
+          ? `${n} · ${formatCount(ranges)} gamme${ranges > 1 ? "s" : ""}. Prix négociés sur les commandes en volume.`
+          : `${n} dans le rayon ${parent.name}. Prix affichés à l'unité ; prix négocié dès la quantité minimum.`;
       }}
-      crumbs={[{ label: "Home", href: BASE || "/" }, ...(isTop ? [] : [{ label: parent.name, href: `${BASE}/category/${parent.slug}` }]), { label: current.name }]}
+      crumbs={[{ label: "Accueil", href: BASE || "/" }, ...(isTop ? [] : [{ label: parent.name, href: `${BASE}/category/${parent.slug}` }]), { label: current.name }]}
       place={{ current, parent }}
       tiles={tiles}
-      emptyTitle={`No ${current.name.toLowerCase()} match these filters`}
+      emptyTitle={`Aucun produit « ${current.name} » ne correspond à ces filtres`}
     />
   );
 }
 
 /* ---------- Search ---------- */
 
+const SEARCH_SCOPE = "La recherche porte sur les noms, les marques et les références.";
+
 export function SearchListing() {
   const q = (useSearchParams().get("q") ?? "").trim().slice(0, 100);
-  const crumbs = [{ label: "Home", href: BASE || "/" }, { label: "Search" }];
+  const crumbs = [{ label: "Accueil", href: BASE || "/" }, { label: "Recherche" }];
 
   if (!q)
     return (
       <div className="mx-auto max-w-[1400px] px-3 pb-14 lg:px-6">
-        <PageHeader crumbs={crumbs} title="Search" lead="Search covers names, brands and SKUs." />
+        <PageHeader crumbs={crumbs} title="Recherche" lead={SEARCH_SCOPE} />
         <form action={`${BASE}/search`} role="search" className={`${TILE} mt-6 flex flex-col gap-3 p-5 sm:flex-row`}>
           <label htmlFor="search-page-q" className="sr-only">
-            Search products
+            Rechercher un produit ou une référence
           </label>
-          <input id="search-page-q" name="q" type="search" required placeholder="Product, brand or SKU" className="h-12 min-w-0 flex-1 rounded-full border border-line-strong bg-surface px-5 text-[15px] text-ink placeholder:text-ink-3" />
+          <input id="search-page-q" name="q" type="search" required placeholder="Produit, marque ou référence" className="h-12 min-w-0 flex-1 rounded-full border border-line-strong bg-surface px-5 text-[15px] text-ink placeholder:text-ink-3" />
           <button type="submit" className={btn("primary", "lg")}>
-            <Search size={18} aria-hidden /> Search
+            <Search size={18} aria-hidden /> Rechercher
           </button>
         </form>
       </div>
@@ -402,10 +408,10 @@ export function SearchListing() {
     <Listing
       key={q}
       query={{ q }}
-      title={`Results for “${q}”`}
-      intro={(total) => (total ? `${formatCount(total)} ${total === 1 ? "product matches" : "products match"}. Search covers names, brands and SKUs.` : "Search covers names, brands and SKUs.")}
+      title={`Résultats pour « ${q} »`}
+      intro={(total) => (total ? `${formatCount(total)} ${total === 1 ? "produit correspond" : "produits correspondent"}. ${SEARCH_SCOPE}` : SEARCH_SCOPE)}
       crumbs={crumbs}
-      emptyTitle={`No products match “${q}”`}
+      emptyTitle={`Aucun produit ne correspond à « ${q} »`}
     />
   );
 }

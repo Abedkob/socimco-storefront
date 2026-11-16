@@ -52,7 +52,7 @@ export function createNegotiations(deps: Deps): ShopBackend["negotiations"] {
   function owned(ctx: RequestContext, id: string) {
     const user = requireRole(deps, ctx, "customer");
     const rec = state.negotiations.get(id);
-    if (!rec || rec.userId !== user.id) throw new ApiError("NOT_FOUND", { message: "Negotiation not found." });
+    if (!rec || rec.userId !== user.id) throw new ApiError("NOT_FOUND", { message: "Devis introuvable." });
     refreshNegotiation(deps, rec);
     return rec;
   }
@@ -67,7 +67,7 @@ export function createNegotiations(deps: Deps): ShopBackend["negotiations"] {
 
       const ids = body.lines.map((l) => l.productId);
       if (new Set(ids).size !== ids.length) {
-        throw new ApiError("VALIDATION_FAILED", { message: "Each product can only appear once." });
+        throw new ApiError("VALIDATION_FAILED", { message: "Chaque produit ne peut figurer qu'une seule fois." });
       }
       const lines = ids.map((productId) => {
         const item = cart.items.find((i) => i.productId === productId);
@@ -152,7 +152,7 @@ export function createSeller(deps: Deps): ShopBackend["seller"] {
   function find(ctx: RequestContext, id: string) {
     requireRole(deps, ctx, "seller");
     const rec = state.negotiations.get(id);
-    if (!rec) throw new ApiError("NOT_FOUND", { message: "Negotiation not found." });
+    if (!rec) throw new ApiError("NOT_FOUND", { message: "Devis introuvable." });
     refreshNegotiation(deps, rec);
     return rec;
   }

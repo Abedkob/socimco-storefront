@@ -90,7 +90,7 @@ export function createState(seed: Seed): MockState {
 
 export function getProduct(state: MockState, productId: string): Product {
   const product = state.products.get(productId);
-  if (!product) throw new ApiError("NOT_FOUND", { message: "Product not found." });
+  if (!product) throw new ApiError("NOT_FOUND", { message: "Produit introuvable." });
   return product;
 }
 

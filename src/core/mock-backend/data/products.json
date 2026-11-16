@@ -3,10 +3,10 @@
     "id": "prd_drill_18v",
     "sku": "DRL-18V-001",
     "slug": "18v-cordless-drill-driver",
-    "name": "18V Cordless Drill Driver",
+    "name": "Perceuse-visseuse sans fil 18 V",
     "brand": "Torqmax",
     "categoryId": "cat_drills",
-    "description": "Compact 2-speed drill driver with two 2.0Ah batteries, charger and carry case.",
+    "description": "Perceuse-visseuse compacte 2 vitesses, livrée avec deux batteries 2,0 Ah, un chargeur et une mallette de transport.",
     "images": [
       "https://images.pexels.com/photos/4792486/pexels-photo-4792486.jpeg?auto=compress&cs=tinysrgb&w=960",
       "https://images.pexels.com/photos/7218101/pexels-photo-7218101.jpeg?auto=compress&cs=tinysrgb&w=960"
@@ -18,10 +18,10 @@
     "negotiable": true,
     "minNegotiableQty": 100,
     "specs": {
-      "Voltage": "18V",
-      "Chuck": "13 mm keyless",
-      "Max torque": "55 Nm",
-      "Weight": "1.4 kg"
+      "Tension": "18 V",
+      "Mandrin": "13 mm autoserrant",
+      "Couple max.": "55 Nm",
+      "Poids": "1,4 kg"
     },
     "rating": 4.6,
     "createdAt": "2026-09-01T10:00:00Z"
@@ -30,10 +30,10 @@
     "id": "prd_impact_driver",
     "sku": "DRL-IMP-002",
     "slug": "18v-brushless-impact-driver",
-    "name": "18V Brushless Impact Driver",
+    "name": "Visseuse à chocs sans charbons 18 V",
     "brand": "Torqmax",
     "categoryId": "cat_drills",
-    "description": "Brushless impact driver with 3 speed modes for long screws and lag bolts.",
+    "description": "Visseuse à chocs à moteur sans charbons, 3 modes de vitesse, pour les vis longues et les tire-fonds.",
     "images": [
       "https://images.pexels.com/photos/8487757/pexels-photo-8487757.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -44,9 +44,9 @@
     "negotiable": true,
     "minNegotiableQty": 100,
     "specs": {
-      "Voltage": "18V",
-      "Bit holder": "1/4\" hex",
-      "Max torque": "180 Nm"
+      "Tension": "18 V",
+      "Porte-embout": "6 pans 1/4\"",
+      "Couple max.": "180 Nm"
     },
     "rating": 4.7,
     "createdAt": "2026-08-20T10:00:00Z"
@@ -55,10 +55,10 @@
     "id": "prd_sds_hammer_drill",
     "sku": "DRL-SDS-003",
     "slug": "sds-plus-rotary-hammer",
-    "name": "SDS-Plus Rotary Hammer 800W",
+    "name": "Perforateur SDS-Plus 800 W",
     "brand": "Brickline",
     "categoryId": "cat_drills",
-    "description": "Corded rotary hammer with chisel mode for concrete and masonry.",
+    "description": "Perforateur filaire avec mode burinage pour le béton et la maçonnerie.",
     "images": [
       "https://images.pexels.com/photos/16280528/pexels-photo-16280528.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -69,9 +69,9 @@
     "negotiable": true,
     "minNegotiableQty": 50,
     "specs": {
-      "Power": "800W",
-      "Impact energy": "2.8 J",
-      "Chuck": "SDS-Plus"
+      "Puissance": "800 W",
+      "Énergie de frappe": "2,8 J",
+      "Emmanchement": "SDS-Plus"
     },
     "rating": 4.5,
     "createdAt": "2026-07-14T10:00:00Z"
@@ -80,10 +80,10 @@
     "id": "prd_circular_saw",
     "sku": "SAW-CIR-004",
     "slug": "185mm-circular-saw",
-    "name": "185mm Circular Saw 1400W",
+    "name": "Scie circulaire 185 mm 1400 W",
     "brand": "Cutwell",
     "categoryId": "cat_saws",
-    "description": "Circular saw with bevel adjustment up to 45° and dust port.",
+    "description": "Scie circulaire avec inclinaison réglable jusqu'à 45° et raccord d'aspiration.",
     "images": [
       "https://images.pexels.com/photos/20318087/pexels-photo-20318087.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -94,9 +94,9 @@
     "negotiable": true,
     "minNegotiableQty": 50,
     "specs": {
-      "Blade": "185 mm",
-      "Power": "1400W",
-      "Cut depth": "63 mm"
+      "Lame": "185 mm",
+      "Puissance": "1400 W",
+      "Profondeur de coupe": "63 mm"
     },
     "rating": 4.4,
     "createdAt": "2026-06-30T10:00:00Z"
@@ -105,10 +105,10 @@
     "id": "prd_jigsaw",
     "sku": "SAW-JIG-005",
     "slug": "variable-speed-jigsaw",
-    "name": "Variable Speed Jigsaw 650W",
+    "name": "Scie sauteuse à vitesse variable 650 W",
     "brand": "Cutwell",
     "categoryId": "cat_saws",
-    "description": "Pendulum-action jigsaw with tool-free blade change.",
+    "description": "Scie sauteuse pendulaire avec changement de lame sans outil.",
     "images": [
       "https://images.pexels.com/photos/8447895/pexels-photo-8447895.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -119,9 +119,9 @@
     "negotiable": true,
     "minNegotiableQty": 50,
     "specs": {
-      "Power": "650W",
-      "Stroke": "20 mm",
-      "Wood capacity": "85 mm"
+      "Puissance": "650 W",
+      "Course": "20 mm",
+      "Capacité de coupe bois": "85 mm"
     },
     "rating": 4.3,
     "createdAt": "2026-05-18T10:00:00Z"
@@ -130,10 +130,10 @@
     "id": "prd_angle_grinder",
     "sku": "GRD-ANG-006",
     "slug": "115mm-angle-grinder",
-    "name": "115mm Angle Grinder 900W",
+    "name": "Meuleuse d'angle 115 mm 900 W",
     "brand": "Brickline",
     "categoryId": "cat_grinders",
-    "description": "Slim-grip angle grinder with spindle lock and side handle.",
+    "description": "Meuleuse d'angle à prise fine avec blocage de l'arbre et poignée latérale.",
     "images": [
       "https://images.pexels.com/photos/4315560/pexels-photo-4315560.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -144,9 +144,9 @@
     "negotiable": true,
     "minNegotiableQty": 100,
     "specs": {
-      "Disc": "115 mm",
-      "Power": "900W",
-      "No-load speed": "11,000 rpm"
+      "Disque": "115 mm",
+      "Puissance": "900 W",
+      "Vitesse à vide": "11 000 tr/min"
     },
     "rating": 4.4,
     "createdAt": "2026-04-02T10:00:00Z"
@@ -155,10 +155,10 @@
     "id": "prd_bench_grinder",
     "sku": "GRD-BEN-007",
     "slug": "200mm-bench-grinder",
-    "name": "200mm Bench Grinder",
+    "name": "Touret à meuler 200 mm",
     "brand": "Brickline",
     "categoryId": "cat_grinders",
-    "description": "Twin-wheel bench grinder with eye shields and tool rests.",
+    "description": "Touret à meuler à deux meules avec écrans de protection et supports d'outil.",
     "images": [
       "https://images.pexels.com/photos/5973829/pexels-photo-5973829.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -169,8 +169,8 @@
     "negotiable": false,
     "minNegotiableQty": null,
     "specs": {
-      "Wheels": "200 mm",
-      "Power": "370W"
+      "Meules": "200 mm",
+      "Puissance": "370 W"
     },
     "rating": 4.2,
     "createdAt": "2026-03-11T10:00:00Z"
@@ -179,10 +179,10 @@
     "id": "prd_hammer_16oz",
     "sku": "HMR-16OZ-008",
     "slug": "16oz-claw-hammer",
-    "name": "16oz Fiberglass Claw Hammer",
+    "name": "Marteau arrache-clou 16 oz, manche fibre de verre",
     "brand": "Ironhand",
     "categoryId": "cat_hammers",
-    "description": "Anti-vibration fiberglass handle with a forged steel head.",
+    "description": "Manche en fibre de verre anti-vibrations et tête en acier forgé.",
     "images": [
       "https://images.unsplash.com/photo-1607870411590-d5e9e06da09a?w=960&h=840&fit=crop&q=75&auto=format"
     ],
@@ -193,9 +193,9 @@
     "negotiable": false,
     "minNegotiableQty": null,
     "specs": {
-      "Head weight": "16 oz",
-      "Handle": "Fiberglass",
-      "Length": "33 cm"
+      "Poids de la tête": "16 oz",
+      "Manche": "Fibre de verre",
+      "Longueur": "33 cm"
     },
     "rating": 4.4,
     "createdAt": "2026-08-12T10:00:00Z"
@@ -204,10 +204,10 @@
     "id": "prd_sledge_4lb",
     "sku": "HMR-SLG-009",
     "slug": "4lb-club-hammer",
-    "name": "4lb Club Hammer",
+    "name": "Massette 4 lb",
     "brand": "Ironhand",
     "categoryId": "cat_hammers",
-    "description": "Short-handle club hammer for chisels and demolition work.",
+    "description": "Massette à manche court pour le travail au burin et la démolition.",
     "images": [
       "https://images.unsplash.com/photo-1788399629905-05ce3b9544a5?w=960&h=840&fit=crop&q=75&auto=format"
     ],
@@ -218,8 +218,8 @@
     "negotiable": false,
     "minNegotiableQty": null,
     "specs": {
-      "Head weight": "4 lb",
-      "Handle": "Hickory"
+      "Poids de la tête": "4 lb",
+      "Manche": "Hickory"
     },
     "rating": 4.5,
     "createdAt": "2026-02-27T10:00:00Z"
@@ -228,10 +228,10 @@
     "id": "prd_socket_set",
     "sku": "WRN-SOC-010",
     "slug": "94-piece-socket-set",
-    "name": "94-Piece Metric Socket Set",
+    "name": "Coffret de douilles métriques 94 pièces",
     "brand": "Ironhand",
     "categoryId": "cat_wrenches",
-    "description": "1/4\" and 1/2\" drive sockets, ratchets and extensions in a blow-moulded case.",
+    "description": "Douilles, cliquets et rallonges en 1/4\" et 1/2\", rangés dans une mallette moulée.",
     "images": [
       "https://images.pexels.com/photos/8335679/pexels-photo-8335679.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -242,9 +242,9 @@
     "negotiable": true,
     "minNegotiableQty": 200,
     "specs": {
-      "Pieces": "94",
-      "Drive": "1/4\" + 1/2\"",
-      "Material": "Chrome vanadium"
+      "Pièces": "94",
+      "Carré d'entraînement": "1/4\" + 1/2\"",
+      "Matériau": "Chrome-vanadium"
     },
     "rating": 4.6,
     "createdAt": "2026-07-01T10:00:00Z"
@@ -253,10 +253,10 @@
     "id": "prd_adjustable_wrench",
     "sku": "WRN-ADJ-011",
     "slug": "250mm-adjustable-wrench",
-    "name": "250mm Adjustable Wrench",
+    "name": "Clé à molette 250 mm",
     "brand": "Ironhand",
     "categoryId": "cat_wrenches",
-    "description": "Wide-jaw adjustable wrench with laser-etched scale.",
+    "description": "Clé à molette à grande ouverture avec graduation gravée au laser.",
     "images": [
       "https://images.unsplash.com/photo-1503789188050-804ee34b3d32?w=960&h=840&fit=crop&q=75&auto=format"
     ],
@@ -267,8 +267,8 @@
     "negotiable": true,
     "minNegotiableQty": 300,
     "specs": {
-      "Length": "250 mm",
-      "Max jaw": "30 mm"
+      "Longueur": "250 mm",
+      "Ouverture max.": "30 mm"
     },
     "rating": 4.3,
     "createdAt": "2026-01-19T10:00:00Z"
@@ -277,10 +277,10 @@
     "id": "prd_screwdriver_set",
     "sku": "HND-SCR-012",
     "slug": "12-piece-screwdriver-set",
-    "name": "12-Piece Insulated Screwdriver Set",
+    "name": "Jeu de 12 tournevis isolés",
     "brand": "Ironhand",
     "categoryId": "cat_hand",
-    "description": "1000V-rated slotted and Phillips screwdrivers with soft-grip handles.",
+    "description": "Tournevis plats et cruciformes Phillips isolés 1000 V, avec poignées bi-matière.",
     "images": [
       "https://images.pexels.com/photos/5583097/pexels-photo-5583097.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -291,8 +291,8 @@
     "negotiable": true,
     "minNegotiableQty": 200,
     "specs": {
-      "Pieces": "12",
-      "Rating": "1000V VDE"
+      "Pièces": "12",
+      "Isolation": "1000 V VDE"
     },
     "rating": 4.5,
     "createdAt": "2026-06-05T10:00:00Z"
@@ -301,10 +301,10 @@
     "id": "prd_utility_knife",
     "sku": "HND-KNF-013",
     "slug": "retractable-utility-knife",
-    "name": "Retractable Utility Knife",
+    "name": "Cutter à lame rétractable",
     "brand": "Cutwell",
     "categoryId": "cat_hand",
-    "description": "Auto-lock utility knife with 5 spare blades in the handle.",
+    "description": "Cutter à verrouillage automatique avec 5 lames de rechange rangées dans le manche.",
     "images": [
       "https://images.pexels.com/photos/19327094/pexels-photo-19327094.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -315,8 +315,8 @@
     "negotiable": true,
     "minNegotiableQty": 1000,
     "specs": {
-      "Blade": "18 mm snap-off",
-      "Spares": "5"
+      "Lame": "18 mm sécable",
+      "Lames de rechange": "5"
     },
     "rating": 4.1,
     "createdAt": "2026-03-22T10:00:00Z"
@@ -325,10 +325,10 @@
     "id": "prd_wood_screws",
     "sku": "FST-WSC-014",
     "slug": "wood-screws-4x40-box",
-    "name": "Wood Screws 4×40mm (Box of 500)",
+    "name": "Vis à bois 4 × 40 mm (boîte de 500)",
     "brand": "Fixright",
     "categoryId": "cat_screws",
-    "description": "Zinc-plated countersunk wood screws with a Pozi drive.",
+    "description": "Vis à bois zinguées à tête fraisée, empreinte Pozidriv.",
     "images": [
       "https://images.pexels.com/photos/5583084/pexels-photo-5583084.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -339,9 +339,9 @@
     "negotiable": true,
     "minNegotiableQty": 500,
     "specs": {
-      "Size": "4 × 40 mm",
-      "Drive": "PZ2",
-      "Per box": "500"
+      "Dimensions": "4 × 40 mm",
+      "Empreinte": "PZ2",
+      "Par boîte": "500"
     },
     "rating": 4.6,
     "createdAt": "2026-05-09T10:00:00Z"
@@ -350,10 +350,10 @@
     "id": "prd_drywall_screws",
     "sku": "FST-DSC-015",
     "slug": "drywall-screws-35mm-box",
-    "name": "Drywall Screws 3.5×35mm (Box of 1000)",
+    "name": "Vis pour plaque de plâtre 3,5 × 35 mm (boîte de 1000)",
     "brand": "Fixright",
     "categoryId": "cat_screws",
-    "description": "Black phosphate bugle-head screws for plasterboard to timber.",
+    "description": "Vis phosphatées noires à tête trompette pour fixer les plaques de plâtre sur ossature bois.",
     "images": [
       "https://images.pexels.com/photos/26856081/pexels-photo-26856081.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -364,9 +364,9 @@
     "negotiable": true,
     "minNegotiableQty": 500,
     "specs": {
-      "Size": "3.5 × 35 mm",
-      "Drive": "PH2",
-      "Per box": "1000"
+      "Dimensions": "3,5 × 35 mm",
+      "Empreinte": "PH2",
+      "Par boîte": "1000"
     },
     "rating": 4.5,
     "createdAt": "2026-05-09T11:00:00Z"
@@ -375,10 +375,10 @@
     "id": "prd_wall_anchors",
     "sku": "FST-ANC-016",
     "slug": "nylon-wall-plugs-kit",
-    "name": "Nylon Wall Plugs Kit (300 pcs)",
+    "name": "Assortiment de chevilles nylon (300 pièces)",
     "brand": "Fixright",
     "categoryId": "cat_anchors",
-    "description": "Assorted 5–10 mm nylon plugs for brick, concrete and block.",
+    "description": "Chevilles nylon assorties de 5 à 10 mm pour brique, béton et parpaing.",
     "images": [
       "https://images.pexels.com/photos/5583050/pexels-photo-5583050.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -389,8 +389,8 @@
     "negotiable": true,
     "minNegotiableQty": 500,
     "specs": {
-      "Sizes": "5, 6, 8, 10 mm",
-      "Per box": "300"
+      "Diamètres": "5, 6, 8, 10 mm",
+      "Par boîte": "300"
     },
     "rating": 4.2,
     "createdAt": "2026-04-15T10:00:00Z"
@@ -399,10 +399,10 @@
     "id": "prd_tape_measure",
     "sku": "MSR-TAP-017",
     "slug": "8m-tape-measure",
-    "name": "8m Tape Measure",
+    "name": "Mètre ruban 8 m",
     "brand": "Truline",
     "categoryId": "cat_measuring",
-    "description": "Rubber-armoured tape measure with a 25 mm blade and belt clip.",
+    "description": "Mètre ruban à boîtier caoutchouté, ruban de 25 mm et clip de ceinture.",
     "images": [
       "https://images.pexels.com/photos/32942847/pexels-photo-32942847.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -413,8 +413,8 @@
     "negotiable": true,
     "minNegotiableQty": 300,
     "specs": {
-      "Length": "8 m",
-      "Blade width": "25 mm"
+      "Longueur": "8 m",
+      "Largeur du ruban": "25 mm"
     },
     "rating": 4.6,
     "createdAt": "2026-09-10T10:00:00Z"
@@ -423,10 +423,10 @@
     "id": "prd_laser_level",
     "sku": "MSR-LAS-018",
     "slug": "green-cross-line-laser",
-    "name": "Green Cross-Line Laser Level",
+    "name": "Niveau laser en croix vert",
     "brand": "Truline",
     "categoryId": "cat_measuring",
-    "description": "Self-levelling cross-line laser with 30 m range and tripod mount.",
+    "description": "Laser en croix à mise à niveau automatique, portée de 30 m, avec fixation pour trépied.",
     "images": [
       "https://images.pexels.com/photos/6474120/pexels-photo-6474120.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -437,9 +437,9 @@
     "negotiable": true,
     "minNegotiableQty": 30,
     "specs": {
-      "Range": "30 m",
-      "Accuracy": "±0.3 mm/m",
-      "Beam": "Green"
+      "Portée": "30 m",
+      "Précision": "±0,3 mm/m",
+      "Faisceau": "Vert"
     },
     "rating": 4.7,
     "createdAt": "2026-10-01T10:00:00Z"
@@ -448,10 +448,10 @@
     "id": "prd_spirit_level",
     "sku": "MSR-SPL-019",
     "slug": "1200mm-spirit-level",
-    "name": "1200mm Box Spirit Level",
+    "name": "Niveau à bulle tubulaire 1200 mm",
     "brand": "Truline",
     "categoryId": "cat_measuring",
-    "description": "Aluminium box level with 3 shock-resistant vials.",
+    "description": "Niveau tubulaire en aluminium avec 3 fioles antichocs.",
     "images": [
       "https://images.unsplash.com/photo-1567361808976-260065224468?w=960&h=840&fit=crop&q=75&auto=format"
     ],
@@ -462,8 +462,8 @@
     "negotiable": false,
     "minNegotiableQty": null,
     "specs": {
-      "Length": "1200 mm",
-      "Vials": "3"
+      "Longueur": "1200 mm",
+      "Fioles": "3"
     },
     "rating": 4.4,
     "createdAt": "2026-02-08T10:00:00Z"
@@ -472,10 +472,10 @@
     "id": "prd_safety_helmet",
     "sku": "SAF-HLM-020",
     "slug": "vented-safety-helmet",
-    "name": "Vented Safety Helmet",
+    "name": "Casque de chantier ventilé",
     "brand": "Guardline",
     "categoryId": "cat_safety",
-    "description": "EN397 helmet with a 6-point harness and ratchet adjustment.",
+    "description": "Casque EN 397 avec harnais 6 points et réglage par molette.",
     "images": [
       "https://images.unsplash.com/photo-1768158988512-ad31657fe5b8?w=960&h=840&fit=crop&q=75&auto=format"
     ],
@@ -486,8 +486,8 @@
     "negotiable": true,
     "minNegotiableQty": 200,
     "specs": {
-      "Standard": "EN397",
-      "Harness": "6-point"
+      "Norme": "EN 397",
+      "Harnais": "6 points"
     },
     "rating": 4.5,
     "createdAt": "2026-08-01T10:00:00Z"
@@ -496,10 +496,10 @@
     "id": "prd_safety_glasses",
     "sku": "SAF-GLS-021",
     "slug": "anti-fog-safety-glasses",
-    "name": "Anti-Fog Safety Glasses",
+    "name": "Lunettes de sécurité antibuée",
     "brand": "Guardline",
     "categoryId": "cat_safety",
-    "description": "Wraparound clear lenses with anti-scratch and anti-fog coating.",
+    "description": "Lunettes enveloppantes à verres incolores, avec traitement anti-rayures et antibuée.",
     "images": [
       "https://images.pexels.com/photos/7789650/pexels-photo-7789650.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -510,8 +510,8 @@
     "negotiable": true,
     "minNegotiableQty": 1000,
     "specs": {
-      "Standard": "EN166",
-      "Lens": "Clear polycarbonate"
+      "Norme": "EN 166",
+      "Verres": "Polycarbonate incolore"
     },
     "rating": 4.3,
     "createdAt": "2026-07-22T10:00:00Z"
@@ -520,10 +520,10 @@
     "id": "prd_work_gloves",
     "sku": "SAF-GLV-022",
     "slug": "nitrile-coated-work-gloves",
-    "name": "Nitrile-Coated Work Gloves (Pair)",
+    "name": "Gants de travail enduits nitrile (la paire)",
     "brand": "Guardline",
     "categoryId": "cat_safety",
-    "description": "Breathable knit gloves with a nitrile palm for grip in oily conditions.",
+    "description": "Gants tricotés respirants, paume enduite de nitrile pour une bonne prise en milieu gras.",
     "images": [
       "https://images.unsplash.com/photo-1634852836003-c0aa5b67d243?w=960&h=840&fit=crop&q=75&auto=format"
     ],
@@ -534,8 +534,8 @@
     "negotiable": true,
     "minNegotiableQty": 1000,
     "specs": {
-      "Sizes": "S–XXL",
-      "Standard": "EN388 4131"
+      "Tailles": "S–XXL",
+      "Norme": "EN 388 4131"
     },
     "rating": 4.4,
     "createdAt": "2026-06-18T10:00:00Z"
@@ -544,10 +544,10 @@
     "id": "prd_tool_box",
     "sku": "STO-BOX-023",
     "slug": "22-inch-tool-box",
-    "name": "22\" Tool Box with Organiser",
+    "name": "Boîte à outils 22\" avec organiseur",
     "brand": "Stackpro",
     "categoryId": "cat_storage",
-    "description": "Impact-resistant tool box with a removable tray and lid organisers.",
+    "description": "Boîte à outils résistante aux chocs, avec plateau amovible et compartiments dans le couvercle.",
     "images": [
       "https://images.pexels.com/photos/7640990/pexels-photo-7640990.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -558,8 +558,8 @@
     "negotiable": true,
     "minNegotiableQty": 100,
     "specs": {
-      "Size": "22\"",
-      "Load": "15 kg"
+      "Taille": "22\"",
+      "Charge": "15 kg"
     },
     "rating": 4.3,
     "createdAt": "2026-03-30T10:00:00Z"
@@ -568,10 +568,10 @@
     "id": "prd_rolling_cabinet",
     "sku": "STO-CAB-024",
     "slug": "7-drawer-rolling-cabinet",
-    "name": "7-Drawer Rolling Tool Cabinet",
+    "name": "Servante d'atelier 7 tiroirs",
     "brand": "Stackpro",
     "categoryId": "cat_storage",
-    "description": "Steel roller cabinet with ball-bearing drawers and central locking.",
+    "description": "Servante en acier sur roulettes, tiroirs sur roulements à billes et verrouillage centralisé.",
     "images": [
       "https://images.pexels.com/photos/9606740/pexels-photo-9606740.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
     ],
@@ -582,9 +582,9 @@
     "negotiable": false,
     "minNegotiableQty": null,
     "specs": {
-      "Drawers": "7",
-      "Load per drawer": "20 kg",
-      "Lock": "Central key"
+      "Tiroirs": "7",
+      "Charge par tiroir": "20 kg",
+      "Verrouillage": "Centralisé à clé"
     },
     "rating": 4.8,
     "createdAt": "2026-10-20T10:00:00Z"

@@ -85,7 +85,7 @@ export function createPhoneCode(deps: Deps): ShopBackend["phoneCode"] {
     async decide(ctx, id, body) {
       const rec = ownedByUser(ctx, id);
       if (rec.status === "expired") throw new ApiError("QR_EXPIRED");
-      if (rec.status === "pending") throw new ApiError("FORBIDDEN", { message: "No phone has scanned this code yet." });
+      if (rec.status === "pending") throw new ApiError("FORBIDDEN", { message: "Aucun téléphone n'a encore scanné ce code." });
       if (rec.status !== "scanned") throw new ApiError("QR_ALREADY_USED");
       const status = body.decision === "approve" ? "approved" : "denied";
       rec.status = status;
@@ -120,7 +120,7 @@ export function createPhoneCode(deps: Deps): ShopBackend["phoneCode"] {
       const rec = boundToPhone(ctx, id);
       if (rec.status === "expired") throw new ApiError("QR_EXPIRED");
       if (rec.status === "consumed" || rec.status === "denied") throw new ApiError("QR_ALREADY_USED");
-      if (rec.status !== "approved") throw new ApiError("FORBIDDEN", { message: "The computer hasn't approved this phone yet." });
+      if (rec.status !== "approved") throw new ApiError("FORBIDDEN", { message: "L'ordinateur n'a pas encore autorisé ce téléphone." });
       return signInPhone(rec);
     },
   };

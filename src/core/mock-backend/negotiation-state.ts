@@ -45,7 +45,7 @@ export function assertTurn(rec: NegotiationRecord, side: "customer" | "seller") 
 
 function customerRef(deps: Deps, rec: NegotiationRecord) {
   const user = deps.state.users.get(rec.userId);
-  return { name: user?.name ?? "Unknown customer", company: user?.company ?? "" };
+  return { name: user?.name ?? "Client inconnu", company: user?.company ?? "" };
 }
 
 export function toNegotiationView(deps: Deps, rec: NegotiationRecord): Negotiation {

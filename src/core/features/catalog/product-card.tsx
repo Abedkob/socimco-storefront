@@ -21,7 +21,7 @@ export function ProductCard({ product, priority = false }: { product: ProductLis
     add.mutate(
       { productId: product.id, quantity: qty },
       {
-        onSuccess: () => notify(`Added ${formatCount(qty)} × ${product.name}`),
+        onSuccess: () => notify(`Ajouté au panier : ${formatCount(qty)} × ${product.name}`),
         onError: (e) => notify(errorMessage(e), "danger"),
       },
     );
@@ -52,9 +52,10 @@ export function ProductCard({ product, priority = false }: { product: ProductLis
           </p>
           <div className="@container relative z-10 mt-3">
             <div className="flex flex-col gap-1.5 @min-[176px]:flex-row">
-              <Stepper value={qty} min={1} max={99_999} onChange={setQty} size="sm" label={`Quantity of ${product.name}`} disabled={soldOut} className="w-full @min-[176px]:w-[118px]" />
+              <Stepper value={qty} min={1} max={99_999} onChange={setQty} size="sm" label={`Quantité : ${product.name}`} disabled={soldOut} className="w-full @min-[176px]:w-[118px]" />
               <button type="button" onClick={addToCart} disabled={soldOut || add.isPending} aria-busy={add.isPending || undefined} className={btn("primary", "sm", "w-full px-3 @min-[176px]:flex-1")}>
-                <Plus size={16} aria-hidden /> Add
+                {/* "Ajouter" doesn't fit next to the stepper on narrow cards: icon only there, text kept for screen readers. */}
+                <Plus size={16} aria-hidden /> <span className="@min-[176px]:@max-[223px]:sr-only">Ajouter</span>
               </button>
             </div>
           </div>
@@ -83,7 +84,7 @@ export function ProductCardSkeleton() {
 export function ProductGrid({ items, loading, skeletons = 8, className = "grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4 xl:gap-4" }: { items: ProductListItem[]; loading?: boolean; skeletons?: number; className?: string }) {
   if (loading) {
     return (
-      <ul className={`grid ${className}`} aria-busy="true" aria-label="Loading products">
+      <ul className={`grid ${className}`} aria-busy="true" aria-label="Chargement des produits">
         {Array.from({ length: skeletons }, (_, i) => (
           <li key={i}>
             <ProductCardSkeleton />

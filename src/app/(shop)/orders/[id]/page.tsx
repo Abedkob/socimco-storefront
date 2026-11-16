@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { OrderDetailScreen, OrderDetailSkeleton } from "@/core/features/orders/order-detail";
 
-export const metadata: Metadata = { title: "Order" };
+export const metadata: Metadata = { title: "Commande" };
 
 type Params = Promise<{ id: string }>;
 

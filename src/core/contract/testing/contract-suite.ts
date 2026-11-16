@@ -108,7 +108,7 @@ export function runBackendContract(name: string, makeDriver: DriverFactory) {
         taxCents: 0,
         totalCents: 3_400_000,
         lines: [{ productId: DRILL, quantity: 400, listUnitPriceCents: 10000, unitPriceCents: 8500, negotiated: true }],
-        shippingAddress: { label: "Main warehouse" },
+        shippingAddress: { label: "Entrepôt principal" },
       });
 
       expect((await customer.call("product", { params: { slug: DRILL_SLUG } })).product.stock).toBe(800);
@@ -508,7 +508,7 @@ export function runBackendContract(name: string, makeDriver: DriverFactory) {
 
       const phone = await loggedIn(d);
       const scan = await phone.call("qrScan", { body: { code } });
-      expect(scan.requestedFrom).toBe("Chrome on Windows");
+      expect(scan.requestedFrom).toBe("Chrome sur Windows");
       expect((await desktop.call("qrStatus", { params: { id } })).status).toBe("scanned");
 
       expect(await phone.call("qrApprove", { body: { code, decision: "approve" } })).toEqual({ status: "approved" });
@@ -624,7 +624,7 @@ export function runBackendContract(name: string, makeDriver: DriverFactory) {
       const result = await phone.call("phoneSignIn", { body: { code } });
       expect(result).toMatchObject({ status: "awaiting_approval", id });
       await expectError(phone.call("me"), "UNAUTHENTICATED");
-      expect(await computer.call("phoneCodeStatus", { params: { id } })).toMatchObject({ status: "scanned", requestedFrom: "Safari on iOS" });
+      expect(await computer.call("phoneCodeStatus", { params: { id } })).toMatchObject({ status: "scanned", requestedFrom: "Safari sur iOS" });
       expect((await phone.call("phoneSignInStatus", { params: { id } })).status).toBe("scanned");
       await expectError(phone.call("phoneSignInComplete", { params: { id } }), "FORBIDDEN");
 
@@ -731,6 +731,18 @@ export function runBackendContract(name: string, makeDriver: DriverFactory) {
 
       const search = await customer.call("products", { query: { q: "DRL-18V" } });
       expect(search.items.map((p) => p.id)).toEqual([DRILL]);
+      expect((await customer.call("products", { query: { q: "drl-18v" } })).items.map((p) => p.id)).toEqual([DRILL]);
+
+      // Names are French: search ignores case and accents, and the name sort follows French collation.
+      expect((await customer.call("products", { query: { q: "perceuse-visseuse" } })).items.map((p) => p.id)).toEqual([DRILL]);
+      for (const q of ["metre ruban", "MÈTRE RUBAN", "Mètre ruban"]) {
+        expect((await customer.call("products", { query: { q } })).items.map((p) => p.id)).toEqual([TAPE]);
+      }
+      const levels = await customer.call("products", { query: { q: "niveau", sort: "name" } });
+      expect(levels.items.map((p) => p.name)).toEqual(["Niveau à bulle tubulaire 1200 mm", "Niveau laser en croix vert"]);
+      const names = all.items.map((p) => p.name);
+      expect(names).toEqual([...names].sort(new Intl.Collator("fr").compare));
+      expect(names[0]).toBe("Assortiment de chevilles nylon (300 pièces)");
 
       await expectError(customer.call("products", { query: { category: "nope" } }), "NOT_FOUND");
       await expectError(customer.call("product", { params: { slug: "nope" } }), "NOT_FOUND");

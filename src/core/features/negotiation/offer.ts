@@ -21,18 +21,22 @@ export function useOfferForm(n: Shape) {
     const valid = cents !== null && isPriceWithinBounds(n, { productId: l.productId, unitPriceCents: cents });
     const lowest = bounds.minExclusive + 1;
     const highest = bounds.maxExclusive - 1;
-    const hint =
-      bounds.minExclusive === 0 ? `Below ${formatMoney(bounds.maxExclusive)}` : `Between ${formatMoney(lowest)} and ${formatMoney(highest)}`;
+    const noFloor = bounds.minExclusive === 0;
+    // "Inférieur à 100,00 $US" / "Entre 80,01 $US et 89,99 $US"
+    const hint = noFloor ? `Inférieur à ${formatMoney(bounds.maxExclusive)}` : `Entre ${formatMoney(lowest)} et ${formatMoney(highest)}`;
+    const rangeError = noFloor
+      ? `Saisissez un prix inférieur à ${formatMoney(bounds.maxExclusive)}.`
+      : `Saisissez un prix entre ${formatMoney(lowest)} et ${formatMoney(highest)}.`;
     const midpoint = Math.round((bounds.minExclusive + bounds.maxExclusive) / 2 / 100) * 100;
     const inRange = (c: number) => c > bounds.minExclusive && c < bounds.maxExclusive;
-    const suggestions =
-      bounds.minExclusive === 0
-        ? [10, 15, 20]
-            .map((pct) => ({ label: `${pct}% off`, cents: Math.round((l.listUnitPriceCents * (100 - pct)) / 100 / 100) * 100 }))
-            .filter((s) => inRange(s.cents))
-        : inRange(midpoint)
-          ? [{ label: "Meet halfway", cents: midpoint }]
-          : [];
+    const suggestions = noFloor
+      ? [10, 15, 20]
+          // "−10 %" (narrow no-break space before %, as French typesetting wants)
+          .map((pct) => ({ label: `−${pct} %`, cents: Math.round((l.listUnitPriceCents * (100 - pct)) / 100 / 100) * 100 }))
+          .filter((s) => inRange(s.cents))
+      : inRange(midpoint)
+        ? [{ label: "À mi-chemin", cents: midpoint }]
+        : [];
     return {
       ...l,
       suggestions,
@@ -41,7 +45,7 @@ export function useOfferForm(n: Shape) {
       cents,
       valid,
       hint,
-      error: touched && raw !== "" && !valid ? `Enter a price ${hint.toLowerCase()}.` : touched && raw === "" ? "Enter a price." : null,
+      error: touched && raw !== "" && !valid ? rangeError : touched && raw === "" ? "Saisissez un prix." : null,
     };
   });
 

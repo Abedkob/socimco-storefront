@@ -4,13 +4,13 @@
     "userId": "usr_01",
     "status": "ordered",
     "lines": [
-      { "productId": "prd_impact_driver", "name": "18V Brushless Impact Driver", "quantity": 150, "listUnitPriceCents": 14900 }
+      { "productId": "prd_impact_driver", "name": "Visseuse à chocs sans charbons 18 V", "quantity": 150, "listUnitPriceCents": 14900 }
     ],
     "rounds": [
-      { "n": 1, "by": "customer", "action": "offer", "lines": [{ "productId": "prd_impact_driver", "unitPriceCents": 12500 }], "message": "Fit-out for our new site crew.", "createdAt": "2026-10-20T09:00:00Z" },
+      { "n": 1, "by": "customer", "action": "offer", "lines": [{ "productId": "prd_impact_driver", "unitPriceCents": 12500 }], "message": "Pour équiper notre nouvelle équipe de chantier.", "createdAt": "2026-10-20T09:00:00Z" },
       { "n": 2, "by": "seller", "action": "counter", "lines": [{ "productId": "prd_impact_driver", "unitPriceCents": 14000 }], "message": null, "createdAt": "2026-10-20T14:30:00Z" },
-      { "n": 3, "by": "customer", "action": "offer", "lines": [{ "productId": "prd_impact_driver", "unitPriceCents": 13500 }], "message": "Can you meet us at $135?", "createdAt": "2026-10-21T08:15:00Z" },
-      { "n": 4, "by": "seller", "action": "accept", "lines": [], "message": "Deal.", "createdAt": "2026-10-21T15:00:00Z" }
+      { "n": 3, "by": "customer", "action": "offer", "lines": [{ "productId": "prd_impact_driver", "unitPriceCents": 13500 }], "message": "Pouvez-vous descendre à 135 $ ?", "createdAt": "2026-10-21T08:15:00Z" },
+      { "n": 4, "by": "seller", "action": "accept", "lines": [], "message": "C'est d'accord.", "createdAt": "2026-10-21T15:00:00Z" }
     ],
     "agreedLines": [{ "productId": "prd_impact_driver", "quantity": 150, "unitPriceCents": 13500 }],
     "acceptedAt": "2026-10-21T15:00:00Z",

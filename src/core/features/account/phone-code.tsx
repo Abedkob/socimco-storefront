@@ -35,15 +35,16 @@ export function PhoneCodePanel({ onClose }: { onClose: () => void }) {
   const failure = create.error ?? (status.isError && !status.data ? status.error : null);
   const busy = create.isPending || !code;
   const showCode = !busy && !failure && (remote === "pending" || remote === "scanned");
-  const requestedFrom = status.data?.requestedFrom ?? "A phone";
+  // e.g. "Safari sur iOS" (the API describes the phone in French).
+  const requestedFrom = status.data?.requestedFrom ?? null;
 
   return (
     <div className="flex h-full flex-col bg-canvas">
       <div className="flex items-center justify-between gap-3 border-b border-line px-6 py-4">
         <h2 className="display flex items-center gap-2 text-[22px]">
-          <Smartphone size={20} aria-hidden /> Sign in on your phone
+          <Smartphone size={20} aria-hidden /> Connecter votre téléphone
         </h2>
-        <button type="button" onClick={onClose} className="grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label="Close">
+        <button type="button" onClick={onClose} className="grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label="Fermer">
           <X size={18} aria-hidden />
         </button>
       </div>
@@ -76,18 +77,18 @@ export function PhoneCodePanel({ onClose }: { onClose: () => void }) {
 
           <div className="mt-6" aria-live="polite">
             {failure ? (
-              <Message title="Couldn't show a code" body={errorMessage(failure)} action={<NewCodeButton onClick={() => newCode()} />} />
+              <Message title="Impossible d'afficher un code" body={errorMessage(failure)} action={<NewCodeButton onClick={() => newCode()} />} />
             ) : remote === "scanned" ? (
               <div className="rounded-[20px] bg-dark p-5 text-on-dark">
-                <p className="font-semibold">Allow {requestedFrom} to sign in?</p>
+                <p className="font-semibold">{requestedFrom ? `Autoriser ce téléphone (${requestedFrom}) à se connecter ?` : "Autoriser ce téléphone à se connecter ?"}</p>
                 <p className="mt-1 text-sm text-on-dark-2">
-                  It will be signed in as {me.data?.user.name ?? "you"}
-                  {me.data ? ` (${me.data.user.company})` : ""}. Only allow it if it&apos;s your phone, in your hand, right now.
+                  {me.data ? `Il sera connecté au compte de ${me.data.user.name} (${me.data.user.company}).` : "Il sera connecté à votre compte."} N&apos;autorisez que s&apos;il
+                  s&apos;agit de votre téléphone, en main, en ce moment.
                 </p>
                 {decide.isError && !expired && <p className="mt-3 text-sm font-medium text-danger-soft">{errorMessage(decide.error)}</p>}
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <button type="button" onClick={() => decide.mutate("approve")} disabled={decide.isPending} className={btn("light", "md", "w-full")}>
-                    {decide.isPending && decide.variables === "approve" ? <Spinner /> : <Check size={17} aria-hidden />} Allow
+                    {decide.isPending && decide.variables === "approve" ? <Spinner /> : <Check size={17} aria-hidden />} Autoriser
                   </button>
                   <button
                     type="button"
@@ -95,30 +96,30 @@ export function PhoneCodePanel({ onClose }: { onClose: () => void }) {
                     disabled={decide.isPending}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/25 px-4 text-[14px] font-semibold hover:bg-white/10"
                   >
-                    {decide.isPending && decide.variables === "deny" ? <Spinner /> : <X size={17} aria-hidden />} Deny
+                    {decide.isPending && decide.variables === "deny" ? <Spinner /> : <X size={17} aria-hidden />} Refuser
                   </button>
                 </div>
               </div>
             ) : remote === "approved" ? (
-              <Message title="Allowed" body="Finishing on your phone…" />
+              <Message title="Autorisé" body="Finalisation sur votre téléphone…" />
             ) : remote === "consumed" ? (
               <Message
-                title="Your phone is signed in"
-                body={code?.requireApproval === false ? "A phone scanned the code and was signed in to your account." : "You can close this panel."}
+                title="Votre téléphone est connecté"
+                body={code?.requireApproval === false ? "Un téléphone a scanné le code et a été connecté à votre compte." : "Vous pouvez fermer ce panneau."}
                 action={
                   <button type="button" onClick={onClose} className={btn("primary", "md")}>
-                    Done
+                    Terminé
                   </button>
                 }
               />
             ) : remote === "denied" ? (
-              <Message title="Phone not allowed" body="Nothing was signed in." action={<NewCodeButton onClick={() => newCode()} />} />
+              <Message title="Téléphone refusé" body="Aucune connexion n'a eu lieu." action={<NewCodeButton onClick={() => newCode()} />} />
             ) : expired ? (
-              <Message title="Code expired" body="Codes last 2 minutes. Show a new one to try again." action={<NewCodeButton onClick={() => newCode()} />} />
+              <Message title="Code expiré" body="Un code est valable 2 minutes. Affichez-en un nouveau pour réessayer." action={<NewCodeButton onClick={() => newCode()} />} />
             ) : (
               <>
                 <ol className="space-y-2.5 text-[15px] text-ink-2">
-                  {["On your phone, open the SOCIMCO sign-in page.", "Tap “Scan to sign in”.", "Point the phone at this code."].map((s, i) => (
+                  {["Sur votre téléphone, ouvrez la page de connexion SOCIMCO.", "Touchez « Scanner un QR code ».", "Visez ce code avec le téléphone."].map((s, i) => (
                     <li key={s} className="flex gap-3">
                       <span className="tabular grid size-6 shrink-0 place-items-center rounded-full bg-dark text-[12px] font-bold text-on-dark">{i + 1}</span>
                       {s}
@@ -127,10 +128,10 @@ export function PhoneCodePanel({ onClose }: { onClose: () => void }) {
                 </ol>
                 <p className="tabular mt-4 flex items-center justify-between gap-3 text-[13px] text-ink-3">
                   <span className="inline-flex items-center gap-1.5">
-                    <Clock size={14} aria-hidden /> Expires in {formatSeconds(left)}
+                    <Clock size={14} aria-hidden /> Le code expire dans {formatSeconds(left)}
                   </span>
                   <button type="button" onClick={() => newCode()} className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-ink hover:underline">
-                    <RefreshCw size={14} aria-hidden /> New code
+                    <RefreshCw size={14} aria-hidden /> Nouveau code
                   </button>
                 </p>
               </>
@@ -154,12 +155,12 @@ export function PhoneCodePanel({ onClose }: { onClose: () => void }) {
             />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 font-semibold">
-                <ShieldCheck size={16} className="text-success" aria-hidden /> Ask me to confirm on this computer
+                <ShieldCheck size={16} className="text-success" aria-hidden /> Me demander de confirmer sur cet ordinateur
               </span>
               <span className="mt-0.5 block text-sm text-ink-3">
                 {confirm
-                  ? "Recommended. You'll click Allow here before the phone gets in."
-                  : "Off: whoever scans this code in the next 2 minutes is signed in as you. Only use it when nobody else can see your screen."}
+                  ? "Recommandé. Vous cliquerez sur Autoriser ici avant que le téléphone soit connecté."
+                  : "Désactivé : toute personne qui scanne ce code dans les 2 prochaines minutes sera connectée à votre compte. À utiliser seulement si personne d'autre ne voit votre écran."}
               </span>
             </span>
           </label>
@@ -182,7 +183,7 @@ function Message({ title, body, action }: { title: string; body: string; action?
 function NewCodeButton({ onClick }: { onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className={btn("primary", "md")}>
-      <RefreshCw size={16} aria-hidden /> Show a new code
+      <RefreshCw size={16} aria-hidden /> Afficher un nouveau code
     </button>
   );
 }

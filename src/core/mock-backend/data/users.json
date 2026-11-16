@@ -11,7 +11,7 @@
     "addresses": [
       {
         "id": "adr_01",
-        "label": "Main warehouse",
+        "label": "Entrepôt principal",
         "line1": "12 Industrial Rd",
         "city": "Springfield",
         "postalCode": "10001",
@@ -32,7 +32,7 @@
     "addresses": [
       {
         "id": "adr_02",
-        "label": "Head office",
+        "label": "Siège",
         "line1": "48 Harbor St",
         "city": "Portland",
         "postalCode": "97201",
@@ -64,7 +64,7 @@
     "addresses": [
       {
         "id": "adr_04",
-        "label": "Main yard",
+        "label": "Dépôt principal",
         "line1": "7 Quarry Lane",
         "city": "Denver",
         "postalCode": "80216",
@@ -73,7 +73,7 @@
       },
       {
         "id": "adr_05",
-        "label": "Site office",
+        "label": "Bureau de chantier",
         "line1": "220 Market St, Unit 4",
         "city": "Boulder",
         "postalCode": "80302",
@@ -87,7 +87,7 @@
     "username": "demo.seller",
     "password": "demo1234",
     "active": true,
-    "name": "SOCIMCO Sales Desk",
+    "name": "Service commercial SOCIMCO",
     "email": "sales@socimco.example",
     "company": "SOCIMCO",
     "role": "seller",

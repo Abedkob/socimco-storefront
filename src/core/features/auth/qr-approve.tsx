@@ -7,21 +7,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { useApi, useMe } from "@/core/api/client/react";
 import { ERROR_MESSAGES, isApiError } from "@/core/contract";
-import { BrandLogo, btn, errorMessage, ErrorTile, Spinner } from "@/core/ui";
+import { BrandLogo, btn, errorMessage, ErrorTile, formatTime, Spinner } from "@/core/ui";
 import { QrScanner } from "./qr-scanner";
 
 type Result = "approved" | "denied" | "expired" | "used" | "invalid";
 /** Results where scanning a fresh code is the natural next step. */
 const RESCAN: readonly Result[] = ["expired", "used", "invalid"];
 
-const timeFmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" });
-
 const RESULT: Record<Result, { icon: typeof Check; tone: string; title: string; body: string }> = {
-  approved: { icon: Check, tone: "bg-success text-white", title: "Computer signed in", body: "The computer is now signed in to your account. You can close this screen." },
-  denied: { icon: X, tone: "bg-danger text-white", title: "Sign-in denied", body: "Nobody was signed in. If you didn't try to sign in, tell your account manager." },
-  expired: { icon: Clock, tone: "bg-dark text-on-dark", title: "Request expired", body: `${ERROR_MESSAGES.QR_EXPIRED} Scan the new code on your computer.` },
-  used: { icon: Lock, tone: "bg-dark text-on-dark", title: "Already used", body: `${ERROR_MESSAGES.QR_ALREADY_USED} Each code signs in one computer once.` },
-  invalid: { icon: X, tone: "bg-dark text-on-dark", title: "Code not recognised", body: "This link isn't a current sign-in code. Scan the code on your computer again." },
+  approved: { icon: Check, tone: "bg-success text-white", title: "Ordinateur connecté", body: "L'ordinateur est maintenant connecté à votre compte. Vous pouvez fermer cet écran." },
+  denied: { icon: X, tone: "bg-danger text-white", title: "Connexion refusée", body: "Personne n'a été connecté. Si ce n'était pas vous, prévenez votre chargé de compte." },
+  expired: { icon: Clock, tone: "bg-dark text-on-dark", title: "Demande expirée", body: `${ERROR_MESSAGES.QR_EXPIRED} Scannez le nouveau code affiché sur votre ordinateur.` },
+  used: { icon: Lock, tone: "bg-dark text-on-dark", title: "Code déjà utilisé", body: `${ERROR_MESSAGES.QR_ALREADY_USED} Chaque code ne connecte qu'un seul ordinateur, une seule fois.` },
+  invalid: { icon: X, tone: "bg-dark text-on-dark", title: "Code non reconnu", body: "Ce lien n'est pas un code de connexion valide. Scannez à nouveau le code affiché sur votre ordinateur." },
 };
 
 /** The phone-screen frame (logo + "This phone"), shared by the QR approve and phone sign-in screens. */
@@ -31,7 +29,7 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
       <div className="flex items-center justify-between">
         <BrandLogo className="h-10" priority />
         <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-surface px-3 text-[12px] font-semibold text-ink-2">
-          <Smartphone size={14} aria-hidden /> This phone
+          <Smartphone size={14} aria-hidden /> Ce téléphone
         </span>
       </div>
       <main className="flex flex-1 flex-col">{children}</main>
@@ -53,11 +51,11 @@ function ResultView({ result }: { result: Result }) {
       <div className="mt-auto space-y-2.5 pt-10">
         {RESCAN.includes(result) && (
           <Link href="/qr/approve" className={btn("primary", "lg", "w-full")}>
-            <ScanLine size={18} aria-hidden /> Scan again
+            <ScanLine size={18} aria-hidden /> Scanner à nouveau
           </Link>
         )}
         <Link href="/" className={btn(RESCAN.includes(result) ? "outline" : "primary", "lg", "w-full")}>
-          Back to SOCIMCO
+          Retour à SOCIMCO
         </Link>
       </div>
     </div>
@@ -95,11 +93,11 @@ function Approve({ code }: { code: string }) {
   if (decide.isSuccess) return <ResultView result={decide.data.status === "approved" ? "approved" : "denied"} />;
   const ended = errorResult(decide.error) ?? errorResult(scan.error);
   if (ended) return <ResultView result={ended} />;
-  if (scan.isPending) return <Loading label="Checking the sign-in request…" />;
+  if (scan.isPending) return <Loading label="Vérification de la demande de connexion…" />;
   if (scan.isError) {
     return (
       <div className="mt-10">
-        <h1 className="display text-[30px] leading-tight">Couldn&apos;t check this code</h1>
+        <h1 className="display text-[30px] leading-tight">Impossible de vérifier ce code</h1>
         <ErrorTile message={errorMessage(scan.error)} onRetry={() => void scan.refetch()} className="mt-6" />
       </div>
     );
@@ -107,14 +105,14 @@ function Approve({ code }: { code: string }) {
 
   const user = me.data?.user;
   const rows: [typeof Clock, string, string][] = [
-    [Clock, "Requested", `Today at ${timeFmt.format(new Date(scan.data.requestedAt))}`],
-    [ShieldCheck, "Account", user ? `${user.name} · ${user.company}` : "Your account"],
+    [Clock, "Demandé", `Aujourd'hui à ${formatTime(scan.data.requestedAt)}`],
+    [ShieldCheck, "Compte", user ? `${user.name} · ${user.company}` : "Votre compte"],
   ];
 
   return (
     <>
-      <h1 className="display mt-10 text-[36px] leading-[1.05]">Sign in on a computer?</h1>
-      <p className="mt-2 text-ink-3">Someone scanned your sign-in code. Only approve if it&apos;s you, at that computer, right now.</p>
+      <h1 className="display mt-10 text-[36px] leading-[1.05]">Autoriser un ordinateur ?</h1>
+      <p className="mt-2 text-ink-3">Quelqu&apos;un a scanné votre code de connexion. N&apos;autorisez que si c&apos;est bien vous, devant cet ordinateur, en ce moment.</p>
 
       <div className="mt-6 overflow-hidden rounded-[28px] bg-surface">
         <div className="flex items-center gap-4 bg-dark p-5 text-on-dark">
@@ -123,7 +121,7 @@ function Approve({ code }: { code: string }) {
           </span>
           <div className="min-w-0">
             <p className="truncate font-semibold">{scan.data.requestedFrom}</p>
-            <p className="text-sm text-on-dark-2">Desktop browser</p>
+            <p className="text-sm text-on-dark-2">Navigateur d&apos;ordinateur</p>
           </div>
         </div>
         <dl className="divide-y divide-line px-5 text-[15px]">
@@ -145,10 +143,10 @@ function Approve({ code }: { code: string }) {
 
       <div className="mt-auto space-y-2.5 pt-8">
         <button type="button" onClick={() => decide.mutate("approve")} disabled={decide.isPending} className={btn("primary", "lg", "w-full")}>
-          {decide.isPending && decide.variables === "approve" ? <Spinner /> : <Check size={18} aria-hidden />} Approve sign-in
+          {decide.isPending && decide.variables === "approve" ? <Spinner /> : <Check size={18} aria-hidden />} Autoriser
         </button>
         <button type="button" onClick={() => decide.mutate("deny")} disabled={decide.isPending} className={btn("outline", "lg", "w-full")}>
-          {decide.isPending && decide.variables === "deny" ? <Spinner /> : <X size={18} aria-hidden />} Deny
+          {decide.isPending && decide.variables === "deny" ? <Spinner /> : <X size={18} aria-hidden />} Refuser
         </button>
       </div>
     </>
@@ -176,10 +174,10 @@ export function QrApproveScreen() {
   return (
     <PhoneFrame>
       {me.isPending || signedOut ? (
-        <Loading label="Checking your account…" />
+        <Loading label="Vérification de votre compte…" />
       ) : me.isError ? (
         <div className="mt-10">
-          <h1 className="display text-[30px] leading-tight">Couldn&apos;t check your account</h1>
+          <h1 className="display text-[30px] leading-tight">Impossible de vérifier votre compte</h1>
           <ErrorTile message={errorMessage(me.error)} onRetry={() => void me.refetch()} className="mt-6" />
         </div>
       ) : !code ? (
@@ -194,7 +192,7 @@ export function QrApproveScreen() {
 export function QrApproveFallback() {
   return (
     <PhoneFrame>
-      <Loading label="Loading…" />
+      <Loading label="Chargement…" />
     </PhoneFrame>
   );
 }

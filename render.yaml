@@ -29,3 +29,6 @@ services:
         value: cookie
       - key: NEXT_PUBLIC_QR_LOGIN
         value: "on"
+      # Prices are shown in French formatting in this currency (USD = the demo data).
+      - key: NEXT_PUBLIC_CURRENCY
+        value: USD

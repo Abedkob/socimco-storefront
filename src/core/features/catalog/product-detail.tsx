@@ -22,13 +22,13 @@ function Gallery({ product }: { product: Product }) {
         {badge && <TradeBadge qty={badge} className="absolute left-4 top-4 px-3 py-1.5 text-[12px]" />}
       </div>
       {photos.length > 1 && (
-        <ul className="mt-2.5 hidden gap-2.5 lg:flex" aria-label="Product images">
+        <ul className="mt-2.5 hidden gap-2.5 lg:flex" aria-label="Images du produit">
           {photos.map((src, i) => (
             <li key={src}>
               <button
                 type="button"
                 onClick={() => setActive(i)}
-                aria-label={`Show image ${i + 1} of ${photos.length}`}
+                aria-label={`Afficher l'image ${i + 1} sur ${photos.length}`}
                 aria-current={active === i || undefined}
                 className={`block overflow-hidden rounded-[16px] ring-2 ring-offset-2 ${active === i ? "ring-ink" : "ring-transparent hover:ring-line-strong"}`}
               >
@@ -40,16 +40,16 @@ function Gallery({ product }: { product: Product }) {
       )}
       {/* Mobile: swipeable gallery */}
       <div className="relative lg:hidden">
-        <ul className="flex snap-x snap-mandatory overflow-x-auto rounded-[22px] bg-canvas" aria-label="Product images">
+        <ul className="flex snap-x snap-mandatory overflow-x-auto rounded-[22px] bg-canvas" aria-label="Images du produit">
           {photos.map((src, i) => (
             <li key={src} className="w-full shrink-0 snap-center">
-              <ProductImage src={src} alt={`${product.name}, image ${i + 1} of ${photos.length}`} priority={i === 0} className="aspect-[4/3] w-full object-cover" />
+              <ProductImage src={src} alt={`${product.name}, image ${i + 1} sur ${photos.length}`} priority={i === 0} className="aspect-[4/3] w-full object-cover" />
             </li>
           ))}
         </ul>
         {badge && <TradeBadge qty={badge} className="absolute left-3 top-3" />}
       </div>
-      {photos.length > 1 && <p className="pb-1 pt-2 text-center text-sm text-ink-3 lg:hidden">Swipe for {photos.length} images</p>}
+      {photos.length > 1 && <p className="pb-1 pt-2 text-center text-sm text-ink-3 lg:hidden">Faites glisser pour voir les {photos.length} images</p>}
     </div>
   );
 }
@@ -77,7 +77,7 @@ function Related({ product, categorySlug, categoryName }: { product: Product; ca
   if (res.isError || (res.isSuccess && related.length === 0)) return null;
   return (
     <section className="mt-12 lg:mt-16">
-      <SectionHead title="More in this range" sub={categoryName} action={{ label: "View all", href: `${BASE}/category/${categorySlug}` }} />
+      <SectionHead title="Dans la même gamme" sub={categoryName} action={{ label: "Tout voir", href: `${BASE}/category/${categorySlug}` }} />
       <div className="mt-5">
         <ProductGrid items={related} loading={res.isPending} skeletons={4} className="grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4" />
       </div>
@@ -109,7 +109,7 @@ function ProductView({ product }: { product: Product }) {
       {
         onSuccess: () => {
           setAdded(true);
-          notify(`Added ${formatCount(qty)} × ${product.name}`);
+          notify(`Ajouté au panier : ${formatCount(qty)} × ${product.name}`);
         },
         // The API's message covers CART_LOCKED (cart frozen by an open quote), stock and minimum-order errors.
         onError: (e) => notify(errorMessage(e), "danger"),
@@ -117,13 +117,13 @@ function ProductView({ product }: { product: Product }) {
     );
 
   const crumbs = [
-    { label: "Home", href: BASE || "/" },
+    { label: "Accueil", href: BASE || "/" },
     ...[parent, category].filter((c): c is NonNullable<typeof c> => Boolean(c)).map((c) => ({ label: c.name, href: `${BASE}/category/${c.slug}` })),
   ];
 
   return (
     <div className="mx-auto max-w-[1400px] px-3 pb-36 lg:px-6 lg:pb-6">
-      <nav aria-label="Breadcrumb" className="px-1 pt-4 text-sm text-ink-3">
+      <nav aria-label="Fil d'Ariane" className="px-1 pt-4 text-sm text-ink-3">
         <ol className="flex flex-wrap items-center gap-x-1">
           {crumbs.map((c, i) => (
             <li key={c.label} className="flex items-center gap-1">
@@ -141,7 +141,7 @@ function ProductView({ product }: { product: Product }) {
 
         <div className="min-w-0 rounded-[28px] bg-surface p-6 lg:self-start lg:p-8">
           <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-ink-3">
-            {product.brand} · <span className="tabular normal-case tracking-normal">SKU {product.sku}</span>
+            {product.brand} · <span className="tabular normal-case tracking-normal">Réf. {product.sku}</span>
           </p>
           <h1 className="display mt-2 text-[30px] leading-[1.06] sm:text-[38px]">{product.name}</h1>
           <div className="mt-3 flex items-center gap-2 text-sm text-ink-2">
@@ -150,36 +150,36 @@ function ProductView({ product }: { product: Product }) {
                 <Star key={i} size={16} fill={i < Math.round(product.rating) ? "currentColor" : "none"} />
               ))}
             </span>
-            <span>{product.rating.toFixed(1)} trade rating</span>
+            <span>Note des professionnels : {product.rating.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/5</span>
           </div>
 
           <p className="tabular display mt-6 text-[44px] leading-none">
             {formatMoney(product.priceCents)}
-            <span className="ml-2 font-sans text-base font-normal tracking-normal text-ink-3">per {unitLabel(product.unit, 1)}</span>
+            <span className="ml-2 font-sans text-base font-normal tracking-normal text-ink-3">/ {unitLabel(product.unit, 1)}</span>
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
             <StockLine stock={product.stock} />
-            <span className="text-sm text-ink-3">Minimum order {formatCount(product.minOrderQty)}</span>
+            <span className="text-sm text-ink-3">Minimum de commande : {formatCount(product.minOrderQty)}</span>
           </div>
 
           {soldOut ? (
             <div className="mt-6 rounded-[20px] bg-surface-2 p-5" role="status">
               <p className="flex items-center gap-2 font-semibold">
-                <PackageX size={18} aria-hidden /> Currently out of stock
+                <PackageX size={18} aria-hidden /> Actuellement en rupture de stock
               </p>
-              <p className="mt-1 text-sm text-ink-2">This product can&apos;t be added to your cart until stock returns.</p>
+              <p className="mt-1 text-sm text-ink-2">Ce produit pourra être ajouté au panier dès son réapprovisionnement.</p>
             </div>
           ) : (
             <>
               <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-t border-canvas pt-6">
                 <div>
                   <p className="mb-2 text-sm font-semibold" aria-hidden>
-                    Quantity
+                    Quantité
                   </p>
-                  <Stepper value={qty} min={product.minOrderQty} max={maxQty} onChange={setQty} label={`Quantity of ${product.name}`} className="w-[164px]" />
+                  <Stepper value={qty} min={product.minOrderQty} max={maxQty} onChange={setQty} label={`Quantité : ${product.name}`} className="w-[164px]" />
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-ink-3">Line total</p>
+                  <p className="text-sm text-ink-3">Total de la ligne</p>
                   <p className="tabular display text-[28px] leading-tight" aria-live="polite">
                     {formatMoney(total)}
                   </p>
@@ -196,7 +196,7 @@ function ProductView({ product }: { product: Product }) {
                     ) : (
                       <FileText size={18} aria-hidden />
                     )}
-                    {eligible ? "This quantity qualifies for a trade price" : `Trade price from ${formatCount(product.minNegotiableQty)} ${unitLabel(product.unit)}`}
+                    {eligible ? "Cette quantité ouvre droit à un prix négocié" : `Prix négocié dès ${formatCount(product.minNegotiableQty)} ${unitLabel(product.unit, product.minNegotiableQty)}`}
                   </p>
                   <div className={`mt-3 h-1.5 overflow-hidden rounded-full ${eligible ? "bg-dark-2" : "bg-line"}`} aria-hidden>
                     <div
@@ -205,11 +205,11 @@ function ProductView({ product }: { product: Product }) {
                     />
                   </div>
                   <p className={`mt-2 text-sm ${eligible ? "text-on-dark-2" : "text-ink-2"}`}>
-                    {eligible ? "Add to cart, then propose your price per unit at checkout." : `Add ${formatCount(product.minNegotiableQty - qty)} more to request a trade price.`}
+                    {eligible ? "Ajoutez au panier, puis proposez votre prix unitaire lors de la commande." : `Ajoutez-en ${formatCount(product.minNegotiableQty - qty)} de plus pour demander un prix négocié.`}
                   </p>
                 </div>
               ) : (
-                <p className="mt-5 rounded-[20px] bg-surface-2 p-4 text-sm text-ink-2">Fixed price: this product isn&apos;t open to trade quotes.</p>
+                <p className="mt-5 rounded-[20px] bg-surface-2 p-4 text-sm text-ink-2">Prix fixe : ce produit n&apos;est pas négociable.</p>
               )}
 
               <button
@@ -219,23 +219,23 @@ function ProductView({ product }: { product: Product }) {
                 aria-busy={add.isPending || undefined}
                 className={btn("primary", "lg", "tabular mt-5 hidden w-full lg:flex")}
               >
-                Add to cart · {formatMoney(total)}
+                Ajouter au panier · {formatMoney(total)}
               </button>
             </>
           )}
           {(added || inCart) && (
             <p className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-[16px] bg-success-soft px-4 py-3 text-sm font-medium text-success" role="status">
               <span className="flex items-center gap-2">
-                <Check size={16} aria-hidden /> In your cart: {formatCount(inCart?.quantity ?? qty)}
+                <Check size={16} aria-hidden /> Dans votre panier : {formatCount(inCart?.quantity ?? qty)}
               </span>
               <span className="flex flex-wrap gap-x-4">
                 {inCart && isNegotiationEligible(product, inCart.quantity) && (
                   <Link href={`${BASE}/negotiation`} className="inline-flex min-h-11 items-center font-semibold text-ink underline underline-offset-4">
-                    Request trade price
+                    Demander un prix négocié
                   </Link>
                 )}
                 <Link href={`${BASE}/cart`} className="inline-flex min-h-11 items-center font-semibold text-ink underline underline-offset-4">
-                  View cart
+                  Voir le panier
                 </Link>
               </span>
             </p>
@@ -245,9 +245,9 @@ function ProductView({ product }: { product: Product }) {
 
       <section className="mt-3 grid gap-3 lg:mt-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-4">
         <div className="min-w-0 rounded-[28px] bg-surface p-6 lg:p-8">
-          <h2 className="display text-[24px]">Specifications</h2>
+          <h2 className="display text-[24px]">Caractéristiques</h2>
           <dl className="mt-3 divide-y divide-canvas">
-            {[["SKU", product.sku], ["Brand", product.brand], ["Unit", unitLabel(product.unit, 1)], ...Object.entries(product.specs)].map(([k, v]) => (
+            {[["Référence", product.sku], ["Marque", product.brand], ["Unité", unitLabel(product.unit, 1)], ...Object.entries(product.specs)].map(([k, v]) => (
               <div key={k} className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-3 py-3">
                 <dt className="text-ink-3">{k}</dt>
                 <dd className="tabular break-words font-medium">{v}</dd>
@@ -256,7 +256,7 @@ function ProductView({ product }: { product: Product }) {
           </dl>
         </div>
         <div className="min-w-0 rounded-[28px] bg-dark p-6 text-on-dark lg:p-8">
-          <h2 className="display text-[24px]">About this product</h2>
+          <h2 className="display text-[24px]">À propos de ce produit</h2>
           <p className="mt-3 text-[17px] leading-relaxed text-on-dark/80">{product.description}</p>
         </div>
       </section>
@@ -266,9 +266,9 @@ function ProductView({ product }: { product: Product }) {
       {/* Mobile sticky buy bar, floating above the nav */}
       {!soldOut && (
         <div className="fixed inset-x-3 bottom-[88px] z-20 flex items-center gap-2 rounded-full bg-surface p-1.5 shadow-[0_12px_32px_-12px_rgb(6_22_61/0.45)] ring-1 ring-black/5 lg:hidden">
-          <Stepper value={qty} min={product.minOrderQty} max={maxQty} onChange={setQty} size="sm" label={`Quantity of ${product.name}, buy bar`} className="w-[128px] shrink-0" />
+          <Stepper value={qty} min={product.minOrderQty} max={maxQty} onChange={setQty} size="sm" label={`Quantité : ${product.name} (barre d'achat)`} className="w-[128px] shrink-0" />
           <button type="button" onClick={addToCart} disabled={add.isPending} aria-busy={add.isPending || undefined} className={btn("primary", "md", "tabular min-w-0 flex-1 px-3")}>
-            <span className="truncate">Add · {formatMoney(total)}</span>
+            <span className="truncate">Ajouter · {formatMoney(total)}</span>
           </button>
         </div>
       )}
@@ -306,13 +306,13 @@ export function ProductDetail() {
     const notFound = isApiError(res.error) && res.error.code === "NOT_FOUND";
     return (
       <div className="mx-auto max-w-[1400px] px-3 pb-14 lg:px-6">
-        <PageHeader crumbs={[{ label: "Home", href: BASE || "/" }, { label: notFound ? "Not found" : "Product" }]} title={notFound ? "Product not found" : "Product"} />
+        <PageHeader crumbs={[{ label: "Accueil", href: BASE || "/" }, { label: notFound ? "Introuvable" : "Produit" }]} title={notFound ? "Produit introuvable" : "Produit"} />
         {notFound ? (
           <div className={`${TILE} mt-6 flex flex-col items-center gap-4 px-6 py-12 text-center`}>
             <PackageX className="text-ink-3" size={30} aria-hidden />
-            <p className="max-w-md text-ink-2">This product isn&apos;t in the catalog any more, or the link is wrong. Search by name, brand or SKU to find it.</p>
+            <p className="max-w-md text-ink-2">Ce produit ne figure plus au catalogue, ou le lien est erroné. Recherchez-le par nom, marque ou référence.</p>
             <Link href={BASE || "/"} className={btn("primary", "md")}>
-              Back to the catalog
+              Retour au catalogue
             </Link>
           </div>
         ) : (

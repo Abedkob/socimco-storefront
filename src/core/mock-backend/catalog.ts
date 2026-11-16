@@ -23,6 +23,12 @@ const toListItem = (p: Product): ProductListItem => ({
   rating: p.rating,
 });
 
+/** French collation, so « Échelle » sorts with E rather than after Z. */
+const byName = new Intl.Collator("fr").compare;
+
+/** Lower-cases and strips accents, so « metre », « Mètre » and « MÈTRE » all match. */
+const fold = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
 export function createCatalog(deps: Deps): ShopBackend["catalog"] {
   const { state } = deps;
 
@@ -41,7 +47,7 @@ export function createCatalog(deps: Deps): ShopBackend["catalog"] {
   return {
     async categories(ctx) {
       currentUser(deps, ctx);
-      const bySort = [...state.categories].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+      const bySort = [...state.categories].sort((a, b) => a.sortOrder - b.sortOrder || byName(a.name, b.name));
       const categories: CategoryNode[] = bySort
         .filter((c) => c.parentId === null)
         .map((c) => ({
@@ -69,18 +75,18 @@ export function createCatalog(deps: Deps): ShopBackend["catalog"] {
       let items = [...state.products.values()];
       if (query.category) {
         const category = state.categories.find((c) => c.slug === query.category);
-        if (!category) throw new ApiError("NOT_FOUND", { message: "Category not found." });
+        if (!category) throw new ApiError("NOT_FOUND", { message: "Catégorie introuvable." });
         const ids = categoryIdsFor(category.id);
         items = items.filter((p) => ids.has(p.categoryId));
       }
       if (query.q) {
-        const q = query.q.toLowerCase();
-        items = items.filter((p) => [p.name, p.brand, p.sku].some((field) => field.toLowerCase().includes(q)));
+        const q = fold(query.q);
+        items = items.filter((p) => [p.name, p.brand, p.sku].some((field) => fold(field).includes(q)));
       }
       const sorters: Record<typeof query.sort, (a: Product, b: Product) => number> = {
-        name: (a, b) => a.name.localeCompare(b.name),
-        price_asc: (a, b) => a.priceCents - b.priceCents || a.name.localeCompare(b.name),
-        price_desc: (a, b) => b.priceCents - a.priceCents || a.name.localeCompare(b.name),
+        name: (a, b) => byName(a.name, b.name),
+        price_asc: (a, b) => a.priceCents - b.priceCents || byName(a.name, b.name),
+        price_desc: (a, b) => b.priceCents - a.priceCents || byName(a.name, b.name),
         newest: (a, b) => b.createdAt.localeCompare(a.createdAt),
       };
       items.sort(sorters[query.sort]);
@@ -96,7 +102,7 @@ export function createCatalog(deps: Deps): ShopBackend["catalog"] {
     async product(ctx, slug) {
       currentUser(deps, ctx);
       const product = state.productsBySlug.get(slug);
-      if (!product) throw new ApiError("NOT_FOUND", { message: "Product not found." });
+      if (!product) throw new ApiError("NOT_FOUND", { message: "Produit introuvable." });
       return { product: structuredClone(product) };
     },
   };

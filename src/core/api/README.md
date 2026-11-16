@@ -283,7 +283,7 @@ COMPUTER (login page)                       BACKEND                             
 - **`qrScan` and `qrApprove` need the phone's session.** A signed-out phone gets `UNAUTHENTICATED`; the storefront then sends it to sign-in and brings it back to the same code.
   - A code is scanned by one account only. A second account scanning it gets `QR_ALREADY_USED`.
   - Only the account that scanned it can approve it (`FORBIDDEN`). Approving before scanning is also `FORBIDDEN`.
-- **`requestedFrom`** is a short description of the computer, taken from its User-Agent at `qrCreate`, e.g. "Chrome on Windows". It's shown to the phone user so they can spot a request that isn't theirs.
+- **`requestedFrom`** is a short description of the computer, taken from its User-Agent at `qrCreate`, **in French**, e.g. « Chrome sur Windows ». It's shown to the phone user so they can spot a request that isn't theirs.
 - **`qrConsume`** succeeds once, and only when the status is `approved`. It then becomes `consumed`.
   - A repeat call, or a `denied` code, gets `QR_ALREADY_USED`.
   - An expired code gets `QR_EXPIRED`.
@@ -337,7 +337,7 @@ The computer chooses one of two modes when it creates the code:
 
 | Mode | `requireApproval` | What happens | When to use it |
 |---|---|---|---|
-| **Confirm on the computer** (default) | `true` | The phone scans, the computer asks "Allow Safari on iOS to sign in?", the user clicks Allow, and only then does the phone get its session. | Always recommended. Protects against someone photographing the code. |
+| **Confirm on the computer** (default) | `true` | The phone scans, the computer asks « Autoriser Safari sur iOS à se connecter ? », the user clicks Allow, and only then does the phone get its session. | Always recommended. Protects against someone photographing the code. |
 | **No confirmation** | `false` | Scanning signs the phone in at once. | When nobody else can see the screen. Anyone who scans the code within its 2 minutes gets in. |
 
 ### The flow
@@ -353,8 +353,8 @@ COMPUTER (signed in)                         BACKEND                            
   requireApproval = false:                   ──► { status: "signed_in", user } + session      → phone is in
   requireApproval = true:                    binds THIS phone (poll cookie), status "scanned"
                                              ──► { status: "awaiting_approval", id, expiresAt }
-   status "scanned", requestedFrom "Safari on iOS"                             phone polls phoneSignInStatus every 2 s
-   → "Allow Safari on iOS to sign in?"                                         → "Allow it on your computer"
+   status "scanned", requestedFrom "Safari sur iOS"                            phone polls phoneSignInStatus every 2 s
+   → "Autoriser Safari sur iOS … ?"                                             → "Autorisez-le sur votre ordinateur"
 3. phoneCodeDecide POST …/:id/decision ────► "approved" (or "denied")
                                                                               4. sees "approved"
                                              ◄─── phoneSignInComplete POST …/:id/complete
@@ -377,7 +377,7 @@ COMPUTER (signed in)                         BACKEND                            
   - Not decided yet: `FORBIDDEN`.
 - **The mode is decided when the code is created, and enforced by the backend.** A phone can't skip the approval of a code created with `requireApproval: true`. If SOCIMCO wants to forbid the no-confirmation mode altogether, reject `requireApproval: false` with `FORBIDDEN`, and the computer will show the error.
 - **The phone's session** is a normal session for the code's owner, the same as after a password login. In bearer mode, `readToken` runs on the `phoneSignIn` and `phoneSignInComplete` responses.
-- **`requestedFrom`** describes the phone from its User-Agent at redeem time (e.g. "Safari on iOS"). It's shown on the computer next to Allow.
+- **`requestedFrom`** describes the phone from its User-Agent at redeem time, **in French** (e.g. « Safari sur iOS »). It's shown on the computer next to Allow.
 - **Rate limits (mock):** 10 creates per minute per user, 10 redeems per minute per IP, and 40 polls per minute per code.
 
 `NEXT_PUBLIC_QR_LOGIN=off` hides both directions of QR sign-in.
@@ -400,6 +400,12 @@ Return our envelope if you can:
 ```
 
 Otherwise, map yours in `toError`. Each code has a ready-made user message in `src/core/contract/errors.ts`.
+
+> **The storefront is French only, and customers see the `message` of your error envelope as-is.**
+> - Send French messages, **or**
+> - leave `message` out and map the code in `toError` (`return new ApiError("OUT_OF_STOCK")`). The storefront then shows its own French text for that code, e.g. « Stock insuffisant pour cette quantité. ».
+>
+> An English message from your API would appear in the middle of a French screen.
 
 | Code | HTTP | When |
 |---|---|---|
@@ -469,7 +475,7 @@ These screens or ideas exist in the design but **aren't in the contract yet**. I
 - **Cart lines lack some fields.** They have no `slug`, `brand`, `stock`, `minOrderQty` or `minNegotiableQty`. As a result the cart can't link to the product, can't show "add N more for trade pricing", and the stepper can't cap at stock; the server still enforces the real limits.
 - **Negotiation lines lack `imageUrl`.** The quote page borrows pictures from the cart, so they're blank once the cart is ordered.
 - **Order summaries lack an image.** `OrderSummary` has no image, so the order list shows an icon per row. Adding `imageUrl` (for example, the first line's) lets it show the product.
-- **The sales-desk contact is hard-coded.** The account page shows "SOCIMCO Sales Desk, sales@socimco.example". An account-manager name, email and phone on `User`, or in store settings, would replace it.
+- **The sales-desk contact is hard-coded.** The account page shows « Service commercial SOCIMCO », sales@socimco.example. An account-manager name, email and phone on `User`, or in store settings, would replace it.
 - **There's no store-settings endpoint.** The storefront can't read `StoreConfig.negotiation` (max offers, offer expiry, accepted-price validity). It assumes 3 offers and doesn't show the hours.
 - **A customer's quotes list.** Today only one negotiation is fetched, by id, via `cart.lockedByNegotiationId`. The last quote id is remembered in the tab so a closed quote can still be shown. An endpoint for the customer's latest or all quotes would remove that workaround.
 - **Address book editing.** Addresses are read-only and come from `User.addresses`.

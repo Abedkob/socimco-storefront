@@ -6,9 +6,10 @@
 export function ProposalTag() {
   return (
     <span className="ml-1.5 rounded-full border border-dashed border-ink-3 px-1.5 py-px align-middle text-[10px] font-semibold uppercase tracking-wider text-ink-3">
-      Proposal
+      Bientôt
     </span>
   );
 }
 
-export const proposalMessage = (what: string) => `${what} is a Proposal — it isn't available yet.`;
+/** e.g. proposalMessage("L'ajout d'adresse") → "L'ajout d'adresse arrive bientôt : ce n'est pas encore disponible." */
+export const proposalMessage = (what: string) => `${what} arrive bientôt : ce n'est pas encore disponible.`;

@@ -23,6 +23,9 @@ function useActiveQuote() {
 
 const isOpen = (status?: string) => !!status && (OPEN_NEGOTIATION_STATUSES as readonly string[]).includes(status);
 
+/** "1 produit", "12 produits" (French: plural from 2). */
+const plural = (n: number, word: string) => `${formatCount(n)} ${word}${n > 1 ? "s" : ""}`;
+
 /* ---------- Footer ---------- */
 
 const footLink = "group inline-flex items-center gap-1.5 text-on-dark-2 transition-colors hover:text-on-dark focus-visible:text-on-dark";
@@ -48,12 +51,12 @@ function Footer() {
       <div className="rounded-[28px] bg-dark px-6 py-5 text-sm text-on-dark-2 lg:px-10 lg:pb-6 lg:pt-10">
         <div className="hidden grid-cols-[1.25fr_1fr_1fr_1.15fr] gap-8 lg:grid">
           <div>
-            <Link href={BASE || "/"} aria-label="SOCIMCO home" className="inline-block">
+            <Link href={BASE || "/"} aria-label="Accueil SOCIMCO" className="inline-block">
               <BrandLogo className="h-12" />
             </Link>
-            <p className="mt-4 max-w-xs leading-relaxed">Private trade portal for approved SOCIMCO customers.</p>
+            <p className="mt-4 max-w-xs leading-relaxed">Portail professionnel privé, réservé aux clients agréés SOCIMCO.</p>
           </div>
-          <FootCol title="Departments">
+          <FootCol title="Rayons">
             {categories.map((c) => (
               <li key={c.id}>
                 <Link href={`${BASE}/category/${c.slug}`} className={footLink}>
@@ -62,25 +65,25 @@ function Footer() {
               </li>
             ))}
           </FootCol>
-          <FootCol title="Trade account">
+          <FootCol title="Compte professionnel">
             <li>
               <Link href={`${BASE}/negotiation`} className={footLink}>
-                Quotes and trade pricing <FootArrow />
+                Devis et prix négociés <FootArrow />
               </Link>
             </li>
             <li>
               <Link href={`${BASE}/orders`} className={footLink}>
-                Orders <FootArrow />
+                Commandes <FootArrow />
               </Link>
             </li>
             <li>
               <Link href={`${BASE}/account`} className={footLink}>
-                Account and addresses <FootArrow />
+                Compte et adresses <FootArrow />
               </Link>
             </li>
           </FootCol>
-          <FootCol title="Need an account?">
-            <li className="leading-relaxed">Contact SOCIMCO to open a trade account.</li>
+          <FootCol title="Pas encore de compte ?">
+            <li className="leading-relaxed">Contactez SOCIMCO pour ouvrir un compte professionnel.</li>
             <li>
               <a href="mailto:sales@socimco.example" className={`${footLink} gap-2`}>
                 <Mail size={15} className="shrink-0 text-accent" aria-hidden /> sales@socimco.example
@@ -89,11 +92,11 @@ function Footer() {
           </FootCol>
         </div>
         <div className="flex items-center justify-between gap-4 lg:mt-8 lg:border-t lg:border-white/10 lg:pt-5">
-          <Link href={BASE || "/"} aria-label="SOCIMCO home" className="shrink-0 lg:hidden">
+          <Link href={BASE || "/"} aria-label="Accueil SOCIMCO" className="shrink-0 lg:hidden">
             <BrandLogo className="h-10" />
           </Link>
           <p className="text-[12px] max-lg:text-right">
-            © {new Date().getFullYear()} SOCIMCO<span className="max-sm:hidden"> · Private trade portal</span>
+            © {new Date().getFullYear()} SOCIMCO<span className="max-sm:hidden"> · Portail professionnel privé</span>
           </p>
         </div>
       </div>
@@ -132,7 +135,7 @@ function NavEntry({ item, onClick, expanded }: { item: NavItem; onClick?: () => 
         data-key={item.key}
         className={cls}
         aria-current={item.active ? "page" : undefined}
-        aria-label={item.badge ? `${item.label}, ${item.pulse ? "your reply needed" : `${item.badge} open`}` : item.label}
+        aria-label={item.badge ? `${item.label}, ${item.pulse ? "réponse attendue" : `${item.badge} en cours`}` : item.label}
         title={item.label}
       >
         {body}
@@ -152,10 +155,10 @@ function MainNav({ mega, setMega, firstCategoryId }: { mega: string | null; setM
   const openQuote = isOpen(quote?.status) || quote?.status === "accepted";
   const home = BASE || "/";
   const items: NavItem[] = [
-    { key: "home", label: "Home", icon: House, href: home, active: pathname === home },
-    { key: "departments", label: "Departments", icon: LayoutGrid, active: mega !== null || pathname.startsWith(`${BASE}/category`) },
-    { key: "quotes", label: "Quotes", icon: FileText, href: `${BASE}/negotiation`, active: pathname === `${BASE}/negotiation`, badge: openQuote ? 1 : 0, pulse: quote?.status === "awaiting_customer" },
-    { key: "orders", label: "Orders", icon: Package, href: `${BASE}/orders`, active: pathname.startsWith(`${BASE}/orders`) },
+    { key: "home", label: "Accueil", icon: House, href: home, active: pathname === home },
+    { key: "departments", label: "Rayons", icon: LayoutGrid, active: mega !== null || pathname.startsWith(`${BASE}/category`) },
+    { key: "quotes", label: "Devis", icon: FileText, href: `${BASE}/negotiation`, active: pathname === `${BASE}/negotiation`, badge: openQuote ? 1 : 0, pulse: quote?.status === "awaiting_customer" },
+    { key: "orders", label: "Commandes", icon: Package, href: `${BASE}/orders`, active: pathname.startsWith(`${BASE}/orders`) },
   ];
   const activeKey = mega !== null ? "departments" : (items.find((i) => i.active)?.key ?? null);
   const shown = items.map((i) => ({ ...i, active: i.key === activeKey }));
@@ -176,7 +179,7 @@ function MainNav({ mega, setMega, firstCategoryId }: { mega: string | null; setM
   }, [activeKey, openQuote]);
 
   return (
-    <nav ref={navRef} className="relative hidden items-center gap-1 lg:flex" aria-label="Main">
+    <nav ref={navRef} className="relative hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
       <span
         aria-hidden
         className="btn-raised absolute top-0 h-11 rounded-full bg-dark transition-[left,width,opacity] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none"
@@ -197,7 +200,7 @@ function MainNav({ mega, setMega, firstCategoryId }: { mega: string | null; setM
 
 function Logo() {
   return (
-    <Link href={BASE || "/"} className="flex h-11 shrink-0 items-center" aria-label="SOCIMCO home">
+    <Link href={BASE || "/"} className="flex h-11 shrink-0 items-center" aria-label="Accueil SOCIMCO">
       <BrandLogo className="h-10 lg:h-12" priority />
     </Link>
   );
@@ -206,7 +209,7 @@ function Logo() {
 function QuotePill() {
   const { quote } = useActiveQuote();
   if (!quote || !(isOpen(quote.status) || quote.status === "accepted")) return null;
-  const label = quote.status === "awaiting_customer" ? "Your move" : quote.status === "accepted" ? "Price agreed" : "With the sales desk";
+  const label = quote.status === "awaiting_customer" ? "À vous de répondre" : quote.status === "accepted" ? "Prix convenu" : "En attente du service commercial";
   const urgent = quote.status !== "awaiting_seller";
   return (
     <Link
@@ -214,7 +217,7 @@ function QuotePill() {
       className={`hidden h-11 shrink-0 items-center gap-2 rounded-full px-4 text-[13px] font-semibold 2xl:inline-flex ${urgent ? "bg-accent text-accent-ink" : "bg-surface-2 text-ink"}`}
     >
       <FileText size={15} aria-hidden />
-      Quote · {label}
+      Devis · {label}
     </Link>
   );
 }
@@ -237,11 +240,11 @@ function SearchForm({ autoFocus = false, onDone, large = false }: { autoFocus?: 
         value={q}
         onChange={(e) => setQ(e.target.value)}
         autoFocus={autoFocus}
-        placeholder="Search products or SKU"
-        aria-label="Search products"
+        placeholder="Produit, marque ou réf."
+        aria-label="Rechercher un produit ou une référence"
         className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-3"
       />
-      <button type="submit" className={`grid shrink-0 place-items-center rounded-full bg-dark text-on-dark hover:bg-dark-2 ${large ? "size-12" : "size-9"}`} aria-label="Search">
+      <button type="submit" className={`grid shrink-0 place-items-center rounded-full bg-dark text-on-dark hover:bg-dark-2 ${large ? "size-12" : "size-9"}`} aria-label="Rechercher">
         <ArrowUpRight size={17} aria-hidden />
       </button>
     </form>
@@ -287,7 +290,7 @@ function MegaMenu({ open, setOpen, categories }: { open: string | null; setOpen:
   return (
     <div className="absolute inset-x-0 top-full z-40 hidden pt-2 lg:block" onMouseLeave={close}>
       <div className="mx-auto grid max-w-[1400px] grid-cols-12 gap-6 rounded-[28px] bg-surface p-6 shadow-[0_30px_60px_-30px_rgb(6_22_61/0.45)] ring-1 ring-black/5">
-        <ul className="col-span-3 space-y-1" aria-label="Departments">
+        <ul className="col-span-3 space-y-1" aria-label="Rayons">
           {categories.map((c) => (
             <li key={c.id}>
               <button
@@ -307,7 +310,7 @@ function MegaMenu({ open, setOpen, categories }: { open: string | null; setOpen:
         <div className="col-span-5">
           <p className="display text-[22px]">{category.name}</p>
           <ul className="mt-3 grid grid-cols-2 gap-1">
-            {category.children.length === 0 && <li className="text-sm text-ink-3">No subcategories</li>}
+            {category.children.length === 0 && <li className="text-sm text-ink-3">Aucune sous-catégorie</li>}
             {category.children.map((c) => (
               <li key={c.id}>
                 <Link href={`${BASE}/category/${c.slug}`} onClick={close} className="flex h-11 items-center justify-between rounded-full px-3 text-[15px] hover:bg-surface-2">
@@ -324,8 +327,8 @@ function MegaMenu({ open, setOpen, categories }: { open: string | null; setOpen:
           <span className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
           <span className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 text-white">
             <span>
-              <span className="display block text-[20px]">Shop all {category.name}</span>
-              <span className="text-[13px] text-white/80">{formatCount(category.productCount)} products</span>
+              <span className="display block text-[20px]">Tout le rayon {category.name}</span>
+              <span className="text-[13px] text-white/80">{plural(category.productCount, "produit")}</span>
             </span>
             <span className="grid size-10 place-items-center rounded-full bg-white/90 text-ink">
               <ArrowUpRight size={17} aria-hidden />
@@ -363,14 +366,14 @@ function MiniCart({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="flex h-full flex-col bg-surface">
-      <SheetHead title="Your cart" onClose={onClose} label="Close cart" />
+      <SheetHead title="Votre panier" onClose={onClose} label="Fermer le panier" />
       {locked && (
         <div className="mx-5 mb-2 flex gap-3 rounded-[18px] bg-accent-soft px-4 py-3 text-sm">
           <Lock size={16} className="mt-0.5 shrink-0" aria-hidden />
           <p>
-            Quantities are locked while your quote is {quote?.status === "accepted" ? "accepted" : "open"}.{" "}
+            {quote?.status === "accepted" ? "Les quantités sont bloquées : votre devis a été accepté." : "Les quantités sont bloquées tant que votre devis est en cours."}{" "}
             <Link href={`${BASE}/negotiation`} onClick={onClose} className="font-semibold underline underline-offset-4">
-              View quote
+              Voir le devis
             </Link>
           </p>
         </div>
@@ -378,7 +381,7 @@ function MiniCart({ onClose }: { onClose: () => void }) {
       <ul className="flex-1 space-y-2 overflow-y-auto px-3" aria-busy={cart.isPending || undefined}>
         {cart.isPending && [0, 1].map((i) => <li key={i} className="shimmer h-28 rounded-[20px]" aria-hidden />)}
         {cart.isError && <li className="px-5 py-10 text-center text-danger">{errorMessage(cart.error)}</li>}
-        {data && lines.length === 0 && <li className="px-5 py-10 text-center text-ink-3">Your cart is empty.</li>}
+        {data && lines.length === 0 && <li className="px-5 py-10 text-center text-ink-3">Votre panier est vide.</li>}
         {lines.map((l) => (
           <li key={l.productId} className="flex gap-3 rounded-[20px] bg-surface-2 p-3">
             <ProductImage src={l.imageUrl} alt="" className="size-[72px] shrink-0 rounded-[14px] object-cover" />
@@ -390,7 +393,7 @@ function MiniCart({ onClose }: { onClose: () => void }) {
                     type="button"
                     onClick={() => remove.mutate(l.productId, { onError: fail })}
                     className="-mr-1.5 -mt-2.5 grid size-11 shrink-0 place-items-center rounded-full text-ink-3 hover:bg-surface hover:text-danger"
-                    aria-label={`Remove ${l.name}`}
+                    aria-label={`Retirer ${l.name} du panier`}
                   >
                     <Trash2 size={16} aria-hidden />
                   </button>
@@ -401,7 +404,7 @@ function MiniCart({ onClose }: { onClose: () => void }) {
               </p>
               {l.negotiationEligible && (
                 <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-dark px-2.5 py-0.5 text-[11px] font-semibold text-on-dark">
-                  <span className="size-1.5 rounded-full bg-accent" aria-hidden /> Trade price eligible
+                  <span className="size-1.5 rounded-full bg-accent" aria-hidden /> Éligible au prix négocié
                 </p>
               )}
               <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
@@ -410,7 +413,7 @@ function MiniCart({ onClose }: { onClose: () => void }) {
                   min={1}
                   max={99_999}
                   size="sm"
-                  label={`Quantity of ${l.name}`}
+                  label={`Quantité : ${l.name}`}
                   disabled={locked || update.isPending}
                   className="w-[132px]"
                   onChange={(quantity) => update.mutate({ productId: l.productId, quantity }, { onError: fail })}
@@ -424,29 +427,29 @@ function MiniCart({ onClose }: { onClose: () => void }) {
       {data && (
         <div className="space-y-2.5 px-5 pb-5 pt-4">
           <div className="flex items-baseline justify-between pb-1">
-            <span className="text-ink-2">Subtotal · {formatCount(data.itemCount)} items</span>
+            <span className="text-ink-2">Sous-total · {plural(data.itemCount, "article")}</span>
             <span className="tabular display text-[26px]">{formatMoney(data.subtotalCents)}</span>
           </div>
           {quote?.status === "accepted" ? (
             <Link href={`${BASE}/checkout`} onClick={onClose} className={btn("primary", "lg", "w-full")}>
-              Checkout at agreed price
+              Commander au prix convenu
             </Link>
           ) : (
             <>
               {eligible.length > 0 && (
                 <Link href={`${BASE}/negotiation`} onClick={onClose} className={btn("trade", "lg", "w-full")}>
-                  {locked ? "View your quote" : `Request a trade price on ${eligible.length} line${eligible.length > 1 ? "s" : ""}`}
+                  {locked ? "Voir votre devis" : `Demander un prix négocié (${plural(eligible.length, "ligne")})`}
                 </Link>
               )}
               {!locked && lines.length > 0 && (
                 <Link href={`${BASE}/checkout`} onClick={onClose} className={btn("primary", "lg", "w-full")}>
-                  Checkout{eligible.length ? " at list price" : ""}
+                  {eligible.length ? "Commander au prix catalogue" : "Passer la commande"}
                 </Link>
               )}
             </>
           )}
           <Link href={`${BASE}/cart`} onClick={onClose} className={btn("ghost", "md", "w-full")}>
-            View full cart
+            Voir le panier complet
           </Link>
         </div>
       )}
@@ -458,7 +461,7 @@ function DepartmentsPanel({ onClose, categories }: { onClose: () => void; catego
   return (
     <div className="flex max-h-[88dvh] flex-col bg-surface">
       <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-line-strong" aria-hidden />
-      <SheetHead title="Departments" onClose={onClose} label="Close departments" />
+      <SheetHead title="Rayons" onClose={onClose} label="Fermer les rayons" />
       <ul className="grid grid-cols-2 gap-2.5 overflow-y-auto px-4 pb-8">
         {categories.map((c) => (
           <li key={c.id}>
@@ -467,7 +470,7 @@ function DepartmentsPanel({ onClose, categories }: { onClose: () => void; catego
               <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
               <span className="absolute inset-x-3 bottom-2.5 text-white">
                 <span className="display block text-[16px] leading-tight">{c.name}</span>
-                <span className="tabular text-[12px] text-white/80">{c.productCount} products</span>
+                <span className="tabular text-[12px] text-white/80">{plural(c.productCount, "produit")}</span>
               </span>
             </Link>
           </li>
@@ -506,7 +509,7 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded-full focus:bg-dark focus:px-4 focus:py-2 focus:text-on-dark">
-        Skip to content
+        Aller au contenu
       </a>
 
       {/* Floating pill header (all sizes) */}
@@ -522,7 +525,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <Link
               href={`${BASE}/account`}
               className={`hidden size-11 shrink-0 place-items-center rounded-full text-[13px] font-semibold lg:grid ${pathname === `${BASE}/account` ? "bg-dark text-on-dark" : "bg-surface-2 hover:bg-canvas"}`}
-              aria-label={`Account${user ? `, ${user.name}` : ""}`}
+              aria-label={`Compte${user ? `, ${user.name}` : ""}`}
               aria-current={pathname === `${BASE}/account` ? "page" : undefined}
             >
               {initials || <User size={18} aria-hidden />}
@@ -532,8 +535,8 @@ export function Shell({ children }: { children: ReactNode }) {
               <Link
                 href="/qr/approve"
                 className="ml-auto grid size-11 shrink-0 place-items-center rounded-full bg-surface-2 text-ink hover:bg-canvas md:ml-0 lg:hidden"
-                aria-label="Scan a computer's sign-in code"
-                title="Scan a computer's sign-in code"
+                aria-label="Autoriser un ordinateur : scanner son code de connexion"
+                title="Autoriser un ordinateur"
               >
                 <ScanQrCode size={19} aria-hidden />
               </Link>
@@ -542,7 +545,7 @@ export function Shell({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => setPanel("cart")}
               className={`${qrLoginEnabled() ? "" : "ml-auto md:ml-0"} flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-dark pl-4 pr-1 text-[14px] font-semibold text-on-dark hover:bg-dark-2 lg:h-12 lg:pr-1.5`}
-              aria-label={`Cart, ${cart?.items.length ?? 0} lines${cart ? `, ${formatMoney(cart.subtotalCents)}` : ""}`}
+              aria-label={`Panier, ${plural(cart?.items.length ?? 0, "ligne")}${cart ? `, ${formatMoney(cart.subtotalCents)}` : ""}`}
             >
               <ShoppingBag size={18} aria-hidden />
               <span className="tabular hidden sm:inline">{cart ? formatMoney(cart.subtotalCents) : "—"}</span>
@@ -556,7 +559,7 @@ export function Shell({ children }: { children: ReactNode }) {
       {/* Mobile: always-visible search field */}
       <div className="px-3 pt-3 md:hidden">
         <button type="button" onClick={() => setPanel("search")} className="flex h-12 w-full items-center gap-2.5 rounded-full bg-surface px-4 text-left text-[15px] text-ink-3 ring-1 ring-black/5">
-          <Search size={18} aria-hidden /> Search products or SKU
+          <Search size={18} aria-hidden /> Rechercher un produit ou une réf.
         </button>
       </div>
 
@@ -565,21 +568,21 @@ export function Shell({ children }: { children: ReactNode }) {
       <Footer />
 
       {/* Mobile floating nav */}
-      <nav aria-label="Main" className="fixed inset-x-3 bottom-3 z-30 rounded-[22px] bg-dark px-1.5 text-on-dark shadow-2xl lg:hidden">
+      <nav aria-label="Navigation principale" className="fixed inset-x-3 bottom-3 z-30 rounded-[22px] bg-dark px-1.5 text-on-dark shadow-2xl lg:hidden">
         <ul className="grid h-16 grid-cols-4">
           {[
-            { label: "Home", icon: House, href: home },
-            { label: "Shop", icon: LayoutGrid, onClick: () => setPanel("departments") },
-            { label: "Quotes", icon: FileText, href: `${BASE}/negotiation`, dot: awaitingYou },
-            { label: "Account", icon: User, href: `${BASE}/account` },
+            { label: "Accueil", icon: House, href: home },
+            { label: "Boutique", icon: LayoutGrid, onClick: () => setPanel("departments") },
+            { label: "Devis", icon: FileText, href: `${BASE}/negotiation`, dot: awaitingYou },
+            { label: "Compte", icon: User, href: `${BASE}/account` },
           ].map((item) => {
-            const active = item.href !== undefined && (pathname === item.href || (item.label === "Account" && pathname.startsWith(`${BASE}/orders`)));
+            const active = item.href !== undefined && (pathname === item.href || (item.label === "Compte" && pathname.startsWith(`${BASE}/orders`)));
             const cls = `relative my-1.5 flex h-[52px] w-full flex-col items-center justify-center gap-0.5 rounded-[16px] text-[11px] font-medium ${active ? "bg-white/10 text-on-dark" : "text-on-dark-2"}`;
             const inner = (
               <>
                 <item.icon size={20} aria-hidden />
                 {item.label}
-                {item.dot && <span className="absolute right-[calc(50%-16px)] top-1.5 size-2 rounded-full bg-accent" aria-label="Action needed" />}
+                {item.dot && <span className="absolute right-[calc(50%-16px)] top-1.5 size-2 rounded-full bg-accent" aria-label="Action requise" />}
               </>
             );
             return (
@@ -599,24 +602,24 @@ export function Shell({ children }: { children: ReactNode }) {
         </ul>
       </nav>
 
-      <Sheet open={panel === "cart"} onClose={close} side="right" label="Cart">
+      <Sheet open={panel === "cart"} onClose={close} side="right" label="Panier">
         <MiniCart onClose={close} />
       </Sheet>
-      <Sheet open={panel === "departments"} onClose={close} side="bottom" label="Departments">
+      <Sheet open={panel === "departments"} onClose={close} side="bottom" label="Rayons">
         <DepartmentsPanel onClose={close} categories={categories} />
       </Sheet>
-      <Sheet open={panel === "search"} onClose={close} side="bottom" label="Search" className="max-h-[100dvh]! rounded-none!">
+      <Sheet open={panel === "search"} onClose={close} side="bottom" label="Recherche" className="max-h-[100dvh]! rounded-none!">
         <div className="flex h-[100dvh] flex-col bg-canvas">
           <div className="flex items-center gap-2 p-3">
             <SearchForm autoFocus onDone={close} large />
-            <button type="button" onClick={close} className="grid size-12 shrink-0 place-items-center rounded-full bg-surface" aria-label="Close search">
+            <button type="button" onClick={close} className="grid size-12 shrink-0 place-items-center rounded-full bg-surface" aria-label="Fermer la recherche">
               <X size={20} aria-hidden />
             </button>
           </div>
           <div className="px-4 pt-3">
-            <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-ink-3">Popular with trade buyers</p>
+            <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-ink-3">Recherches fréquentes des pros</p>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {["drill", "impact driver", "screws", "safety", "laser level"].map((s) => (
+              {["perceuse", "visseuse", "vis", "sécurité", "laser"].map((s) => (
                 <li key={s}>
                   <Link href={`${BASE}/search?q=${encodeURIComponent(s)}`} onClick={close} className="inline-flex h-11 items-center rounded-full bg-surface px-4 text-sm font-medium">
                     {s}

@@ -9,6 +9,8 @@ The private B2B storefront for SOCIMCO's trade customers: tools and hardware ord
 | **Backend developer guide** | [`src/core/api/README.md`](src/core/api/README.md): how to plug in the real API |
 | **Integration overview** | [`docs/api-integration.md`](docs/api-integration.md): a shorter summary for project managers |
 
+**The storefront is in French only:** every screen, message, amount and date. Developer documentation (these READMEs) stays in English. The UI wording is fixed in [`docs/glossary-fr.md`](docs/glossary-fr.md); use it for any new text.
+
 The app runs today on a **built-in demo backend** with realistic data. Connecting SOCIMCO's real API means changing settings and filling in **one adapter file**; no screen changes.
 
 ---
@@ -79,8 +81,8 @@ Controls tagged **Proposal** (add or edit an address, "Order these again") are d
 - **The address is public, but the app isn't.** Everything is behind sign-in, and all data is fake. Anyone who guesses a demo login could look around, so don't put real data in it.
 
 **A good path through the demo:** sign in as `test.customer`, then:
-1. Open the 18V Cordless Drill and add 400 to the cart.
-2. In the cart, choose **Request a trade price** and offer $80.
+1. Open « Perceuse-visseuse sans fil 18 V » (the 18V drill) and add 400 to the cart.
+2. In the cart, choose « Demander un prix négocié » and offer 80.
 3. As the sales desk, counter $90 (see "Playing the sales desk" below). The quote page updates by itself.
 4. Offer $85. As the sales desk, accept.
 5. The quote shows **$34,000.00, saving $6,000.00**. Choose **Checkout**, pick an address and place the order.
@@ -175,6 +177,7 @@ These go in `.env.local`, or in the hosting service's environment settings. All 
 | `NEXT_PUBLIC_API_AUTH` | `cookie` | `cookie`: the API sets a secure session cookie. `bearer`: the API returns a token, kept per browser tab. |
 | `NEXT_PUBLIC_API_TIMEOUT_MS` | `15000` | Requests are cancelled after this many milliseconds. |
 | `NEXT_PUBLIC_QR_LOGIN` | `on` | `off` hides both QR sign-in directions, for a backend that doesn't support them. Password sign-in is unaffected. |
+| `NEXT_PUBLIC_CURRENCY` | `USD` | The currency prices are shown in, using French formatting: `USD` → `40 000,00 $US`, `EUR` → `40 000,00 €`, `MAD` → `40 000,00 MAD`. The demo data is in USD. |
 
 ---
 
@@ -229,6 +232,7 @@ src/
     ui/                         Shared building blocks: buttons, stepper, chips, sheet, toast, formatting
   server/backend.ts             Picks the server-side backend (the demo)
 docs/api-integration.md         Short integration overview
+docs/glossary-fr.md             French UI wording and formatting rules
 Dockerfile, render.yaml         Single-server package and the Render setup
 public/brand/                   SOCIMCO logo files
 ```

@@ -16,7 +16,7 @@ function PopularDepartments() {
   if (top.length === 0) return null;
   return (
     <div className="mt-10 border-t border-canvas pt-6">
-      <p className="text-sm font-semibold">Popular departments</p>
+      <p className="text-sm font-semibold">Rayons populaires</p>
       <ul className="mt-3 flex flex-wrap gap-2">
         {top.map((c) => (
           <li key={c.id}>
@@ -40,8 +40,8 @@ export function StatusScreen({ kind, onRetry, standalone = false }: { kind: "404
 
   const copy =
     kind === "404"
-      ? { eyebrow: "Not found", title: "We can't find that page", body: "The link may be old, or the product has moved. Try search or start from a department." }
-      : { eyebrow: "Error", title: "Something went wrong", body: `${ERROR_MESSAGES.INTERNAL} Your cart and quote are safe.` };
+      ? { eyebrow: "Introuvable", title: "Page introuvable", body: "Le lien est peut-être ancien, ou le produit a été déplacé. Lancez une recherche ou partez d'un rayon." }
+      : { eyebrow: "Erreur", title: "Une erreur s'est produite", body: `${ERROR_MESSAGES.INTERNAL} Votre panier et vos devis sont conservés.` };
 
   const big: ReactNode =
     kind === "404" ? (
@@ -67,10 +67,10 @@ export function StatusScreen({ kind, onRetry, standalone = false }: { kind: "404
           {kind === "404" ? (
             <>
               <Link href={HOME} className={btn("primary", "lg")}>
-                Go to home <ArrowRight size={17} aria-hidden />
+                Retour à l&apos;accueil <ArrowRight size={17} aria-hidden />
               </Link>
               <Link href={`${BASE}/search`} className={btn("outline", "lg")}>
-                <Search size={17} aria-hidden /> Search products
+                <Search size={17} aria-hidden /> Rechercher un produit
               </Link>
             </>
           ) : (
@@ -86,18 +86,18 @@ export function StatusScreen({ kind, onRetry, standalone = false }: { kind: "404
                   aria-busy={retrying || undefined}
                   className={btn("primary", "lg")}
                 >
-                  {retrying ? <Spinner /> : <RefreshCw size={17} aria-hidden />} {retrying ? "Retrying…" : "Try again"}
+                  {retrying ? <Spinner /> : <RefreshCw size={17} aria-hidden />} {retrying ? "Nouvelle tentative…" : "Réessayer"}
                 </button>
               )}
               <Link href={HOME} className={btn("outline", "lg")}>
-                Go to home
+                Retour à l&apos;accueil
               </Link>
             </>
           )}
         </div>
         {kind === "error" && retried && !retrying && (
           <p role="status" className="mt-4 text-sm text-ink-3">
-            Still not working. If it keeps happening, contact your sales desk.
+            Le problème persiste. S&apos;il se reproduit, contactez votre service commercial.
           </p>
         )}
 
@@ -110,7 +110,7 @@ export function StatusScreen({ kind, onRetry, standalone = false }: { kind: "404
   return (
     <div className="mx-auto flex min-h-dvh max-w-[1400px] flex-col px-3 py-4 lg:px-6 lg:py-6">
       <header className="flex items-center px-1 pb-4">
-        <Link href={HOME} aria-label="SOCIMCO home" className="inline-flex min-h-11 items-center">
+        <Link href={HOME} aria-label="Accueil SOCIMCO" className="inline-flex min-h-11 items-center">
           <BrandLogo className="h-10 lg:h-12" priority />
         </Link>
       </header>

@@ -7,8 +7,8 @@ const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-
 const sans = Inter({ subsets: ["latin"], variable: "--font-app-sans" });
 
 export const metadata: Metadata = {
-  title: { default: "SOCIMCO trade portal", template: "%s · SOCIMCO" },
-  description: "SOCIMCO's private trade portal: professional tools, and your own price when you buy by the hundred.",
+  title: { default: "Portail professionnel SOCIMCO", template: "%s · SOCIMCO" },
+  description: "Le portail professionnel privé de SOCIMCO : outillage professionnel, et votre propre prix quand vous achetez en volume.",
   robots: { index: false, follow: false },
 };
 
@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang="fr" className={`${display.variable} ${sans.variable}`}>
       <body className="app min-h-dvh">
         <Providers>{children}</Providers>
       </body>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useOrders } from "@/core/api/client/react";
 import type { OrderSummary } from "@/core/contract";
-import { ActionLink, BASE, btn, ErrorTile, errorMessage, formatCount, formatDate, formatMoney, NegotiatedChip, OrderStatusChip, PageHeader, TILE } from "@/core/ui";
+import { ActionLink, BASE, btn, ErrorTile, errorMessage, formatCount, formatDate, formatMoney, formatMoneyShort, NegotiatedChip, OrderStatusChip, PageHeader, TILE } from "@/core/ui";
 
 const SHOP_AGAIN = `${BASE}/category/power-tools`;
 
@@ -26,7 +26,7 @@ function OrderRow({ o }: { o: OrderSummary }) {
             {o.negotiated && <NegotiatedChip />}
           </span>
           <span className="block text-sm text-ink-3 sm:truncate">
-            {formatDate(o.createdAt)} · {formatCount(o.itemCount)} {o.itemCount === 1 ? "item" : "items"}
+            {formatDate(o.createdAt)} · {formatCount(o.itemCount)} {o.itemCount === 1 ? "article" : "articles"}
           </span>
         </span>
         <span className="hidden sm:block">
@@ -34,7 +34,7 @@ function OrderRow({ o }: { o: OrderSummary }) {
         </span>
         <span className="tabular text-right">
           <span className="block font-semibold">{formatMoney(o.totalCents)}</span>
-          {o.savingsCents > 0 && <span className="block text-[13px] font-medium text-success">saved {formatMoney(o.savingsCents)}</span>}
+          {o.savingsCents > 0 && <span className="block text-[13px] font-medium text-success">Économie de {formatMoney(o.savingsCents)}</span>}
         </span>
         <ChevronRight size={18} className="hidden text-ink-3 transition-transform group-hover:translate-x-0.5 sm:block" aria-hidden />
         <span className="col-start-2 sm:hidden">
@@ -60,23 +60,24 @@ export function OrdersScreen() {
   return (
     <div className="mx-auto max-w-[1400px] px-3 pb-16 lg:px-6 lg:pb-6">
       <PageHeader
-        crumbs={[{ label: "Home", href: BASE || "/" }, { label: "Account", href: `${BASE}/account` }, { label: "Orders" }]}
-        title="Orders"
-        lead="Every order on your trade account, newest first."
-        aside={<ActionLink href={SHOP_AGAIN}>Shop again</ActionLink>}
+        crumbs={[{ label: "Accueil", href: BASE || "/" }, { label: "Compte", href: `${BASE}/account` }, { label: "Commandes" }]}
+        title="Commandes"
+        lead="Toutes les commandes de votre compte professionnel, des plus récentes aux plus anciennes."
+        aside={<ActionLink href={SHOP_AGAIN}>Continuer vos achats</ActionLink>}
       />
 
       {!empty && !orders.isError && (
         <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           {[
-            ["Orders", loading ? "—" : formatCount(list.length), "on this account"],
-            ["Spent", loading ? "—" : formatMoney(spent), "after negotiated savings"],
-            ["Saved with quotes", loading ? "—" : formatMoney(saved), "negotiated on volume"],
-            ["Last order", loading || !latest ? "—" : latest.number, latest ? formatDate(latest.createdAt) : ""],
+            ["Commandes", loading ? "—" : formatCount(list.length), "sur ce compte"],
+            ["Dépensé", loading ? "—" : formatMoneyShort(spent), "après économies négociées"],
+            ["Économies sur devis", loading ? "—" : formatMoneyShort(saved), "négociées sur le volume"],
+            ["Dernière commande", loading || !latest ? "—" : latest.number, latest ? formatDate(latest.createdAt) : ""],
           ].map(([k, v, sub], i) => (
             <div key={k} className={`min-w-0 rounded-[var(--radius-card)] p-5 ${i === 2 ? "bg-dark text-on-dark" : "bg-surface"}`}>
               <p className={`text-[13px] ${i === 2 ? "text-on-dark-2" : "text-ink-3"}`}>{k}</p>
-              <p className={`tabular display mt-1 truncate text-[22px] leading-tight sm:text-[24px] lg:text-[28px] ${i === 2 ? "text-[#9fd8b7]" : ""}`}>{v}</p>
+              {/* French amounts are long ("102 000 $US"): smaller on phones, and wrap rather than cut off. */}
+              <p className={`tabular display mt-1 text-[19px] leading-tight [overflow-wrap:anywhere] min-[400px]:text-[22px] sm:text-[24px] lg:text-[28px] ${i === 2 ? "text-[#9fd8b7]" : ""}`}>{v}</p>
               <p className={`mt-0.5 text-[12px] ${i === 2 ? "text-on-dark-2" : "text-ink-3"}`}>{sub}</p>
             </div>
           ))}
@@ -86,7 +87,7 @@ export function OrdersScreen() {
       {orders.isError ? (
         <ErrorTile message={errorMessage(orders.error)} onRetry={() => void orders.refetch()} className="mt-6" />
       ) : (
-        <section className={`${TILE} mt-3 p-3 lg:mt-4 lg:p-4`} aria-label="Order history">
+        <section className={`${TILE} mt-3 p-3 lg:mt-4 lg:p-4`} aria-label="Historique des commandes">
           {loading ? (
             <ul className="space-y-2 p-1" aria-busy="true">
               {[0, 1, 2].map((i) => (
@@ -98,16 +99,16 @@ export function OrdersScreen() {
               <span className="grid size-14 place-items-center rounded-full bg-surface-2">
                 <Package size={24} aria-hidden />
               </span>
-              <h2 className="display mt-4 text-[26px]">No orders yet</h2>
-              <p className="mt-1 max-w-sm text-ink-2">Your orders, deliveries and trade savings will show up here.</p>
+              <h2 className="display mt-4 text-[26px]">Aucune commande pour le moment</h2>
+              <p className="mt-1 max-w-sm text-ink-2">Vos commandes, vos livraisons et vos économies négociées apparaîtront ici.</p>
               <Link href={SHOP_AGAIN} className={btn("primary", "lg", "mt-6")}>
-                Start shopping <ArrowRight size={17} aria-hidden />
+                Commencer vos achats <ArrowRight size={17} aria-hidden />
               </Link>
             </div>
           ) : (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2 px-1 pb-2 pt-1">
-                <div className="flex gap-1.5" role="group" aria-label="Filter orders">
+                <div className="flex gap-1.5" role="group" aria-label="Filtrer les commandes">
                   {(["all", "negotiated"] as const).map((f) => (
                     <button
                       key={f}
@@ -116,14 +117,14 @@ export function OrdersScreen() {
                       onClick={() => setFilter(f)}
                       className="h-11 rounded-full px-4 text-sm font-medium capitalize text-ink-2 ring-1 ring-inset ring-line hover:bg-surface-2 aria-pressed:bg-dark aria-pressed:text-on-dark aria-pressed:ring-dark sm:h-10"
                     >
-                      {f === "all" ? `All · ${list.length}` : `Negotiated · ${negotiatedCount}`}
+                      {f === "all" ? `Toutes · ${formatCount(list.length)}` : `Négociées · ${formatCount(negotiatedCount)}`}
                     </button>
                   ))}
                 </div>
-                <p className="text-sm text-ink-3">Tap an order for lines, savings and delivery.</p>
+                <p className="text-sm text-ink-3">Touchez une commande pour voir le détail, les économies et la livraison.</p>
               </div>
               {shown.length === 0 ? (
-                <p className="px-4 py-10 text-center text-ink-3">No negotiated orders yet. Orders placed at a quoted price show up here.</p>
+                <p className="px-4 py-10 text-center text-ink-3">Aucune commande négociée pour le moment. Les commandes passées à un prix négocié apparaîtront ici.</p>
               ) : (
                 <ul className="divide-y divide-canvas">
                   {shown.map((o) => (

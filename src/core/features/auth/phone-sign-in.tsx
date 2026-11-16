@@ -20,10 +20,10 @@ import { QrScanner } from "./qr-scanner";
 type Ending = "expired" | "used" | "invalid" | "denied";
 
 const ENDINGS: Record<Ending, { icon: typeof Check; title: string; body: string }> = {
-  expired: { icon: Clock, title: "Code expired", body: `${ERROR_MESSAGES.QR_EXPIRED} Show a new code on your computer and scan it again.` },
-  used: { icon: Lock, title: "Already used", body: `${ERROR_MESSAGES.QR_ALREADY_USED} Show a new code on your computer.` },
-  invalid: { icon: X, title: "Code not recognised", body: "This isn't a current sign-in code. Show a new code on your computer and scan it again." },
-  denied: { icon: X, title: "Sign-in declined", body: "The computer didn't allow this phone. If that wasn't you, nothing has changed." },
+  expired: { icon: Clock, title: "Code expiré", body: `${ERROR_MESSAGES.QR_EXPIRED} Affichez un nouveau code sur votre ordinateur, puis scannez-le.` },
+  used: { icon: Lock, title: "Code déjà utilisé", body: `${ERROR_MESSAGES.QR_ALREADY_USED} Affichez un nouveau code sur votre ordinateur.` },
+  invalid: { icon: X, title: "Code non reconnu", body: "Ce n'est pas un code de connexion valide. Affichez un nouveau code sur votre ordinateur, puis scannez-le." },
+  denied: { icon: X, title: "Connexion refusée", body: "L'ordinateur n'a pas autorisé ce téléphone. Si ce n'était pas vous, rien n'a changé." },
 };
 
 const endingFor = (e: unknown): Ending | null =>
@@ -58,10 +58,10 @@ function EndingView({ ending }: { ending: Ending }) {
   return (
     <Centered icon={e.icon} tone="bg-dark text-on-dark" title={e.title} body={e.body}>
       <Link href={QR_PATHS.signInPhone} className={btn("primary", "lg", "w-full")}>
-        <ScanLine size={18} aria-hidden /> Scan again
+        <ScanLine size={18} aria-hidden /> Scanner à nouveau
       </Link>
       <Link href="/login" className={btn("outline", "lg", "w-full")}>
-        Sign in with password
+        Connexion par mot de passe
       </Link>
     </Centered>
   );
@@ -107,14 +107,14 @@ function Redeem({ code }: { code: string }) {
   if (failure) {
     return (
       <div className="mt-10">
-        <h1 className="display text-[30px] leading-tight">Couldn&apos;t sign you in</h1>
+        <h1 className="display text-[30px] leading-tight">Impossible de vous connecter</h1>
         <ErrorTile message={errorMessage(failure)} onRetry={() => router.replace(QR_PATHS.signInPhone)} className="mt-6" />
       </div>
     );
   }
 
   if (redeem.data?.status === "signed_in" || complete.isSuccess || remote === "approved") {
-    return <Centered icon={Check} tone="bg-success text-white" title="You're signed in" body="Taking you to SOCIMCO…" />;
+    return <Centered icon={Check} tone="bg-success text-white" title="Vous êtes connecté" body="Ouverture de SOCIMCO…" />;
   }
 
   if (waiting) {
@@ -123,24 +123,24 @@ function Redeem({ code }: { code: string }) {
       <Centered
         icon={Laptop}
         tone="bg-dark text-on-dark"
-        title="Allow it on your computer"
+        title="Autorisez-le sur votre ordinateur"
         body={
           <>
-            <p>Your computer is asking whether to sign this phone in. Click <span className="font-semibold text-ink">Allow</span> there.</p>
+            <p>Votre ordinateur demande s&apos;il faut connecter ce téléphone. Cliquez sur <span className="font-semibold text-ink">Autoriser</span> sur l&apos;ordinateur.</p>
             <p className="tabular mt-4 inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-sm">
-              <Spinner className="size-3.5" /> Waiting… {mm}
+              <Spinner className="size-3.5" /> En attente… {mm}
             </p>
           </>
         }
       >
         <Link href="/login" className={btn("outline", "lg", "w-full")}>
-          <Smartphone size={18} aria-hidden /> Cancel and use password
+          <Smartphone size={18} aria-hidden /> Utiliser le mot de passe
         </Link>
       </Centered>
     );
   }
 
-  return <Busy label="Signing you in…" />;
+  return <Busy label="Connexion en cours…" />;
 }
 
 /** /qr/sign-in — phone, signed out. */
@@ -155,9 +155,9 @@ export function PhoneSignInScreen() {
   return (
     <PhoneFrame>
       {signedIn ? (
-        <Centered icon={Check} tone="bg-success text-white" title="You're already signed in" body={`This phone is signed in as ${me.data!.user.name}.`}>
+        <Centered icon={Check} tone="bg-success text-white" title="Vous êtes déjà connecté" body={`Ce téléphone est connecté au compte de ${me.data!.user.name}.`}>
           <Link href="/" className={btn("primary", "lg", "w-full")}>
-            Go to SOCIMCO
+            Aller sur SOCIMCO
           </Link>
         </Centered>
       ) : code ? (
@@ -165,9 +165,9 @@ export function PhoneSignInScreen() {
       ) : (
         <QrScanner
           accept={QR_PATHS.signInPhone}
-          title="Scan to sign in"
-          intro="On your computer, signed in to SOCIMCO, open Account → Sign in on your phone. Then scan the code it shows."
-          wrongCode="That isn't a SOCIMCO phone sign-in code. Use the code from Account → Sign in on your phone."
+          title="Scanner pour se connecter"
+          intro="Sur votre ordinateur connecté à SOCIMCO, ouvrez Compte → Connecter votre téléphone. Scannez ensuite le code affiché."
+          wrongCode="Ce n'est pas un code de connexion SOCIMCO pour téléphone. Utilisez le code de Compte → Connecter votre téléphone."
           onCode={(c) => router.replace(`${QR_PATHS.signInPhone}?code=${encodeURIComponent(c)}`)}
         />
       )}
@@ -178,7 +178,7 @@ export function PhoneSignInScreen() {
 export function PhoneSignInFallback() {
   return (
     <PhoneFrame>
-      <Busy label="Loading…" />
+      <Busy label="Chargement…" />
     </PhoneFrame>
   );
 }

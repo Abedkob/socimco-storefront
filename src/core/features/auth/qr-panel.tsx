@@ -11,11 +11,11 @@ import { QrCode } from "./qr-code";
 type View = QrStatus | "loading" | "error";
 
 const OVERLAY: Partial<Record<View, { icon: typeof Check; title: string; body: string; tone: string }>> = {
-  scanned: { icon: Smartphone, title: "Approve on your phone", body: "We sent a sign-in request to your phone.", tone: "bg-dark text-on-dark" },
-  approved: { icon: Check, title: "Signed in", body: "Taking you to your account…", tone: "bg-success text-white" },
-  denied: { icon: X, title: "Sign-in denied", body: "Your phone declined this request.", tone: "bg-danger text-white" },
-  expired: { icon: Clock, title: "Code expired", body: ERROR_MESSAGES.QR_EXPIRED, tone: "bg-dark text-on-dark" },
-  consumed: { icon: Lock, title: "Code already used", body: ERROR_MESSAGES.QR_ALREADY_USED, tone: "bg-dark text-on-dark" },
+  scanned: { icon: Smartphone, title: "Confirmez sur votre téléphone", body: "Une demande de connexion a été envoyée à votre téléphone.", tone: "bg-dark text-on-dark" },
+  approved: { icon: Check, title: "Connexion réussie", body: "Ouverture de votre compte…", tone: "bg-success text-white" },
+  denied: { icon: X, title: "Connexion refusée", body: "Votre téléphone a refusé cette demande.", tone: "bg-danger text-white" },
+  expired: { icon: Clock, title: "Code expiré", body: ERROR_MESSAGES.QR_EXPIRED, tone: "bg-dark text-on-dark" },
+  consumed: { icon: Lock, title: "Code déjà utilisé", body: ERROR_MESSAGES.QR_ALREADY_USED, tone: "bg-dark text-on-dark" },
 };
 
 /**
@@ -91,11 +91,11 @@ export function QrPanel({ next }: { next: string }) {
         </div>
         <div className="min-w-0 flex-1" aria-live="polite">
           <h2 id="qr-title" className="flex items-center gap-2 font-semibold text-ink">
-            <ShieldCheck size={17} className="shrink-0 text-success" aria-hidden /> Or sign in with your phone
+            <ShieldCheck size={17} className="shrink-0 text-success" aria-hidden /> Ou connectez-vous avec votre téléphone
           </h2>
           {view === "error" ? (
             <>
-              <p className="mt-1.5 text-sm font-semibold text-ink">Couldn&apos;t show a code</p>
+              <p className="mt-1.5 text-sm font-semibold text-ink">Impossible d&apos;afficher un code</p>
               <p className="text-sm text-ink-3">{errorMessage(failure)}</p>
             </>
           ) : o ? (
@@ -104,16 +104,16 @@ export function QrPanel({ next }: { next: string }) {
               <p className="text-sm text-ink-3">{o.body}</p>
             </>
           ) : (
-            <p className="mt-1.5 text-sm leading-relaxed text-ink-3">Open SOCIMCO on your phone, tap the scan button at the top, and point it at this code.</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-3">Ouvrez SOCIMCO sur votre téléphone, touchez le bouton de scan en haut de l&apos;écran, puis visez ce code.</p>
           )}
           {(view === "pending" || view === "scanned") && (
             <p className="tabular mt-1.5 flex items-center gap-1.5 text-[12px] text-ink-3">
-              <Clock size={13} aria-hidden /> {view === "scanned" ? "Request valid for" : "Code refreshes in"} {mm}
+              <Clock size={13} aria-hidden /> {view === "scanned" ? "Demande valable encore" : "Le code expire dans"} {mm}
             </p>
           )}
           {final && (
             <button type="button" onClick={refresh} disabled={create.isPending} className={btn("outline", "sm", "mt-2.5")}>
-              {create.isPending ? <Spinner /> : <RefreshCw size={15} aria-hidden />} Get a new code
+              {create.isPending ? <Spinner /> : <RefreshCw size={15} aria-hidden />} Nouveau code
             </button>
           )}
         </div>

@@ -51,9 +51,9 @@ async function createDetector(): Promise<Detect> {
 export function QrScanner({
   onCode,
   accept = QR_PATHS.approveComputer,
-  title = "Scan the code on your computer",
-  intro = "On the computer, open the SOCIMCO sign-in page. Then scan the code next to the password form with this phone.",
-  wrongCode = "That isn't a SOCIMCO sign-in code. Point at the code on the sign-in page.",
+  title = "Scannez le code de votre ordinateur",
+  intro = "Sur l'ordinateur, ouvrez la page de connexion SOCIMCO. Scannez ensuite avec ce téléphone le code affiché à côté du formulaire de mot de passe.",
+  wrongCode = "Ce n'est pas un code de connexion SOCIMCO. Visez le code affiché sur la page de connexion.",
 }: {
   onCode: (code: string) => void;
   /** Which kind of SOCIMCO link this scanner is for; anything else shows `wrongCode`. */
@@ -164,10 +164,10 @@ export function QrScanner({
             </span>
             <p className="max-w-[260px] text-sm text-on-dark-2">
               {state === "denied"
-                ? "Camera access is blocked. Allow the camera for this site in your browser settings, then try again."
+                ? "L'accès à l'appareil photo est bloqué. Autorisez l'appareil photo pour ce site dans les réglages de votre navigateur, puis réessayez."
                 : state === "unavailable"
-                  ? "This browser can't open the camera here. Use your phone's camera app instead (below)."
-                  : "Your camera opens here. Nothing is recorded or uploaded."}
+                  ? "Ce navigateur ne peut pas ouvrir l'appareil photo ici. Utilisez plutôt l'application Appareil photo de votre téléphone (voir ci-dessous)."
+                  : "L'appareil photo s'ouvre ici. Rien n'est enregistré ni envoyé."}
             </p>
           </div>
         )}
@@ -175,26 +175,26 @@ export function QrScanner({
         {state === "starting" && (
           <div className="absolute inset-0 grid place-items-center" aria-busy="true">
             <Spinner />
-            <span className="sr-only">Opening the camera…</span>
+            <span className="sr-only">Ouverture de l&apos;appareil photo…</span>
           </div>
         )}
       </div>
 
       <p className="mt-3 min-h-6 text-center text-sm" aria-live="polite">
-        {state === "scanning" && (sawWrongCode ? <span className="font-medium text-danger">{wrongCode}</span> : <span className="text-ink-3">Point the camera at the code. It scans by itself.</span>)}
+        {state === "scanning" && (sawWrongCode ? <span className="font-medium text-danger">{wrongCode}</span> : <span className="text-ink-3">Visez le code : la lecture est automatique.</span>)}
       </p>
 
       <div className="mt-auto space-y-2.5 pt-6">
         {live ? (
           <button type="button" onClick={cancel} className={btn("outline", "lg", "w-full")}>
-            <X size={18} aria-hidden /> Stop camera
+            <X size={18} aria-hidden /> Fermer l&apos;appareil photo
           </button>
         ) : (
           <button type="button" onClick={() => void start()} className={btn("primary", "lg", "w-full")}>
-            <Camera size={18} aria-hidden /> {state === "idle" ? "Open camera" : "Try again"}
+            <Camera size={18} aria-hidden /> {state === "idle" ? "Ouvrir l'appareil photo" : "Réessayer"}
           </button>
         )}
-        <p className="text-center text-xs leading-relaxed text-ink-3">No camera here? Point your phone&apos;s camera app at the code and open the link it shows.</p>
+        <p className="text-center text-xs leading-relaxed text-ink-3">Pas d&apos;appareil photo ici ? Visez le code avec l&apos;application Appareil photo de votre téléphone, puis ouvrez le lien affiché.</p>
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ export function quoteTotals(n: Pick<Negotiation, "lines" | "rounds">) {
   };
 }
 
-/** Human quote reference, e.g. neg_0004 → Q-0004. */
+/** Human quote reference, e.g. neg_0004 → Q-0004 (kept as is: the sales desk and the order screens use the same reference). */
 export const quoteRef = (id: string) => id.replace(/^neg_/, "Q-");
 
 /*
