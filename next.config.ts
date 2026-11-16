@@ -2,6 +2,8 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Self-contained server in .next/standalone for the Docker image (see Dockerfile). Vercel ignores it.
+  output: "standalone",
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {

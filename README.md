@@ -187,11 +187,30 @@ public/brand/               SOCIMCO logo files
 
 ## Deploying
 
+> **While the built-in demo backend is used, run the app as ONE server process** (the `Dockerfile`, or `pnpm build && pnpm start`). The demo keeps sessions, carts, quotes and orders in that process's memory.
+>
+> On serverless hosting like Vercel, simultaneous requests land on different copies of the function, each with its own memory. Signed-in customers then randomly look signed out, and pages keep loading or bounce back to sign-in.
+>
+> Once the real SOCIMCO API is connected, the storefront keeps no data of its own, and Vercel or any number of servers works fine.
+
+### Docker (single server, recommended for the demo)
+
+```bash
+docker build -t socimco-storefront .
+docker run -p 3000:3000 socimco-storefront     # http://localhost:3000
+```
+
+- **Any Docker host works**, for example Dokploy, Render, Railway or Fly. Run **1 instance**, port **3000**; health check `GET /login`.
+- **The demo data resets** when the container restarts.
+- **`NEXT_PUBLIC_*` settings are compiled in,** so pass them as build args: `--build-arg NEXT_PUBLIC_API_BASE_URL=…`.
+
+### Vercel
+
 **Live:** https://socimco-storefront.vercel.app (Vercel project `socimco-storefront`). **Code:** https://github.com/Abedkob/socimco-storefront (private).
 
 - **Pushing to `main`** deploys to production.
 - **Other branches** get a preview URL. Use one per integration step (for example `feat/api-auth`, `feat/api-catalog`) and check the preview before merging.
 - **Settings for the real API** (`NEXT_PUBLIC_API_*`) go in Vercel → Project → Settings → Environment Variables. Because they're compiled in, **redeploy after changing them**. You can set them on Preview only first, test, then on Production.
-- **The mock resets.** While it runs on Vercel, its in-memory data resets whenever Vercel starts a fresh server (after a deploy or an idle period), and demo users then have to sign in again. That's fine for demos, and it ends when the real API is connected.
+- **The demo backend doesn't work reliably on Vercel** (see the note at the top of this section). Use Vercel once the real API is connected, and use the Docker image for the demo until then.
 
 It's also a standard Next.js app: `pnpm build && pnpm start` on any Node 22 host, or import the folder on Vercel. No database or server secrets are needed by the storefront itself; all data comes from the API set in `NEXT_PUBLIC_API_BASE_URL`.
