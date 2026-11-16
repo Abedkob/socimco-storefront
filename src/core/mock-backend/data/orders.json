@@ -1,0 +1,111 @@
+[
+  {
+    "id": "ord_1001",
+    "number": "TP-2026-1001",
+    "userId": "usr_01",
+    "status": "delivered",
+    "negotiationId": null,
+    "currency": "USD",
+    "lines": [
+      {
+        "productId": "prd_hammer_16oz",
+        "sku": "HMR-16OZ-008",
+        "name": "16oz Fiberglass Claw Hammer",
+        "imageUrl": "https://images.unsplash.com/photo-1607870411590-d5e9e06da09a?w=960&h=840&fit=crop&q=75&auto=format",
+        "quantity": 20,
+        "listUnitPriceCents": 1850,
+        "unitPriceCents": 1850,
+        "negotiated": false
+      }
+    ],
+    "subtotalCents": 37000,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 0,
+    "totalCents": 37000,
+    "shippingAddress": {
+      "label": "Main warehouse",
+      "line1": "12 Industrial Rd",
+      "city": "Springfield",
+      "postalCode": "10001",
+      "country": "US"
+    },
+    "createdAt": "2026-09-28T13:40:00Z"
+  },
+  {
+    "id": "ord_1002",
+    "number": "TP-2026-1002",
+    "userId": "usr_01",
+    "status": "shipped",
+    "negotiationId": "neg_0001",
+    "currency": "USD",
+    "lines": [
+      {
+        "productId": "prd_impact_driver",
+        "sku": "DRL-IMP-002",
+        "name": "18V Brushless Impact Driver",
+        "imageUrl": "https://images.pexels.com/photos/8487757/pexels-photo-8487757.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop",
+        "quantity": 150,
+        "listUnitPriceCents": 14900,
+        "unitPriceCents": 13500,
+        "negotiated": true
+      }
+    ],
+    "subtotalCents": 2235000,
+    "discountCents": 210000,
+    "shippingCents": 0,
+    "taxCents": 0,
+    "totalCents": 2025000,
+    "shippingAddress": {
+      "label": "Main warehouse",
+      "line1": "12 Industrial Rd",
+      "city": "Springfield",
+      "postalCode": "10001",
+      "country": "US"
+    },
+    "createdAt": "2026-10-21T16:20:00Z"
+  },
+  {
+    "id": "ord_1003",
+    "number": "TP-2026-1003",
+    "userId": "usr_01",
+    "status": "processing",
+    "negotiationId": null,
+    "currency": "USD",
+    "lines": [
+      {
+        "productId": "prd_tape_measure",
+        "sku": "MSR-TAP-017",
+        "name": "8m Tape Measure",
+        "imageUrl": "https://images.pexels.com/photos/32942847/pexels-photo-32942847.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop",
+        "quantity": 10,
+        "listUnitPriceCents": 1450,
+        "unitPriceCents": 1450,
+        "negotiated": false
+      },
+      {
+        "productId": "prd_safety_helmet",
+        "sku": "SAF-HLM-020",
+        "name": "Vented Safety Helmet",
+        "imageUrl": "https://images.unsplash.com/photo-1768158988512-ad31657fe5b8?w=960&h=840&fit=crop&q=75&auto=format",
+        "quantity": 5,
+        "listUnitPriceCents": 1900,
+        "unitPriceCents": 1900,
+        "negotiated": false
+      }
+    ],
+    "subtotalCents": 24000,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 0,
+    "totalCents": 24000,
+    "shippingAddress": {
+      "label": "Main warehouse",
+      "line1": "12 Industrial Rd",
+      "city": "Springfield",
+      "postalCode": "10001",
+      "country": "US"
+    },
+    "createdAt": "2026-11-10T09:05:00Z"
+  }
+]

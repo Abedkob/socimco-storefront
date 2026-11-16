@@ -1,0 +1,66 @@
+[
+  {
+    "id": "usr_01",
+    "username": "demo.customer",
+    "password": "demo1234",
+    "active": true,
+    "name": "Sam Carter",
+    "email": "sam@buildco.example",
+    "company": "BuildCo Ltd",
+    "role": "customer",
+    "addresses": [
+      {
+        "id": "adr_01",
+        "label": "Main warehouse",
+        "line1": "12 Industrial Rd",
+        "city": "Springfield",
+        "postalCode": "10001",
+        "country": "US",
+        "isDefault": true
+      }
+    ]
+  },
+  {
+    "id": "usr_02",
+    "username": "demo.customer2",
+    "password": "demo1234",
+    "active": true,
+    "name": "Alex Morgan",
+    "email": "alex@northside.example",
+    "company": "Northside Builders",
+    "role": "customer",
+    "addresses": [
+      {
+        "id": "adr_02",
+        "label": "Head office",
+        "line1": "48 Harbor St",
+        "city": "Portland",
+        "postalCode": "97201",
+        "country": "US",
+        "isDefault": true
+      }
+    ]
+  },
+  {
+    "id": "usr_03",
+    "username": "demo.inactive",
+    "password": "demo1234",
+    "active": false,
+    "name": "Jordan Lee",
+    "email": "jordan@formerclient.example",
+    "company": "Former Client Co",
+    "role": "customer",
+    "addresses": []
+  },
+  {
+    "id": "usr_09",
+    "username": "demo.seller",
+    "password": "demo1234",
+    "active": true,
+    "name": "SOCIMCO Sales Desk",
+    "email": "sales@socimco.example",
+    "company": "SOCIMCO",
+    "role": "seller",
+    "addresses": []
+  }
+]

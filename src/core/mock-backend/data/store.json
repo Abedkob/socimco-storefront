@@ -1,0 +1,11 @@
+{
+  "name": "SOCIMCO UYUS TOOLS",
+  "currency": "USD",
+  "logoUrl": "/images/brand/logo.svg",
+  "negotiation": {
+    "enabled": true,
+    "maxCustomerRounds": 3,
+    "offerExpiryHours": 48,
+    "acceptedPriceValidHours": 24
+  }
+}

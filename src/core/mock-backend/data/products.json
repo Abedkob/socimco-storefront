@@ -1,0 +1,592 @@
+[
+  {
+    "id": "prd_drill_18v",
+    "sku": "DRL-18V-001",
+    "slug": "18v-cordless-drill-driver",
+    "name": "18V Cordless Drill Driver",
+    "brand": "Torqmax",
+    "categoryId": "cat_drills",
+    "description": "Compact 2-speed drill driver with two 2.0Ah batteries, charger and carry case.",
+    "images": [
+      "https://images.pexels.com/photos/4792486/pexels-photo-4792486.jpeg?auto=compress&cs=tinysrgb&w=960",
+      "https://images.pexels.com/photos/7218101/pexels-photo-7218101.jpeg?auto=compress&cs=tinysrgb&w=960"
+    ],
+    "priceCents": 10000,
+    "unit": "piece",
+    "stock": 1200,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 100,
+    "specs": {
+      "Voltage": "18V",
+      "Chuck": "13 mm keyless",
+      "Max torque": "55 Nm",
+      "Weight": "1.4 kg"
+    },
+    "rating": 4.6,
+    "createdAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "prd_impact_driver",
+    "sku": "DRL-IMP-002",
+    "slug": "18v-brushless-impact-driver",
+    "name": "18V Brushless Impact Driver",
+    "brand": "Torqmax",
+    "categoryId": "cat_drills",
+    "description": "Brushless impact driver with 3 speed modes for long screws and lag bolts.",
+    "images": [
+      "https://images.pexels.com/photos/8487757/pexels-photo-8487757.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 14900,
+    "unit": "piece",
+    "stock": 600,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 100,
+    "specs": {
+      "Voltage": "18V",
+      "Bit holder": "1/4\" hex",
+      "Max torque": "180 Nm"
+    },
+    "rating": 4.7,
+    "createdAt": "2026-08-20T10:00:00Z"
+  },
+  {
+    "id": "prd_sds_hammer_drill",
+    "sku": "DRL-SDS-003",
+    "slug": "sds-plus-rotary-hammer",
+    "name": "SDS-Plus Rotary Hammer 800W",
+    "brand": "Brickline",
+    "categoryId": "cat_drills",
+    "description": "Corded rotary hammer with chisel mode for concrete and masonry.",
+    "images": [
+      "https://images.pexels.com/photos/16280528/pexels-photo-16280528.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 21900,
+    "unit": "piece",
+    "stock": 250,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 50,
+    "specs": {
+      "Power": "800W",
+      "Impact energy": "2.8 J",
+      "Chuck": "SDS-Plus"
+    },
+    "rating": 4.5,
+    "createdAt": "2026-07-14T10:00:00Z"
+  },
+  {
+    "id": "prd_circular_saw",
+    "sku": "SAW-CIR-004",
+    "slug": "185mm-circular-saw",
+    "name": "185mm Circular Saw 1400W",
+    "brand": "Cutwell",
+    "categoryId": "cat_saws",
+    "description": "Circular saw with bevel adjustment up to 45° and dust port.",
+    "images": [
+      "https://images.pexels.com/photos/20318087/pexels-photo-20318087.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 17900,
+    "unit": "piece",
+    "stock": 300,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 50,
+    "specs": {
+      "Blade": "185 mm",
+      "Power": "1400W",
+      "Cut depth": "63 mm"
+    },
+    "rating": 4.4,
+    "createdAt": "2026-06-30T10:00:00Z"
+  },
+  {
+    "id": "prd_jigsaw",
+    "sku": "SAW-JIG-005",
+    "slug": "variable-speed-jigsaw",
+    "name": "Variable Speed Jigsaw 650W",
+    "brand": "Cutwell",
+    "categoryId": "cat_saws",
+    "description": "Pendulum-action jigsaw with tool-free blade change.",
+    "images": [
+      "https://images.pexels.com/photos/8447895/pexels-photo-8447895.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 11900,
+    "unit": "piece",
+    "stock": 280,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 50,
+    "specs": {
+      "Power": "650W",
+      "Stroke": "20 mm",
+      "Wood capacity": "85 mm"
+    },
+    "rating": 4.3,
+    "createdAt": "2026-05-18T10:00:00Z"
+  },
+  {
+    "id": "prd_angle_grinder",
+    "sku": "GRD-ANG-006",
+    "slug": "115mm-angle-grinder",
+    "name": "115mm Angle Grinder 900W",
+    "brand": "Brickline",
+    "categoryId": "cat_grinders",
+    "description": "Slim-grip angle grinder with spindle lock and side handle.",
+    "images": [
+      "https://images.pexels.com/photos/4315560/pexels-photo-4315560.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 8900,
+    "unit": "piece",
+    "stock": 500,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 100,
+    "specs": {
+      "Disc": "115 mm",
+      "Power": "900W",
+      "No-load speed": "11,000 rpm"
+    },
+    "rating": 4.4,
+    "createdAt": "2026-04-02T10:00:00Z"
+  },
+  {
+    "id": "prd_bench_grinder",
+    "sku": "GRD-BEN-007",
+    "slug": "200mm-bench-grinder",
+    "name": "200mm Bench Grinder",
+    "brand": "Brickline",
+    "categoryId": "cat_grinders",
+    "description": "Twin-wheel bench grinder with eye shields and tool rests.",
+    "images": [
+      "https://images.pexels.com/photos/5973829/pexels-photo-5973829.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 15900,
+    "unit": "piece",
+    "stock": 80,
+    "minOrderQty": 1,
+    "negotiable": false,
+    "minNegotiableQty": null,
+    "specs": {
+      "Wheels": "200 mm",
+      "Power": "370W"
+    },
+    "rating": 4.2,
+    "createdAt": "2026-03-11T10:00:00Z"
+  },
+  {
+    "id": "prd_hammer_16oz",
+    "sku": "HMR-16OZ-008",
+    "slug": "16oz-claw-hammer",
+    "name": "16oz Fiberglass Claw Hammer",
+    "brand": "Ironhand",
+    "categoryId": "cat_hammers",
+    "description": "Anti-vibration fiberglass handle with a forged steel head.",
+    "images": [
+      "https://images.unsplash.com/photo-1607870411590-d5e9e06da09a?w=960&h=840&fit=crop&q=75&auto=format"
+    ],
+    "priceCents": 1850,
+    "unit": "piece",
+    "stock": 3000,
+    "minOrderQty": 1,
+    "negotiable": false,
+    "minNegotiableQty": null,
+    "specs": {
+      "Head weight": "16 oz",
+      "Handle": "Fiberglass",
+      "Length": "33 cm"
+    },
+    "rating": 4.4,
+    "createdAt": "2026-08-12T10:00:00Z"
+  },
+  {
+    "id": "prd_sledge_4lb",
+    "sku": "HMR-SLG-009",
+    "slug": "4lb-club-hammer",
+    "name": "4lb Club Hammer",
+    "brand": "Ironhand",
+    "categoryId": "cat_hammers",
+    "description": "Short-handle club hammer for chisels and demolition work.",
+    "images": [
+      "https://images.unsplash.com/photo-1788399629905-05ce3b9544a5?w=960&h=840&fit=crop&q=75&auto=format"
+    ],
+    "priceCents": 3200,
+    "unit": "piece",
+    "stock": 400,
+    "minOrderQty": 1,
+    "negotiable": false,
+    "minNegotiableQty": null,
+    "specs": {
+      "Head weight": "4 lb",
+      "Handle": "Hickory"
+    },
+    "rating": 4.5,
+    "createdAt": "2026-02-27T10:00:00Z"
+  },
+  {
+    "id": "prd_socket_set",
+    "sku": "WRN-SOC-010",
+    "slug": "94-piece-socket-set",
+    "name": "94-Piece Metric Socket Set",
+    "brand": "Ironhand",
+    "categoryId": "cat_wrenches",
+    "description": "1/4\" and 1/2\" drive sockets, ratchets and extensions in a blow-moulded case.",
+    "images": [
+      "https://images.pexels.com/photos/8335679/pexels-photo-8335679.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 6400,
+    "unit": "piece",
+    "stock": 700,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 200,
+    "specs": {
+      "Pieces": "94",
+      "Drive": "1/4\" + 1/2\"",
+      "Material": "Chrome vanadium"
+    },
+    "rating": 4.6,
+    "createdAt": "2026-07-01T10:00:00Z"
+  },
+  {
+    "id": "prd_adjustable_wrench",
+    "sku": "WRN-ADJ-011",
+    "slug": "250mm-adjustable-wrench",
+    "name": "250mm Adjustable Wrench",
+    "brand": "Ironhand",
+    "categoryId": "cat_wrenches",
+    "description": "Wide-jaw adjustable wrench with laser-etched scale.",
+    "images": [
+      "https://images.unsplash.com/photo-1503789188050-804ee34b3d32?w=960&h=840&fit=crop&q=75&auto=format"
+    ],
+    "priceCents": 2100,
+    "unit": "piece",
+    "stock": 900,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 300,
+    "specs": {
+      "Length": "250 mm",
+      "Max jaw": "30 mm"
+    },
+    "rating": 4.3,
+    "createdAt": "2026-01-19T10:00:00Z"
+  },
+  {
+    "id": "prd_screwdriver_set",
+    "sku": "HND-SCR-012",
+    "slug": "12-piece-screwdriver-set",
+    "name": "12-Piece Insulated Screwdriver Set",
+    "brand": "Ironhand",
+    "categoryId": "cat_hand",
+    "description": "1000V-rated slotted and Phillips screwdrivers with soft-grip handles.",
+    "images": [
+      "https://images.pexels.com/photos/5583097/pexels-photo-5583097.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 3900,
+    "unit": "piece",
+    "stock": 1100,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 200,
+    "specs": {
+      "Pieces": "12",
+      "Rating": "1000V VDE"
+    },
+    "rating": 4.5,
+    "createdAt": "2026-06-05T10:00:00Z"
+  },
+  {
+    "id": "prd_utility_knife",
+    "sku": "HND-KNF-013",
+    "slug": "retractable-utility-knife",
+    "name": "Retractable Utility Knife",
+    "brand": "Cutwell",
+    "categoryId": "cat_hand",
+    "description": "Auto-lock utility knife with 5 spare blades in the handle.",
+    "images": [
+      "https://images.pexels.com/photos/19327094/pexels-photo-19327094.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 750,
+    "unit": "piece",
+    "stock": 5000,
+    "minOrderQty": 10,
+    "negotiable": true,
+    "minNegotiableQty": 1000,
+    "specs": {
+      "Blade": "18 mm snap-off",
+      "Spares": "5"
+    },
+    "rating": 4.1,
+    "createdAt": "2026-03-22T10:00:00Z"
+  },
+  {
+    "id": "prd_wood_screws",
+    "sku": "FST-WSC-014",
+    "slug": "wood-screws-4x40-box",
+    "name": "Wood Screws 4×40mm (Box of 500)",
+    "brand": "Fixright",
+    "categoryId": "cat_screws",
+    "description": "Zinc-plated countersunk wood screws with a Pozi drive.",
+    "images": [
+      "https://images.pexels.com/photos/5583084/pexels-photo-5583084.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 1299,
+    "unit": "box",
+    "stock": 8000,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 500,
+    "specs": {
+      "Size": "4 × 40 mm",
+      "Drive": "PZ2",
+      "Per box": "500"
+    },
+    "rating": 4.6,
+    "createdAt": "2026-05-09T10:00:00Z"
+  },
+  {
+    "id": "prd_drywall_screws",
+    "sku": "FST-DSC-015",
+    "slug": "drywall-screws-35mm-box",
+    "name": "Drywall Screws 3.5×35mm (Box of 1000)",
+    "brand": "Fixright",
+    "categoryId": "cat_screws",
+    "description": "Black phosphate bugle-head screws for plasterboard to timber.",
+    "images": [
+      "https://images.pexels.com/photos/26856081/pexels-photo-26856081.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 1099,
+    "unit": "box",
+    "stock": 6000,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 500,
+    "specs": {
+      "Size": "3.5 × 35 mm",
+      "Drive": "PH2",
+      "Per box": "1000"
+    },
+    "rating": 4.5,
+    "createdAt": "2026-05-09T11:00:00Z"
+  },
+  {
+    "id": "prd_wall_anchors",
+    "sku": "FST-ANC-016",
+    "slug": "nylon-wall-plugs-kit",
+    "name": "Nylon Wall Plugs Kit (300 pcs)",
+    "brand": "Fixright",
+    "categoryId": "cat_anchors",
+    "description": "Assorted 5–10 mm nylon plugs for brick, concrete and block.",
+    "images": [
+      "https://images.pexels.com/photos/5583050/pexels-photo-5583050.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 899,
+    "unit": "box",
+    "stock": 4000,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 500,
+    "specs": {
+      "Sizes": "5, 6, 8, 10 mm",
+      "Per box": "300"
+    },
+    "rating": 4.2,
+    "createdAt": "2026-04-15T10:00:00Z"
+  },
+  {
+    "id": "prd_tape_measure",
+    "sku": "MSR-TAP-017",
+    "slug": "8m-tape-measure",
+    "name": "8m Tape Measure",
+    "brand": "Truline",
+    "categoryId": "cat_measuring",
+    "description": "Rubber-armoured tape measure with a 25 mm blade and belt clip.",
+    "images": [
+      "https://images.pexels.com/photos/32942847/pexels-photo-32942847.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 1450,
+    "unit": "piece",
+    "stock": 2500,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 300,
+    "specs": {
+      "Length": "8 m",
+      "Blade width": "25 mm"
+    },
+    "rating": 4.6,
+    "createdAt": "2026-09-10T10:00:00Z"
+  },
+  {
+    "id": "prd_laser_level",
+    "sku": "MSR-LAS-018",
+    "slug": "green-cross-line-laser",
+    "name": "Green Cross-Line Laser Level",
+    "brand": "Truline",
+    "categoryId": "cat_measuring",
+    "description": "Self-levelling cross-line laser with 30 m range and tripod mount.",
+    "images": [
+      "https://images.pexels.com/photos/6474120/pexels-photo-6474120.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 18900,
+    "unit": "piece",
+    "stock": 150,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 30,
+    "specs": {
+      "Range": "30 m",
+      "Accuracy": "±0.3 mm/m",
+      "Beam": "Green"
+    },
+    "rating": 4.7,
+    "createdAt": "2026-10-01T10:00:00Z"
+  },
+  {
+    "id": "prd_spirit_level",
+    "sku": "MSR-SPL-019",
+    "slug": "1200mm-spirit-level",
+    "name": "1200mm Box Spirit Level",
+    "brand": "Truline",
+    "categoryId": "cat_measuring",
+    "description": "Aluminium box level with 3 shock-resistant vials.",
+    "images": [
+      "https://images.unsplash.com/photo-1567361808976-260065224468?w=960&h=840&fit=crop&q=75&auto=format"
+    ],
+    "priceCents": 2600,
+    "unit": "piece",
+    "stock": 900,
+    "minOrderQty": 1,
+    "negotiable": false,
+    "minNegotiableQty": null,
+    "specs": {
+      "Length": "1200 mm",
+      "Vials": "3"
+    },
+    "rating": 4.4,
+    "createdAt": "2026-02-08T10:00:00Z"
+  },
+  {
+    "id": "prd_safety_helmet",
+    "sku": "SAF-HLM-020",
+    "slug": "vented-safety-helmet",
+    "name": "Vented Safety Helmet",
+    "brand": "Guardline",
+    "categoryId": "cat_safety",
+    "description": "EN397 helmet with a 6-point harness and ratchet adjustment.",
+    "images": [
+      "https://images.unsplash.com/photo-1768158988512-ad31657fe5b8?w=960&h=840&fit=crop&q=75&auto=format"
+    ],
+    "priceCents": 1900,
+    "unit": "piece",
+    "stock": 2000,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 200,
+    "specs": {
+      "Standard": "EN397",
+      "Harness": "6-point"
+    },
+    "rating": 4.5,
+    "createdAt": "2026-08-01T10:00:00Z"
+  },
+  {
+    "id": "prd_safety_glasses",
+    "sku": "SAF-GLS-021",
+    "slug": "anti-fog-safety-glasses",
+    "name": "Anti-Fog Safety Glasses",
+    "brand": "Guardline",
+    "categoryId": "cat_safety",
+    "description": "Wraparound clear lenses with anti-scratch and anti-fog coating.",
+    "images": [
+      "https://images.pexels.com/photos/7789650/pexels-photo-7789650.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 450,
+    "unit": "piece",
+    "stock": 10000,
+    "minOrderQty": 10,
+    "negotiable": true,
+    "minNegotiableQty": 1000,
+    "specs": {
+      "Standard": "EN166",
+      "Lens": "Clear polycarbonate"
+    },
+    "rating": 4.3,
+    "createdAt": "2026-07-22T10:00:00Z"
+  },
+  {
+    "id": "prd_work_gloves",
+    "sku": "SAF-GLV-022",
+    "slug": "nitrile-coated-work-gloves",
+    "name": "Nitrile-Coated Work Gloves (Pair)",
+    "brand": "Guardline",
+    "categoryId": "cat_safety",
+    "description": "Breathable knit gloves with a nitrile palm for grip in oily conditions.",
+    "images": [
+      "https://images.unsplash.com/photo-1634852836003-c0aa5b67d243?w=960&h=840&fit=crop&q=75&auto=format"
+    ],
+    "priceCents": 650,
+    "unit": "piece",
+    "stock": 8000,
+    "minOrderQty": 12,
+    "negotiable": true,
+    "minNegotiableQty": 1000,
+    "specs": {
+      "Sizes": "S–XXL",
+      "Standard": "EN388 4131"
+    },
+    "rating": 4.4,
+    "createdAt": "2026-06-18T10:00:00Z"
+  },
+  {
+    "id": "prd_tool_box",
+    "sku": "STO-BOX-023",
+    "slug": "22-inch-tool-box",
+    "name": "22\" Tool Box with Organiser",
+    "brand": "Stackpro",
+    "categoryId": "cat_storage",
+    "description": "Impact-resistant tool box with a removable tray and lid organisers.",
+    "images": [
+      "https://images.pexels.com/photos/7640990/pexels-photo-7640990.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 4500,
+    "unit": "piece",
+    "stock": 600,
+    "minOrderQty": 1,
+    "negotiable": true,
+    "minNegotiableQty": 100,
+    "specs": {
+      "Size": "22\"",
+      "Load": "15 kg"
+    },
+    "rating": 4.3,
+    "createdAt": "2026-03-30T10:00:00Z"
+  },
+  {
+    "id": "prd_rolling_cabinet",
+    "sku": "STO-CAB-024",
+    "slug": "7-drawer-rolling-cabinet",
+    "name": "7-Drawer Rolling Tool Cabinet",
+    "brand": "Stackpro",
+    "categoryId": "cat_storage",
+    "description": "Steel roller cabinet with ball-bearing drawers and central locking.",
+    "images": [
+      "https://images.pexels.com/photos/9606740/pexels-photo-9606740.jpeg?auto=compress&cs=tinysrgb&w=960&h=840&fit=crop"
+    ],
+    "priceCents": 38900,
+    "unit": "piece",
+    "stock": 40,
+    "minOrderQty": 1,
+    "negotiable": false,
+    "minNegotiableQty": null,
+    "specs": {
+      "Drawers": "7",
+      "Load per drawer": "20 kg",
+      "Lock": "Central key"
+    },
+    "rating": 4.8,
+    "createdAt": "2026-10-20T10:00:00Z"
+  }
+]
