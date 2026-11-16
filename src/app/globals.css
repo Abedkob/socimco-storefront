@@ -181,6 +181,14 @@
     transform: none;
   }
 }
+/* QR scanner: a line sweeping the viewfinder while the camera looks for a code. */
+.scan-line {
+  top: 8%;
+  animation: scan-sweep 2.2s ease-in-out infinite alternate;
+}
+@keyframes scan-sweep {
+  to { top: 92%; }
+}
 @keyframes ping-green {
   0% {
     box-shadow: 0 0 0 0 rgb(53 179 53 / 0.55);
@@ -251,7 +259,8 @@
 @media (prefers-reduced-motion: reduce) {
   .app::before,
   .hero-in,
-  .hero-ping {
+  .hero-ping,
+  .scan-line {
     animation: none;
   }
   .btn-raised:hover:not(:disabled) {

@@ -145,6 +145,11 @@ public/brand/               SOCIMCO logo files
 - TanStack Query 5, zod 4, lucide-react icons, Vitest
 
 - `qrcode.react` draws the scannable sign-in QR code, which encodes the `approveUrl` from the API.
+- **The phone's in-app scanner.** On a phone, Account → Approve a computer opens `/qr/approve`, which uses the camera:
+  - It reads codes with the browser's `BarcodeDetector` (Chrome on Android), or with `jsqr` elsewhere (Safari on iPhone).
+  - It only accepts this site's own `/qr/approve?code=…` links.
+  - It needs HTTPS (or localhost) and camera permission.
+  - Without a camera, the phone's own camera app works too: it opens the same link.
 - In `next.config.ts`, `experimental.instantInsights.validationLevel: "manual-warning"` stops Next's dev-only "instant navigation" check from flagging every shop page. Pages wait for the signed-in customer and load their data in the browser, so they can't render instantly from the server by design.
 
 > Next.js 16 differs from older versions in places. Check `node_modules/next/dist/docs/` before changing framework-level code (see `AGENTS.md`).
@@ -169,6 +174,7 @@ public/brand/               SOCIMCO logo files
   - the reference scenario through the real screens
   - password sign-in and its errors
   - QR sign-in: approve, already used, unknown code
+  - the phone's in-app scanner: tested with a simulated camera and decoder (wrong code, then a real code), and the no-camera fallback
   - sign-out, and a session expiring and returning to the right page
 - **Controls marked "Proposal"** (add or edit address, order these again) are designs waiting for backend support. They explain this when clicked instead of doing anything.
 

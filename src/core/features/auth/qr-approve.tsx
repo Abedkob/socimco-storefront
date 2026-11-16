@@ -1,15 +1,18 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Check, Clock, Laptop, Lock, QrCode, ShieldCheck, Smartphone, X } from "lucide-react";
+import { Check, Clock, Laptop, Lock, ScanLine, ShieldCheck, Smartphone, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { useApi, useMe } from "@/core/api/client/react";
 import { ERROR_MESSAGES, isApiError } from "@/core/contract";
 import { BrandLogo, btn, errorMessage, ErrorTile, Spinner } from "@/core/ui";
+import { QrScanner } from "./qr-scanner";
 
-type Result = "approved" | "denied" | "expired" | "used" | "invalid" | "missing";
+type Result = "approved" | "denied" | "expired" | "used" | "invalid";
+/** Results where scanning a fresh code is the natural next step. */
+const RESCAN: readonly Result[] = ["expired", "used", "invalid"];
 
 const timeFmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" });
 
@@ -19,12 +22,6 @@ const RESULT: Record<Result, { icon: typeof Check; tone: string; title: string; 
   expired: { icon: Clock, tone: "bg-dark text-on-dark", title: "Request expired", body: `${ERROR_MESSAGES.QR_EXPIRED} Scan the new code on your computer.` },
   used: { icon: Lock, tone: "bg-dark text-on-dark", title: "Already used", body: `${ERROR_MESSAGES.QR_ALREADY_USED} Each code signs in one computer once.` },
   invalid: { icon: X, tone: "bg-dark text-on-dark", title: "Code not recognised", body: "This link isn't a current sign-in code. Scan the code on your computer again." },
-  missing: {
-    icon: QrCode,
-    tone: "bg-dark text-on-dark",
-    title: "Scan the code on your computer",
-    body: "On the computer, open the SOCIMCO sign-in page. Point this phone's camera at the code next to the password form, then come back here to approve.",
-  },
 };
 
 function Frame({ children }: { children: ReactNode }) {
@@ -52,8 +49,13 @@ function ResultView({ result }: { result: Result }) {
         <h1 className="display mt-6 text-[34px] leading-tight">{r.title}</h1>
         <p className="mt-2 max-w-sm text-ink-3">{r.body}</p>
       </div>
-      <div className="mt-auto pt-10">
-        <Link href="/" className={btn("primary", "lg", "w-full")}>
+      <div className="mt-auto space-y-2.5 pt-10">
+        {RESCAN.includes(result) && (
+          <Link href="/qr/approve" className={btn("primary", "lg", "w-full")}>
+            <ScanLine size={18} aria-hidden /> Scan again
+          </Link>
+        )}
+        <Link href="/" className={btn(RESCAN.includes(result) ? "outline" : "primary", "lg", "w-full")}>
           Back to SOCIMCO
         </Link>
       </div>
@@ -152,7 +154,11 @@ function Approve({ code }: { code: string }) {
   );
 }
 
-/** /qr/approve?code=… — opened by scanning the computer's code. Needs the phone to be signed in first. */
+/**
+ * /qr/approve: the in-app scanner (Account → Approve a computer).
+ * /qr/approve?code=…: the approval itself, reached from the scanner or by scanning with the phone's camera app.
+ * Both need the phone to be signed in first.
+ */
 export function QrApproveScreen() {
   const params = useSearchParams();
   const router = useRouter();
@@ -168,17 +174,17 @@ export function QrApproveScreen() {
 
   return (
     <Frame>
-      {!code ? (
-        <ResultView result="missing" />
-      ) : me.isPending || signedOut ? (
+      {me.isPending || signedOut ? (
         <Loading label="Checking your account…" />
       ) : me.isError ? (
         <div className="mt-10">
           <h1 className="display text-[30px] leading-tight">Couldn&apos;t check your account</h1>
           <ErrorTile message={errorMessage(me.error)} onRetry={() => void me.refetch()} className="mt-6" />
         </div>
+      ) : !code ? (
+        <QrScanner onCode={(c) => router.replace(`/qr/approve?code=${encodeURIComponent(c)}`)} />
       ) : (
-        <Approve code={code} />
+        <Approve key={code} code={code} />
       )}
     </Frame>
   );

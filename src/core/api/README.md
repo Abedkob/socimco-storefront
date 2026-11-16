@@ -126,7 +126,7 @@ The UI needs these shapes **after** your adapter. Exact zod definitions are in `
 | `login` | `POST /api/auth/login` | `{ username, password }` | `{ user: User }` (and sets the session) |
 | `logout` | `POST /api/auth/logout` | — | `{ ok: true }` |
 | `me` | `GET /api/auth/me` | — | `{ user: User }`, or 401 when signed out (that drives the redirect to `/login`) |
-| `qrCreate` | `POST /api/auth/qr` | — | `{ id, approveUrl (absolute URL), expiresAt }` |
+| `qrCreate` | `POST /api/auth/qr` | — | `{ id, approveUrl, expiresAt }`. `approveUrl` must be `<storefront origin>/qr/approve?code=<code>`: the phone's in-app scanner only accepts that link. |
 | `qrStatus` | `GET /api/auth/qr/:id` | — | `{ status: pending\|scanned\|approved\|denied\|expired\|consumed, expiresAt }` |
 | `qrScan` | `POST /api/auth/qr/scan` | `{ code }` | `{ requestedFrom, requestedAt }` |
 | `qrApprove` | `POST /api/auth/qr/approve` | `{ code, decision: approve\|deny }` | `{ status: approved\|denied }` |

@@ -91,6 +91,13 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Also recognises an ApiError created by an older copy of this module. In `next dev`, the mock backend is kept
+ * on globalThis across hot reloads, so its errors can come from a previous version of this class.
+ */
 export function isApiError(value: unknown): value is ApiError {
-  return value instanceof ApiError;
+  if (value instanceof ApiError) return true;
+  if (!(value instanceof Error) || value.name !== "ApiError") return false;
+  const v = value as Error & { code?: unknown; toEnvelope?: unknown };
+  return typeof v.code === "string" && Object.hasOwn(ERROR_STATUS, v.code) && typeof v.toEnvelope === "function";
 }
