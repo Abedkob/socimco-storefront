@@ -200,6 +200,7 @@ docker build -t socimco-storefront .
 docker run -p 3000:3000 socimco-storefront     # http://localhost:3000
 ```
 
+- **Live demo (Render):** https://socimco-storefront.onrender.com. Sign in as `test.customer` / `demo1234`. The free plan sleeps after about 15 minutes idle, so the first visit takes about a minute and the data starts fresh.
 - **Render:** `render.yaml` is a ready blueprint. In Render, choose New → Blueprint, pick this repository and Apply. You get one free Docker service, and every push to `main` redeploys it.
 - **Any Docker host works**, for example Dokploy, Render, Railway or Fly. Run **1 instance**, port **3000**; health check `GET /login`.
 - **The demo data resets** when the container restarts.
