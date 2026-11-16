@@ -1,6 +1,8 @@
 # Connecting the storefront to the client's API
 
 > **Backend developer?** Start with [`src/core/api/README.md`](../src/core/api/README.md): the step-by-step plug-in guide, field requirements per route, rules and error codes. This page is the overview.
+>
+> **Live demo** (built-in demo backend): https://socimco-storefront.onrender.com, signing in as `test.customer` / `demo1234`. In the browser's Network tab you can see exactly what each route returns.
 
 The SOCIMCO storefront talks to its backend through one typed client: `src/core/api/client/`. Every screen and hook uses it, so switching from the built-in mock to the client's API is configuration plus one adapter file. No screen changes.
 
