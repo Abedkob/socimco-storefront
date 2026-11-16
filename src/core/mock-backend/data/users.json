@@ -53,6 +53,36 @@
     "addresses": []
   },
   {
+    "id": "usr_04",
+    "username": "test.customer",
+    "password": "demo1234",
+    "active": true,
+    "name": "Nadia Haddad",
+    "email": "nadia@atlascontracting.example",
+    "company": "Atlas Contracting",
+    "role": "customer",
+    "addresses": [
+      {
+        "id": "adr_04",
+        "label": "Main yard",
+        "line1": "7 Quarry Lane",
+        "city": "Denver",
+        "postalCode": "80216",
+        "country": "US",
+        "isDefault": true
+      },
+      {
+        "id": "adr_05",
+        "label": "Site office",
+        "line1": "220 Market St, Unit 4",
+        "city": "Boulder",
+        "postalCode": "80302",
+        "country": "US",
+        "isDefault": false
+      }
+    ]
+  },
+  {
     "id": "usr_09",
     "username": "demo.seller",
     "password": "demo1234",

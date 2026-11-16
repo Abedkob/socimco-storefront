@@ -32,6 +32,7 @@ pnpm dev                        # http://localhost:3001
 |---|---|---|
 | `demo.customer` | Sam Carter, BuildCo Ltd | The main customer: has order history and an address |
 | `demo.customer2` | Alex Morgan, Northside Builders | A second customer with no orders (new-customer home) |
+| `test.customer` | Nadia Haddad, Atlas Contracting | A fresh customer for end-to-end testing: no orders yet, two delivery addresses |
 | `demo.inactive` | Disabled account | Shows the "account disabled" error |
 | `demo.seller` | Sales desk | Not a storefront user. Answers quotes through the mock's sales-desk API (below) |
 
