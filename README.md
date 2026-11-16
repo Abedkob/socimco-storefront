@@ -200,6 +200,7 @@ docker build -t socimco-storefront .
 docker run -p 3000:3000 socimco-storefront     # http://localhost:3000
 ```
 
+- **Render:** `render.yaml` is a ready blueprint. In Render, choose New → Blueprint, pick this repository and Apply. You get one free Docker service, and every push to `main` redeploys it.
 - **Any Docker host works**, for example Dokploy, Render, Railway or Fly. Run **1 instance**, port **3000**; health check `GET /login`.
 - **The demo data resets** when the container restarts.
 - **`NEXT_PUBLIC_*` settings are compiled in,** so pass them as build args: `--build-arg NEXT_PUBLIC_API_BASE_URL=…`.

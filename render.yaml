@@ -1,0 +1,31 @@
+# Render blueprint: the SOCIMCO storefront demo as ONE always-on Docker web service.
+# In Render: New → Blueprint → pick this repository → Apply. Every push to main redeploys.
+#
+# One instance on purpose: the built-in demo backend keeps its data in the server's memory
+# (see README → Deploying). The free plan sleeps after ~15 min idle; the first visit then takes
+# about a minute and the demo data starts fresh.
+services:
+  - type: web
+    name: socimco-storefront
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /login
+    autoDeploy: true
+    numInstances: 1
+    envVars:
+      - key: PORT
+        value: "3000"
+      # Storefront → API settings (compiled in at build time; Render passes them to the Docker build).
+      # Leave the base URL empty to use the built-in demo backend.
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: ""
+      - key: NEXT_PUBLIC_API_ADAPTER
+        value: contract
+      - key: NEXT_PUBLIC_API_AUTH
+        value: cookie
+      - key: NEXT_PUBLIC_QR_LOGIN
+        value: "on"
